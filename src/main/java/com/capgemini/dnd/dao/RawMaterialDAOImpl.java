@@ -880,6 +880,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
 
 				statement2.executeUpdate();
+				resultSet.close();
+				statement1.close();
+				statement2.close();
 			}
 
 			statement = connection.prepareStatement(QueryMapper.UPDATERMSTOCK);
@@ -906,11 +909,10 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		}
 		
 		finally {
-			resultSet.close();
+			
 			
 			statement.close();
-			statement1.close();
-			statement2.close();
+			
 			connection.close();
 		}
 

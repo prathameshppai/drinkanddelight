@@ -1076,7 +1076,9 @@ public class ProductDAOImpl implements ProductDAO {
 				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
 
 				statement2.executeUpdate();
-
+				resultSet.close();
+				statement.close();
+				statement2.close();
 			}
 
 			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
@@ -1086,7 +1088,7 @@ public class ProductDAOImpl implements ProductDAO {
 			statement1.setInt(4, Integer.parseInt(productStock.getOrderId()));
 			statement1.executeUpdate();
 			
-
+			
 			return Constants.DATA_INSERTED_MESSAGE;
 
 		}
@@ -1104,11 +1106,10 @@ public class ProductDAOImpl implements ProductDAO {
 		
 		finally {
 			try {
-			resultSet.close();
+			
 			
 			statement1.close();
-			statement.close();
-			statement2.close();
+			
 			connection.close();
 			}
 			catch(SQLException exception) {
