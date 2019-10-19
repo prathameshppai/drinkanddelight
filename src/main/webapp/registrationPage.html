@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Employee Registration - Drink and Delight</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/CustomStyleDefined.css">
+</head>
+
+<body id="bodyafterlogin">
+	<form action="RegistrationPageServlet" method="post">
+		<div class="container" class="form-check" class="was-validated">
+		<div class="row">
+			<div class="col-lg-9 header-title">
+			
+				<h1>Employee Registration</h1>
+				<p>Please fill in all the details to create an account.</p>
+			</div>
+			<div class="col-lg-3">
+			<img alt="logo" src="images/logo.png" class="rounded-circle float-right header-img-title" width="120" height="120">
+			</div>
+			</div>
+<hr>
+			
+			<div class="row">
+				<div class="col-sm-3">
+					<label for="EmployeeName"><b>Employee Name</b></label>
+				</div>
+
+				<div class="col-sm-9">
+					<input type="text" placeholder="Full Name" name="EmployeeName" class = "text-box-size form-rounded" required>
+				</div>
+			</div>
+<br>
+
+		<div class="row">
+			<div class="col-sm-3">
+					<label for="Designation"><b>Designation</b></label>
+			</div>
+            <div class="col-sm-3">
+		 <select class="form-control" name="Designation" required>
+        			<option>Employee</option>
+        			<option>Asst. Manager</option>
+        			<option>Manager</option>
+        			</select>
+        			</div>
+        			</div>				
+		<br>		
+				<div class="row">
+				<div class="col-sm-3">
+				<label for="Email ID"><b>Email
+					ID</b></label> 
+					</div>
+
+				<div class="col-sm-9">
+					<input type="text" placeholder="abc@gmail.com" class = "text-box-size form-rounded" name="EmailID" required>
+				</div>
+			</div>
+				
+<br>				
+				<div class="row">
+				<div class="col-sm-3">
+				<label for="PhoneNumber"><b>Phone
+					Number</b></label>
+					</div>
+
+				<div class="col-sm-9">
+			<input type="text"	placeholder="Enter 10 Digit Mobile No." name="PhoneNumber" class = "text-box-size form-rounded" required>
+                </div>
+			    </div>
+<br>		    
+
+<div class="row">
+				<div class="col-sm-3">
+			<label for="DOB"><b>Date Of Birth</b></label> 
+			</div>
+
+				<div class="col-sm-9">
+			<input type="date" name="DOB" class = "text-box-size form-rounded" required>
+				</div>
+			</div>
+<br>				
+				
+				<div class="row">
+				<div class="col-sm-3">
+				<label for="gender"><b>Gender</b></label>
+					</div>
+
+				<div class="col-sm-9">
+					 <input type="radio" name="gender" value="male">
+			Male <input type="radio" name="gender" value="female"> Female
+			<input type="radio" name="gender" value="other"> Other
+            </div>
+			</div>
+<br>
+
+<div class="row">
+				<div class="col-sm-3">
+			<label for="UserName"><b>User Name</b></label> 
+			</div>
+
+				<div class="col-sm-9">
+			<input type="text" placeholder="Enter a strong UserName" name="UserName" class="text-box-size form-rounded" required>
+				</div>
+			</div>
+<br>	
+		<div class="row">
+			<div class="col-sm-3">
+					<label for="SecurityQues"><b>Security Question</b></label>
+			</div>
+            <div class="col-sm-3">
+		 <select class="form-control" name="SecurityQues" required>
+        			<option>What is your nickname?</option>
+        			<option>What is your favourite colour</option>
+        			<option>Which is the best car ever?</option>
+        			<option>Which is your favourite brand of handbag?</option>
+        			<option>Which is your favourite subject?</option>
+        			<option>Who is your favourite supervillain?</option>
+        			</select>
+        			</div>
+        			</div>
+<br>
+		
+<div class="row">
+				<div class="col-sm-3">
+			<label for="SecurityAns"><b>Security Answer</b></label> 
+			</div>
+
+				<div class="col-sm-9">
+			<input type="text" name="SecurityAns" class="text-box-size form-rounded" required>
+				</div>
+			</div>
+			
+<br>			
+			
+				<div class="row">
+				<div class="col-sm-3">
+				<label for="Password"><b>Password</b></label>
+			
+			</div>
+
+				<div class="col-sm-9">
+			<input type="password" placeholder="Enter a strong Password" name="Password" class="text-box-size form-rounded" required> 
+				</div>
+			</div>
+<br>				
+				
+				<div class="row">
+				<div class="col-sm-3">
+				<label for="ConfirmPwd"><b>Confirm
+					Password</b></label>
+					</div>
+
+				<div class="col-sm-9">
+					<input type="password"
+				placeholder="Confirm above Password" name="ConfirmPwd" class="text-box-size form-rounded" required>
+</div>
+			</div>
+
+
+			<hr>
+
+			<p>
+				By creating an account you agree to our <a href="#">Terms &
+					Privacy</a>.
+			</p>
+			<button type="submit" class="registerbtn">Register</button>
+		</div>
+
+		<div class="container signin">
+			<p>
+				Already have an account? <a href="loginpage.html">Sign in</a>.
+			</p>
+		</div>
+	</form>
+<footer>
+<div class="footer-copyright text-center bg-info text-white" id="footerbelowfixed">© 2019 Copyright:
+    <a href="#">Drink and Delight</a>
+  </div>
+</footer>
+</body>
+</html>

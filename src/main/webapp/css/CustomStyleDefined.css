@@ -1,0 +1,373 @@
+.header-img-title
+{
+margin-top:0.1px;
+margin-left: 10px;
+}
+
+.header-title
+{
+margin-top:30px;
+}
+#bodyafterlogin
+{
+height: 100%;	
+background-color:#60a3bc;
+}
+.text-box-size {
+	width: 250px;
+	height: 40px;
+}
+
+.form-rounded {
+border-radius: 0.35rem;
+}
+
+.text-box-size-update-order {
+	width: 210px;
+	height: 40px;
+}
+table, td, th {
+  border: 1px solid black;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  height: 50px;
+}
+
+#topbar {
+  padding: 0 0 10px 0;
+  font-size: 14px;
+  transition: all 0.5s;
+}
+
+#topbar .DnD h2{
+font-weight: bold;
+font-style:italic;
+  text-align: left;
+  color: rgb(0,0,0);
+  margin-top:30px;
+}
+
+.adjust-data-to-top {
+	margin-top:2px;
+}
+
+
+#footerbelow {
+   position: absolute;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   text-align: center;
+}
+
+#footerbelowfixed {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   text-align: center;
+}
+
+
+a:hover,
+a:active,
+a:focus {
+  color: #0a98c0;
+  outline: none;
+  text-decoration: none;
+}
+
+p {
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+
+/*--------------------------------------------------------------
+# Header
+--------------------------------------------------------------*/
+
+#header {
+  height: 25px;
+  transition: all 0.5s;
+  z-index: 997;
+  transition: all 0.5s;
+  padding: 20px 0;
+ /* position: fixed; */
+  left: 0;
+  top: 0;
+  right: 0;
+  transition: all 0.5s;
+  z-index: 997;
+}
+
+
+
+.shift-data-below {
+	margin-top: 115px;
+}
+
+
+
+.wrapper {
+	margin-top: 75px;
+	
+}
+
+
+/*--------------------------------------------------------------
+# Intro Section
+--------------------------------------------------------------*/
+
+#homebody {
+  background-color: #fefbd8 ;
+  color: #444;
+  font-family: "Open Sans", sans-serif;
+}
+
+#intro {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background: #fefbd8  url("https://media.licdn.com/dms/image/C511BAQEMmM3V3KN08A/company-background_10000/0?e=2159024400&v=beta&t=3PgWKkorEBAaOI0rL0iCpUzJ-hFyBVpiUdJnVYXJ7aA") center top no-repeat;
+  opacity: 0.3;
+}
+
+#intro .intro-info h2 {
+  color: #413e66;
+  margin-bottom: 40px;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+#intro .intro-info h2 span {
+  color: #1bb1dc;
+}
+
+#intro .intro-info .btn-get-started,
+#intro .intro-info .btn-services {
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-block;
+  padding: 10px 32px;
+  border-radius: 4px;
+  transition: 0.5s;
+  color: #fff;
+  background: #1bb1dc;
+  color: #fff;
+}
+
+#intro .intro-info .btn-get-started:hover,
+#intro .intro-info .btn-services:hover {
+  background: #0a98c0;
+}
+
+/*--------------------------------------------------------------
+# Navigation Menu
+--------------------------------------------------------------*/
+
+/* Desktop Navigation */
+
+.main-nav {
+  /* Drop Down */
+  /* Deep Drop Down */
+}
+
+.main-nav,
+.main-nav * {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.main-nav > ul > li {
+  position: relative;
+  white-space: nowrap;
+  float: left;
+}
+
+.main-nav a {
+  display: block;
+  position: relative;
+  color: #413e66;
+  padding: 10px 15px;
+  transition: 0.3s;
+  font-size: 20px;
+  font-family: "Open Sans", sans-serif;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.main-nav a:hover,
+.main-nav .active > a,
+.main-nav li:hover > a {
+  color: #1bb1dc;
+  text-decoration: none;
+}
+
+.main-nav .drop-down ul {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: calc(100% - 30px);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  padding: 10px 0;
+  background: #fff;
+  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
+  transition: ease all 0.3s;
+}
+
+.main-nav .drop-down:hover > ul {
+  opacity: 1;
+  top: 100%;
+  visibility: visible;
+}
+
+.main-nav .drop-down li {
+  min-width: 180px;
+  position: relative;
+}
+
+.main-nav .drop-down ul a {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  color: #065e77;
+}
+
+.main-nav .drop-down ul a:hover,
+.main-nav .drop-down ul .active > a,
+.main-nav .drop-down ul li:hover > a {
+  color: #1bb1dc;
+}
+
+.main-nav .drop-down > a:after {
+  content: "\f107";
+  font-family: FontAwesome;
+  padding-left: 10px;
+}
+
+.main-nav .drop-down .drop-down ul {
+  top: 0;
+  left: calc(100% - 30px);
+}
+
+.main-nav .drop-down .drop-down:hover > ul {
+  opacity: 1;
+  top: 0;
+  left: 100%;
+}
+
+.main-nav .drop-down .drop-down > a {
+  padding-right: 35px;
+}
+
+.main-nav .drop-down .drop-down > a:after {
+  content: "\f105";
+  position: absolute;
+  right: 15px;
+}
+
+
+
+
+/*******************CustomStyleLogin.css**********/
+
+
+	
+#homepage 
+		{
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			background: #60a3bc !important;
+		}
+
+
+
+		.user_card {
+			height: 400px;
+			width: 350px;
+			margin-top: auto;
+			margin-bottom: auto;
+			background: #f39c12;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			padding: 10px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			border-radius: 5px;
+
+		}
+		.brand_logo_container {
+			position: absolute;
+			height: 170px;
+			width: 170px;
+			top: -75px;
+			border-radius: 50%;
+			background: #60a3bc;
+			padding: 10px;
+			text-align: center;
+		}
+		.brand_logo {
+			height: 150px;
+			width: 150px;
+			border-radius: 50%;
+			border: 2px solid white;
+		}
+		.form_container {
+			margin-top: 100px;
+		}
+		.login_btn {
+			width: 100%;
+			background: #c0392b !important;
+			color: white !important;
+		}
+		.login_btn:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+		.login_container {
+			padding: 0 2rem;
+		}
+		.input-group-text {
+			background: #c0392b !important;
+			color: white !important;
+			border: 0 !important;
+			border-radius: 0.25rem 0 0 0.25rem !important;
+		}
+		.input_user,
+		.input_pass:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+		.custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+			background-color: #c0392b !important;
+		}
+		
+
+
+
+
+/********************************************************/
+
+
+
+
+
+
