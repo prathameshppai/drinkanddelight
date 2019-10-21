@@ -22,9 +22,11 @@ import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dao.ProductDAO;
 import com.capgemini.dnd.dao.ProductDAOImpl;
 import com.capgemini.dnd.dto.DisplayProductOrder;
+import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.util.JsonUtil;
 
 public class ProductServiceImpl implements ProductService {
@@ -165,11 +167,14 @@ public class ProductServiceImpl implements ProductService {
 
 	}
 
-
 	@Override
-	public List<ProductOrder> displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
-		return productDAO.displayProductOrders(displayProductOrderObject);
-	}
+    public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
+        List<ProductOrder> poList2 = new ArrayList<ProductOrder>();
+        poList2 = productDAO.displayProductOrders(displayProductOrderObject);
+        String jsonMessage = JsonUtil.convertJavaToJson1(poList2);
+        return jsonMessage;
+    }
+
 	
 	public static void main(String[] args) throws BackEndException, DoesNotExistException {
 		Distributor distributor=new Distributor();

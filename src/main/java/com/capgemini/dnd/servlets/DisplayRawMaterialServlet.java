@@ -1,13 +1,17 @@
 package com.capgemini.dnd.servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +22,8 @@ import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.service.RawMaterialService;
 import com.capgemini.dnd.service.RawMaterialServiceImpl;
+import com.capgemini.dnd.util.JsonUtil;
+import com.capgemini.dnd.util.MappingUtil;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages;
 
 /**
@@ -39,83 +45,67 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 
 	
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		
+		System.out.println("entered servlet");
 		doGet(req, res);
 		res.setContentType("application/json");
 		res.setHeader("Access-Control-Allow-Origin", "*");
-		
 		res.setHeader("Access-Control-Allow-Headers" ,"Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.setHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
 		PrintWriter out = res.getWriter();
+		String jsonMessage="";
 		String errorMessage = "";
+		
 		List<RawMaterialOrder> rmoList = new ArrayList<RawMaterialOrder>();
 		RawMaterialService rawmaterialServiceObject = new RawMaterialServiceImpl();
 		DisplayRawMaterialOrder displayRawMaterialOrderObject = new DisplayRawMaterialOrder();	
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	  
-	 String startdate = null;
-	 String endDate = null;
-		/// DeliveryStatus
-		String DeliveryStatus = req.getParameter("DeliveryStatus");
-		/// reading supid
-		String supplierid = req.getParameter("supId");
-		
-		startdate = req.getParameter("date1");  
-	   endDate = req.getParameter("date2");
-		displayRawMaterialOrderObject.setDeliveryStatus(DeliveryStatus);
-		displayRawMaterialOrderObject.setSupplierid(supplierid);
-		displayRawMaterialOrderObject.setStartdate(startdate);
-		displayRawMaterialOrderObject.setEndDate(endDate);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	
+	 Map<String,String> fieldValueMap = new HashMap<String, String>();
+	 fieldValueMap =MappingUtil.convertJsonObjectToFieldValueMap(req);
+	
+	        String DeliveryStatusVar= fieldValueMap.get("deliveryStatus");
+	        String SupplierIDVar= fieldValueMap.get("supplierid");
+	        String  date1Var= fieldValueMap.get("startdate");
+	        String  date2Var= fieldValueMap.get("endDate");
+//	        if( date1Var != null && date1Var != null )
+//	        		{
+//	        	
+//	        	Calendar c = Calendar.getInstance();
+//	        	try {
+//					c.setTime(sdf.parse(date2Var));
+//				} catch (ParseException e) {
+//					
+//					e.printStackTrace();
+//				}
+//	        	c.add(Calendar.DATE, 1);  // number of days to add
+//	        	date2Var = sdf.format(c.getTime());  
+//	        	System.out.println(date2Var);
+//	        		}
+	     
+	    displayRawMaterialOrderObject.setDeliveryStatus(DeliveryStatusVar);
+		displayRawMaterialOrderObject.setSupplierid(SupplierIDVar);
+		displayRawMaterialOrderObject.setStartdate(date1Var);
+		displayRawMaterialOrderObject.setEndDate(date2Var);
+
 		try {
-			rmoList = rawmaterialServiceObject.displayRawmaterialOrders(displayRawMaterialOrderObject);
+			jsonMessage = rawmaterialServiceObject.displayRawmaterialOrders(displayRawMaterialOrderObject);
+			
 		} catch (Exception e) {
 			
 			errorMessage = e.getMessage();
 		}
-		String upperhtml = "<!DOCTYPE html>\r\n" + "<html>\r\n" + "<head>\r\n" + "<meta charset=\"ISO-8859-1\">\r\n"
-				+ "<title>Display All Raw Material Orders</title>\r\n"
-				+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n"
-				+ "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\">\r\n"
-				+ "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>\r\n"
-				+ "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js\"></script>\r\n"
-				+ "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js\"></script>\r\n"
-				+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"C:\\Users\\dgupta23\\eclipse-workspace\\MyBiodata\\WebContent\\WEB-INF\\PlaceOrder.css\">\r\n"
-				+ "</head>\r\n" + "\r\n" + "<body>\r\n" + "<div class=\"container\">\r\n" + "<div class=\"row\">\r\n"
-				+ "            <div class=\"col-lg-9 header-title\">\r\n" + "            \r\n"
-				+ "                <h1>All Raw material Orders</h1>\r\n" + "                \r\n"
-				+ "            </div>\r\n" + "            <div class=\"col-lg-3\">\r\n"
-				+ "            <a href=\"#\"><img alt=\"logo\" src=\"Images/logo.png\" class=\"rounded-circle float-right header-img-title\" width=\"120\" height=\"120\">\r\n"
-				+ "            </a>\r\n" + "            </div>\r\n" + "        </div>\r\n" + "\r\n" + "<hr>\r\n"
-				+ "<br>\r\n" + "<div class=\"table-responsive\">" + "<table class=\"table table-striped\">>\r\n"
-				+ "  <tr>\r\n" + "    <th>Order<br>Id</th>\r\n" + "    <th>Name</th> \r\n" + "    <th>pId</th>\r\n"
-				+ "    <th>distributor <br> Id</th>\r\n" + "    <th>Quantity<br>Value</th>\r\n"
-				+ "    <th>Quantity<br>Unit</th>\r\n" + "    <th>Order<br> Date</th>\r\n"
-				+ "    <th>Delivery <br>Date</th>\r\n" + "    <th>Unit <br> Price</th>\r\n"
-				+ "    <th>Total<br>Price</th>\r\n" + "    <th>Delivery<br>Status</th>\r\n"
-				+ "    <th>Warehouse <br>Id</th>\r\n" + "  </tr>";
-
-		for (RawMaterialOrder rmo : rmoList)
-
-		{
-			upperhtml += "<div class=\"table-responsive\">" + "<table class=\"table table-striped\">" + "<tr> <td>"
-					+ rmo.getOrderId() + "</td>&nbsp;<td>" + "<div class=\"col-lg-1\">" + rmo.getName() + "<div>"
-					+ "</td>&nbsp;<td>" + rmo.getRmId() + "</td><td>" + rmo.getSupplierId() + "</td><td>"
-					+ rmo.getQuantityValue() + "</td><td>" + rmo.getQuantityUnit() + "</td><td>" + rmo.getDateOfOrder()
-					+ "</td><td>" + rmo.getDateOfDelivery() + "</td><td>" + rmo.getPricePerUnit() + "</td><td>"
-					+ rmo.getTotalPrice() + "</td><td>" + rmo.getDeliveryStatus() + "</td><td>" + rmo.getWarehouseId()
-					+ "</td></tr>" + "</table>" + "</div>";
-
+			if(errorMessage.isEmpty()) {
+			out.write(jsonMessage);
 		}
-
-		upperhtml += "<tr>\r\n" + "\r\n" + "</tr>\r\n" + "\r\n" + "</table>\r\n" + "</div>\r\n" + "</body>\r\n"
-				+ "</html>";
-
-		out.write(upperhtml);
-
+//		else {
+//			String errorJsonMessage = JsonUtil.convertJavaToJson1(errorMessage);
+//			out.write(errorJsonMessage);
+//
+//		}
 	}
+}
+			
 
 	
-	}
 	
 
 	

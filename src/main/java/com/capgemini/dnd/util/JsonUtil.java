@@ -34,6 +34,30 @@ public class JsonUtil {
                 return jsonString;
         }
         
+        public static String convertJavaToJson1(Object object) {
+            String jsonString = "";
+            
+            
+                try {
+                    jsonString = objectMapper.writeValueAsString(object);
+                } catch (JsonProcessingException exception) {
+                    logger.error(exception.getMessage());
+                }
+                
+                return jsonString;
+        }
+        
+        public static String convertJavaToJson(String str) {
+    		String jsonString = "";
+    		try {
+    			messageObject.setMessage(str);
+    			jsonString = objectMapper.writeValueAsString(messageObject);
+    		} catch (JsonProcessingException exception) {
+    			logger.error(exception.getMessage());
+    		}
+    		return jsonString;
+    	}
+        
         class Message {
             private String message;
             
@@ -50,17 +74,6 @@ public class JsonUtil {
             }
         }
         
-        public static String convertJavaToJson1(Object object) {
-            String jsonString = "";
-            
-            
-                try {
-                    jsonString = objectMapper.writeValueAsString(object);
-                } catch (JsonProcessingException exception) {
-                    logger.error(exception.getMessage());
-                }
-                
-                return jsonString;
-        }
+        
                 
     }
