@@ -3,9 +3,9 @@ Feature: Track Product Order
 Scenario: Tracking a particular product order
 
 Given User is on track product order page 
-When User entered the order ID as "5"
+When User entered the order ID as "7"
 And user clicked on track order button
-Then The shelf life of order Id 5 is displayed below
+Then The shelf life of order Id "7" is displayed below
 
 
 
