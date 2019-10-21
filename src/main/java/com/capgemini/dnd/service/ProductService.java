@@ -72,7 +72,7 @@ public interface ProductService {
 
 	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
 
-	public List<ProductOrder> displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception;
+	public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception;
 
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException;
 

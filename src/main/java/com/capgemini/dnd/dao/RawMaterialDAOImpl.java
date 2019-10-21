@@ -1205,6 +1205,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception {
 		List<RawMaterialOrder> rmoList1 = new ArrayList<RawMaterialOrder>();
 		Connection con = DBUtil.getInstance().getConnection();
+		System.out.println("in dao");
 		PreparedStatement pst = null;
 		int isFetched = 0;
 		try {
@@ -1231,15 +1232,18 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				
 					String startDate = displayRawMaterialOrderObject.getStartdate();  
 					String endDate = displayRawMaterialOrderObject.getEndDate(); 
+					System.out.println(startDate);
+					System.out.println(endDate);
 				
 		
 	
-			if(startDate.isEmpty() && endDate.isEmpty())
+			if(startDate != null && endDate !=null) {
 		
-			 ;
-		else
+//			 ;
+//		else
 			
 			generateQuery += " AND  dateofdelivery BETWEEN '"+ startDate+ "' AND '" +endDate+"'  ";
+			}
 			
 			System.out.println(generateQuery);
 		
@@ -1293,6 +1297,10 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		return rmoList1;
 		
 	}
+		
+		
+	
+
 	
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {

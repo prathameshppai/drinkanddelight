@@ -158,14 +158,6 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		throw new ExpiryDateException("You cant enter expiry date before manufacturing date");
 	}
 
-	@Override
-
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception {
-		return rawMaterialDAO.displayRawmaterialOrders(displayRawMaterialOrderObject);
-	
-	}
-
-
 	public Supplier fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException {
 		
 		return(rawMaterialDAO.fetchSupplierDetail(supplierDetails));
@@ -188,4 +180,14 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		return(rawMaterialDAO.getWarehouseIds());
 	}
 	
+	@Override
+
+	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception {
+		System.out.println("in service");
+		List<RawMaterialOrder> rmoList2 = new ArrayList<RawMaterialOrder>();
+		rmoList2 = rawMaterialDAO.displayRawmaterialOrders(displayRawMaterialOrderObject);
+		String jsonMessage = JsonUtil.convertJavaToJson1(rmoList2);
+		return jsonMessage;
+		
+	}
 }
