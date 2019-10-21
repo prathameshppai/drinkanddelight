@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,19 +20,15 @@ import com.capgemini.dnd.customexceptions.RMNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RowNotAddedException;
-import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.SupplierAddressDoesNotExistsException;
 import com.capgemini.dnd.customexceptions.SupplierIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dto.Address;
 import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
-import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
-import com.capgemini.dnd.service.RawMaterialService;
-import com.capgemini.dnd.service.RawMaterialServiceImpl;
 import com.capgemini.dnd.util.DBUtil;
 
 public class RawMaterialDAOImpl implements RawMaterialDAO {
@@ -847,8 +842,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			rmOrderinStock = doesRawMaterialOrderIdExistInStock(rawMaterialStock.getOrderId());
 			if (rmOrderinStock == false) {
 
-				statement1 = connection
-						.prepareStatement(QueryMapper.RETRIEVERMORDERDETAILSFORRMSTOCK);
+				statement1 = connection.prepareStatement(QueryMapper.RETRIEVERMORDERDETAILSFORRMSTOCK);
 				statement1.setInt(1, Integer.parseInt(rawMaterialStock.getOrderId()));
 				resultSet = statement1.executeQuery();
 				String name = null;
@@ -892,7 +886,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			statement.setInt(4, Integer.parseInt(rawMaterialStock.getOrderId()));
 			statement.executeUpdate();
 
-			
 			return Constants.DATA_INSERTED_MESSAGE;
 
 		}
@@ -907,12 +900,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
 			throw new ConnectionException(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
 		}
-		
+
 		finally {
-			
-			
+
 			statement.close();
-			
+
 			connection.close();
 		}
 
@@ -976,7 +968,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			throw exception;
 
 		}
-		
+
 		finally {
 			resultSet.close();
 			statement.close();
@@ -1002,12 +994,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 			connection = DBUtil.getInstance().getConnection();
 
-			statement  = connection.prepareStatement(QueryMapper.UPDATEPROCESSDATE);
+			statement = connection.prepareStatement(QueryMapper.UPDATEPROCESSDATE);
 			statement.setDate(1, DBUtil.stringtoDate(rawMaterialStock.getProcessDate()));
 			statement.setInt(2, Integer.parseInt(rawMaterialStock.getOrderId()));
 			statement.executeUpdate();
 
-			
 			return Constants.DATA_INSERTED_MESSAGE;
 
 		}
@@ -1019,13 +1010,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		} catch (Exception exception) {
 			logger.info(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
 			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		}
-		finally {
+		} finally {
 			try {
-			statement.close();
-			connection.close();
-			}
-			catch(SQLException exception) {
+				statement.close();
+				connection.close();
+			} catch (SQLException exception) {
 				logger.error(exception.getMessage());
 			}
 		}
@@ -1065,7 +1054,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				warehouseId = resultSet.getString(3);
 
 			}
-			
 
 			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
 					+ deliveryDate.toString() + " to " + processDate.toString() + "("
@@ -1081,7 +1069,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
 		} finally {
 			try {
-				
+
 				resultSet.close();
 				statement.close();
 				connection.close();
@@ -1089,8 +1077,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				logger.error(exception.getMessage());
 			}
 		}
-		}
-	
+	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1112,10 +1099,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			while (resultSet.next()) {
 				SupplierCounter++;
 
-				supplierDetails.setName(resultSet.getString(4));
+				supplierDetails.setName(resultSet.getString(2));
 				supplierDetails.setPhoneNo(resultSet.getString(5));
-				supplierDetails.setEmailId(resultSet.getString(3));
-				supplierDetails.setAddress(resultSet.getString(2));
+				supplierDetails.setEmailId(resultSet.getString(4));
+				supplierDetails.setAddress(resultSet.getString(3));
+
 			}
 			if (SupplierCounter == 0)
 				throw new DoesNotExistException(Constants.SUPPLIER_ID_DOES_NOT_EXISTS_EXCEPTION);
@@ -1202,53 +1190,46 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	}
 
 	@Override
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception {
+	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
+			throws Exception {
 		List<RawMaterialOrder> rmoList1 = new ArrayList<RawMaterialOrder>();
 		Connection con = DBUtil.getInstance().getConnection();
 		System.out.println("in dao");
 		PreparedStatement pst = null;
 		int isFetched = 0;
 		try {
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String DeliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
-	        String generateQuery= "";
-				{	
-					if(DeliveryStatus.equals("ALL"))
-					 generateQuery = "select * from RawmaterialOrders where DeliveryStatus in "  + "( select DeliveryStatus from RawmaterialOrders )";
+			String generateQuery = "";
+			{
+				if (DeliveryStatus.equals("ALL"))
+					generateQuery = "select * from RawmaterialOrders where DeliveryStatus in "
+							+ "( select DeliveryStatus from RawmaterialOrders )";
 				else
-					 generateQuery = "select * from RawmaterialOrders where DeliveryStatus in ( '" +DeliveryStatus+ "')"; 	
-					
+					generateQuery = "select * from RawmaterialOrders where DeliveryStatus in ( '" + DeliveryStatus
+							+ "')";
+
 			}
-				
-				String supplierid = displayRawMaterialOrderObject.getSupplierid();
-				{
-					if(supplierid.equals("ALL"))
-					 generateQuery += " AND supplierid in ( select supplierid  from RawmaterialOrders )";
+
+			String supplierid = displayRawMaterialOrderObject.getSupplierid();
+			{
+				if (supplierid.equals("ALL"))
+					generateQuery += " AND supplierid in ( select supplierid  from RawmaterialOrders )";
 				else
-				
+
 					generateQuery += " AND supplierid in ( '" + supplierid + "' )";
-				}
-				
-					String startDate = displayRawMaterialOrderObject.getStartdate();  
-					String endDate = displayRawMaterialOrderObject.getEndDate(); 
-					System.out.println(startDate);
-					System.out.println(endDate);
-				
-		
-	
-			if(startDate != null && endDate !=null) {
-		
-//			 ;
-//		else
-			
-			generateQuery += " AND  dateofdelivery BETWEEN '"+ startDate+ "' AND '" +endDate+"'  ";
 			}
-			
+
+			String startDate = displayRawMaterialOrderObject.getStartdate();
+			String endDate = displayRawMaterialOrderObject.getEndDate();
+			System.out.println(startDate);
+			System.out.println(endDate);
+
+			if (startDate != null && endDate != null) {
+				generateQuery += " AND  dateofdelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
+			}
+
 			System.out.println(generateQuery);
-		
-			RawMaterialService rawmaterialServiceObject = new RawMaterialServiceImpl();
-				
+
 			pst = con.prepareStatement(generateQuery);
 			ResultSet rs = pst.executeQuery();
 
@@ -1295,16 +1276,12 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			}
 		}
 		return rmoList1;
-		
-	}
-		
-		
-	
 
-	
+	}
+
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
-	
+
 		ArrayList<String> rawMaterialNamesList = new ArrayList<String>();
 		Connection connection;
 		try {
@@ -1314,47 +1291,47 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
 		PreparedStatement pst = null;
-	
+
 		try {
 			pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
 			ResultSet rs = pst.executeQuery();
-	
+
 			int isFetched = 0;
 			while (rs.next()) {
 				isFetched = 1;
 				String rawMaterialName = rs.getString(1);
 				rawMaterialNamesList.add(rawMaterialName);
 			}
-	
+
 			if (isFetched == 0) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-	
+
 			} else {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-	
+
 			}
-	
+
 		} catch (SQLException sqlException) {
 			logger.error(sqlException.getMessage());
 			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
 		} finally {
 			try {
-	
+
 				pst.close();
 				connection.close();
 			} catch (SQLException sqlException) {
 				logger.error(sqlException.getMessage());
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-	
+
 			}
 		}
 		return rawMaterialNamesList;
 	}
-	
+
 	@Override
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
-	
+
 		ArrayList<String> supplierIdsList = new ArrayList<String>();
 		Connection connection;
 		try {
@@ -1364,27 +1341,27 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
 		PreparedStatement pst = null;
-	
+
 		try {
 			pst = connection.prepareStatement(QueryMapper.FETCH_SUPPLIER_IDS);
 			ResultSet rs = pst.executeQuery();
-	
+
 			int isFetched = 0;
 			while (rs.next()) {
 				isFetched = 1;
 				String supplierId = rs.getString(1);
 				supplierIdsList.add(supplierId);
 			}
-	
+
 			if (isFetched == 0) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-	
+
 			} else {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-	
+
 			}
-	
+
 		} catch (SQLException sqlException) {
 			logger.error(sqlException.getMessage());
 			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
@@ -1395,15 +1372,15 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			} catch (SQLException sqlException) {
 				logger.error(sqlException.getMessage());
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-	
+
 			}
 		}
 		return supplierIdsList;
 	}
-	
+
 	@Override
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
-	
+
 		ArrayList<String> warehouseIdsList = new ArrayList<String>();
 		Connection connection;
 		try {
@@ -1413,27 +1390,27 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
 		PreparedStatement pst = null;
-	
+
 		try {
 			pst = connection.prepareStatement(QueryMapper.FETCH_WAREHOUSE_IDS);
 			ResultSet rs = pst.executeQuery();
-	
+
 			int isFetched = 0;
 			while (rs.next()) {
 				isFetched = 1;
 				String warehouseId = rs.getString(1);
 				warehouseIdsList.add(warehouseId);
 			}
-	
+
 			if (isFetched == 0) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-	
+
 			} else {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-	
+
 			}
-	
+
 		} catch (SQLException sqlException) {
 			logger.error(sqlException.getMessage());
 			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
@@ -1444,17 +1421,10 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			} catch (SQLException sqlException) {
 				logger.error(sqlException.getMessage());
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-	
+
 			}
 		}
 		return warehouseIdsList;
 	}
-		
-		
-	}
 
-
-
-
-
-
+}

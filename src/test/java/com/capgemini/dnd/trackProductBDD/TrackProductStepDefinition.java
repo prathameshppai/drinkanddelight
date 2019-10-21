@@ -53,8 +53,8 @@ public class TrackProductStepDefinition {
 		jsButton.executeScript("arguments[0].click();", loginBtn);
 	}
 
-	@Then("The shelf life of order Id {int} is displayed below")
-	public void the_shelf_life_of_order_Id_is_displayed_below(Integer int1) {
+	@Then("The shelf life of order Id {string} is displayed below")
+	public void the_shelf_life_of_order_Id_is_displayed_below(String string) {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
@@ -64,7 +64,7 @@ public class TrackProductStepDefinition {
 		
 		String outputValue = outputElement.getText();
 		
-		Assert.assertEquals("The order ID had been in the warehouse with warehouseID = w01 from 2019-09-19 to 2019-10-29(40 days)",outputValue);
+		Assert.assertEquals("The order ID had been in the warehouse with warehouseID = w03 from 2019-08-09 to 2019-10-03(55 days)",outputValue);
 	}
 
 	@Then("A message {string} is displayed below")

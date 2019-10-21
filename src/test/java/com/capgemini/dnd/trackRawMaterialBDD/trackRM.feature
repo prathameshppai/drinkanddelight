@@ -3,9 +3,9 @@ Feature: Track Raw Material Order
 Scenario: Tracking a particular raw material order
 
 Given User is on track raw material order page 
-When User enters number in the order ID field as "5"
+When User enters number in the order ID field as "7"
 And user clicks on track order button present below
-Then The shelf life of the given order Id 5 is displayed below
+Then The shelf life of the given order Id 7 is displayed below
 
 
 

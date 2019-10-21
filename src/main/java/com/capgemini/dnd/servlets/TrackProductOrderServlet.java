@@ -30,30 +30,7 @@ public class TrackProductOrderServlet extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
-//		response.setContentType("application/json");
-//		response.addHeader("Access-Control-Allow-Origin", "*");
-//		response.getWriter().write("{}");
-//		String id = request.getParameter("OrderId");
-//		ProductService productServiceObject = new ProductServiceImpl();
-//		response.setContentType("application/json");
-//		response.addHeader("Access-Control-Allow-Origin", "*");
-//		response.getWriter().write("{}");
-//		try {
-//			if(productServiceObject.doesProductOrderIdExist(id)) {
-//				String jsonMessage = productServiceObject.trackProductOrder(new ProductStock(id));
-//				response.setContentType("application/json");
-////				response.getWriter().write("<script> alert(\"" + jsonMessage + "\")</script>");
-//				response.getWriter().write(jsonMessage);
-////				RequestDispatcher reqd=request.getRequestDispatcher("/trackProductOrder.html");  
-////			    reqd.include(request, response);
-////			    response.getWriter().write("<script> document.getElementById(\"trackbox\").innerHTML =  \"" +productServiceObject.trackProductOrder(new ProductStock(id))+ "\"</script>");
-//			}	
-//		} catch (ConnectionException | SQLException | ProductOrderIDDoesNotExistException exception) {
-//			response.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//			RequestDispatcher rd1=request.getRequestDispatcher("/trackProductOrder.html");
-//			rd1.include(request, response);
-//		}
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

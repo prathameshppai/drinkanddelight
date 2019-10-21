@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,23 +23,16 @@ import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
-
-import com.capgemini.dnd.dto.DisplayProductOrder;
-
 import com.capgemini.dnd.dto.Address;
-
+import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.dto.RawMaterialOrder;
-import com.capgemini.dnd.dto.Supplier;
-import com.capgemini.dnd.service.ProductService;
-import com.capgemini.dnd.service.ProductServiceImpl;
 import com.capgemini.dnd.util.DBUtil;
 
 public class ProductDAOImpl implements ProductDAO {
 
-	private static final Distributor supplier = null;
+	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
 
 	/*
@@ -1220,7 +1212,6 @@ public class ProductDAOImpl implements ProductDAO {
 		int isFetched = 0;
 		try {
 			con = DBUtil.getInstance().getConnection();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String DeliveryStatus = displayProductOrderObject.getDeliveryStatus();
 			String generateQuery = "";
 			{
@@ -1244,11 +1235,10 @@ public class ProductDAOImpl implements ProductDAO {
 			String startDate = displayProductOrderObject.getStartdate();
 			String endDate = displayProductOrderObject.getEndDate();
 
-			if (startDate != null && endDate !=null)
+			if (startDate != null && endDate != null)
 
 				generateQuery += " AND  dateofdelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
 			System.out.println(generateQuery);
-			ProductService productServiceObject = new ProductServiceImpl();
 			pst = con.prepareStatement(generateQuery);
 			ResultSet rs = pst.executeQuery();
 
@@ -1439,5 +1429,3 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 }
-
-	

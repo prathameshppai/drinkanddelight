@@ -1,99 +1,70 @@
 package com.capgemini.dnd.dto;
 
- 
-
 public class Supplier {
-    private String supplierId;
-    private String name;
-    private String address;
-    private String emailId;
-    private String phoneNo;
-
  
+	private String supplierId;
+	private String name;
+	private String address;
+	private String emailId;
+	private String phoneNo;
 
-    public Supplier(String supplierId, String name, String addressId, String emailId, String phoneNo) {
-        this.supplierId = supplierId;
-        this.name = name;
-        this.address = address;
-        this.emailId = emailId;
-        this.phoneNo = phoneNo;
-    }
+	public Supplier(String supplierId, String name, String address, String emailId, String phoneNo) {
+		this.supplierId = supplierId;
+		this.name = name;
+		this.address = address;
+		this.emailId = emailId;
+		this.phoneNo = phoneNo;
+	}
 
- 
+	public Supplier() {
 
-    public Supplier() {
-    
-    }
+	}
 
- 
+	public String getSupplierId() {
+		return supplierId;
+	}
 
-    public String getSupplierId() {
-        return supplierId;
-    }
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
+	}
 
- 
+	public String getName() {
+		return name;
+	}
 
-    public void setSupplierId(String supplierId) {
-        this.supplierId = supplierId;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
- 
+	public String getAddress() {
+		return address;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
- 
+	public String getEmailId() {
+		return emailId;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
 
- 
+	public String getPhoneNo() {
+		return phoneNo;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
+	}
 
- 
-
-    public void setAddress(String string) {
-        this.address = string;
-    }
-
- 
-
-    public String getEmailId() {
-        return emailId;
-    }
-
- 
-
-    public void setEmailId(String emailId) {
-        this.emailId = emailId;
-    }
-
- 
-
-    public String getPhoneNo() {
-        return phoneNo;
-    }
-
- 
-
-    public void setPhoneNo(String phoneNo) {
-        this.phoneNo = phoneNo;
-    }
-
- 
-
-    @Override
-    public String toString() {
-        return "Supplier [supplierId=" + supplierId + ", name=" + name + ", address=" + address + ", emailId=" + emailId
-                + ", phoneNo=" + phoneNo + "]";
-    }
-
-
+	@Override
+	public String toString() {
+		return "Supplier [supplierId=" + supplierId + ", name=" + name + ", address=" + address + ", emailId=" + emailId
+				+ ", phoneNo=" + phoneNo + "]";
+	}
 
 
 }
