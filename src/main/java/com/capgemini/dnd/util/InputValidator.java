@@ -6,7 +6,6 @@ import com.capgemini.dnd.customexceptions.EmptyInputException;
 import com.capgemini.dnd.customexceptions.FullNameException;
 import com.capgemini.dnd.customexceptions.InvalidEmailIdException;
 import com.capgemini.dnd.customexceptions.InvalidGenderException;
-import com.capgemini.dnd.customexceptions.InvalidPasswordException;
 import com.capgemini.dnd.customexceptions.PasswordException;
 import com.capgemini.dnd.customexceptions.PhoneNoException;
 import com.capgemini.dnd.customexceptions.UserNameException;
@@ -40,22 +39,23 @@ public class InputValidator {
 		} else
 			throw new InvalidGenderException(InputValidatorConstants.INVALID_GENDER_EXCEPTION_MESSAGE);
 	}
-	
+
 	/*
-	(?=.*[a-z])     : This matches the presence of at least one lowercase letter.
-	(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
-	(?=.*[@#$%])    : This matches the presence of at least one special character.
-	((?=.*[A-Z])    : This matches the presence of at least one capital letter.
-	{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
-	*/
-	
+	 * (?=.*[a-z]) : This matches the presence of at least one lowercase letter.
+	 * (?=.*d) : This matches the presence of at least one digit i.e. 0-9.
+	 * (?=.*[@#$%]) : This matches the presence of at least one special character.
+	 * ((?=.*[A-Z]) : This matches the presence of at least one capital letter.
+	 * {6,16} : This limits the length of password from minimum 6 letters to maximum
+	 * 16 letters.
+	 */
+
 	public static boolean passwordValidator(String password) throws PasswordException {
-		boolean validPassword=false;
+		boolean validPassword = false;
 		String regex = InputValidatorConstants.PASSWORD_VALIDATOR_PATTERN_CHECK;
 		if (!Pattern.compile(regex).matcher(password).matches())
 			throw new PasswordException(InputValidatorConstants.INVALID_PASSWORD_EXCEPTION_MESSAGE);
 		else {
-			validPassword=true;
+			validPassword = true;
 		}
 		return validPassword;
 	}
@@ -80,5 +80,5 @@ public class InputValidator {
 			throw new FullNameException(InputValidatorConstants.FULL_NAME_EXCEPTION_MESSAGE);
 
 	}
-	
+
 }

@@ -22,11 +22,9 @@ import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dao.ProductDAO;
 import com.capgemini.dnd.dao.ProductDAOImpl;
 import com.capgemini.dnd.dto.DisplayProductOrder;
-import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.util.JsonUtil;
 
 public class ProductServiceImpl implements ProductService {

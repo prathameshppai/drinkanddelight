@@ -22,11 +22,9 @@ public class RawMaterialOrder {
 		super();
 		this.orderId = "OID" + orderIdCount++;
 		this.name = name;
-		this.rmId = rmId;
 		this.supplierId = supplierId;
 		this.quantityValue = quantityValue;
 		this.quantityUnit = quantityUnit;
-		this.dateOfOrder = dateOfOrder;
 		this.dateOfDelivery = dateOfDelivery;
 		this.pricePerUnit = pricePerUnit;
 		this.totalPrice = this.quantityValue * this.pricePerUnit;

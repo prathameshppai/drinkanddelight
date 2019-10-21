@@ -2,7 +2,6 @@ package com.capgemini.dnd.validator;
 
 import java.util.Calendar;
 import java.util.Date;
-
 //import java.text.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +25,8 @@ public class InitializationValidator {
 		if (len != 10)
 			return false;
 		for (int i = 0; i < len; i++) {
-			if (phoneNo.charAt(i) < InitializationValidatorConstants.CONTACT_VALIDATION_CHECK_DIGIT_ZERO || phoneNo.charAt(i) > InitializationValidatorConstants.CONTACT_VALIDATION_CHECK_DIGIT_NINE) {
+			if (phoneNo.charAt(i) < InitializationValidatorConstants.CONTACT_VALIDATION_CHECK_DIGIT_ZERO
+					|| phoneNo.charAt(i) > InitializationValidatorConstants.CONTACT_VALIDATION_CHECK_DIGIT_NINE) {
 				return false;
 			}
 		}
@@ -34,7 +34,7 @@ public class InitializationValidator {
 	}
 
 	public boolean emailValidator(String emailId) {
-		String regex =InitializationValidatorConstants.EMAILVALIDATOR_PATTERN_CHECK;
+		String regex = InitializationValidatorConstants.EMAILVALIDATOR_PATTERN_CHECK;
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(emailId);
 		return matcher.matches();
@@ -46,7 +46,8 @@ public class InitializationValidator {
 						// later according to requirement
 			return false;
 		for (int i = 0; i < len; i++) {
-			if (pincode.charAt(i) < InitializationValidatorConstants.PINCODE_VALIDATOR_CHECK_DIGIT_ZERO || pincode.charAt(i) > InitializationValidatorConstants.PINCODE_VALIDATOR_CHECK_DIGIT_NINE)
+			if (pincode.charAt(i) < InitializationValidatorConstants.PINCODE_VALIDATOR_CHECK_DIGIT_ZERO
+					|| pincode.charAt(i) > InitializationValidatorConstants.PINCODE_VALIDATOR_CHECK_DIGIT_NINE)
 				return false;
 		}
 		return true;
@@ -54,14 +55,16 @@ public class InitializationValidator {
 
 	public boolean maleValidator(String gender) {
 		gender = gender.toLowerCase();
-		if (gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_M) || gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_MALE))
+		if (gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_M)
+				|| gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_MALE))
 			return true;
 		return false;
 	}
 
 	public boolean femaleValidator(String gender) {
 		gender = gender.toLowerCase();
-		if (gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_F) || gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_FEMALE))
+		if (gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_F)
+				|| gender.equals(InitializationValidatorConstants.GENDER_VALIDATOR_CHECK_FEMALE))
 			return true;
 		return false;
 	}
@@ -78,10 +81,9 @@ public class InitializationValidator {
 
 	public boolean IDValidator(String number) {
 		try {
-			int value = Integer.parseInt(number);
+			Integer.parseInt(number);
 			return true;
 		} catch (Exception e) {
-			// throw
 			return false;
 		}
 	}
