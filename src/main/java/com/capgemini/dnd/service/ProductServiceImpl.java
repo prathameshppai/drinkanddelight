@@ -22,11 +22,9 @@ import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dao.ProductDAO;
 import com.capgemini.dnd.dao.ProductDAOImpl;
 import com.capgemini.dnd.dto.DisplayProductOrder;
-import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.util.JsonUtil;
 
 public class ProductServiceImpl implements ProductService {
@@ -35,11 +33,12 @@ public class ProductServiceImpl implements ProductService {
 
 	ProductDAO productDAO = new ProductDAOImpl();
 
-	public Distributor fetchCompleteDistributorDetail(Distributor distributor)
+	public String fetchCompleteDistributorDetail(Distributor distributor)
 			throws BackEndException, DoesNotExistException {
-		distributor = productDAO.fetchDistributorDetail(distributor);
 		distributor.setAddress(productDAO.fetchAddress(distributor));
-		return distributor;
+		Distributor distributorObject = productDAO.fetchDistributorDetail(distributor); 
+		String jsonMessage = JsonUtil.convertJavaToJson1(distributorObject);
+		return jsonMessage;
 	}
 
 	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
@@ -176,13 +175,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
 	
-	public static void main(String[] args) throws BackEndException, DoesNotExistException {
-		Distributor distributor=new Distributor();
-		distributor.setDistributorId("d001");
-		ProductService pd=new ProductServiceImpl();
-		distributor=pd.fetchCompleteDistributorDetail(distributor);
-		System.out.println(distributor);
-	}
+//	public static void main(String[] args) throws BackEndException, DoesNotExistException {
+//		Distributor distributor=new Distributor();
+//		distributor.setDistributorId("d001");
+//		ProductService pd=new ProductServiceImpl();
+//		distributor=pd.fetchCompleteDistributorDetail(distributor);
+//		System.out.println(distributor);
+//	}
 
 	@Override
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException {
