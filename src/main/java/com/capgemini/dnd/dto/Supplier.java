@@ -5,13 +5,13 @@ package com.capgemini.dnd.dto;
 public class Supplier {
     private String supplierId;
     private String name;
-    private int address;
+    private String address;
     private String emailId;
     private String phoneNo;
 
  
 
-    public Supplier(String supplierId, String name, int addressId, String emailId, String phoneNo) {
+    public Supplier(String supplierId, String name, String addressId, String emailId, String phoneNo) {
         this.supplierId = supplierId;
         this.name = name;
         this.address = address;
@@ -51,14 +51,14 @@ public class Supplier {
 
  
 
-    public int getAddress() {
+    public String getAddress() {
         return address;
     }
 
  
 
-    public void setAddress(int address) {
-        this.address = address;
+    public void setAddress(String string) {
+        this.address = string;
     }
 
  

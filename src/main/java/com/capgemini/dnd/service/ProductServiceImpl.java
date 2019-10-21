@@ -35,11 +35,12 @@ public class ProductServiceImpl implements ProductService {
 
 	ProductDAO productDAO = new ProductDAOImpl();
 
-	public Distributor fetchCompleteDistributorDetail(Distributor distributor)
+	public String fetchCompleteDistributorDetail(Distributor distributor)
 			throws BackEndException, DoesNotExistException {
-		distributor = productDAO.fetchDistributorDetail(distributor);
 		distributor.setAddress(productDAO.fetchAddress(distributor));
-		return distributor;
+		Distributor distributorObject = productDAO.fetchDistributorDetail(distributor); 
+		String jsonMessage = JsonUtil.convertJavaToJson1(distributorObject);
+		return jsonMessage;
 	}
 
 	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
@@ -176,13 +177,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
 	
-	public static void main(String[] args) throws BackEndException, DoesNotExistException {
-		Distributor distributor=new Distributor();
-		distributor.setDistributorId("d001");
-		ProductService pd=new ProductServiceImpl();
-		distributor=pd.fetchCompleteDistributorDetail(distributor);
-		System.out.println(distributor);
-	}
+//	public static void main(String[] args) throws BackEndException, DoesNotExistException {
+//		Distributor distributor=new Distributor();
+//		distributor.setDistributorId("d001");
+//		ProductService pd=new ProductServiceImpl();
+//		distributor=pd.fetchCompleteDistributorDetail(distributor);
+//		System.out.println(distributor);
+//	}
 
 	@Override
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException {

@@ -25,7 +25,7 @@ import com.capgemini.dnd.dto.ProductStock;
 
 public interface ProductService {
 
-	public Distributor fetchCompleteDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException;
+	public String fetchCompleteDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException;
 	
 	public String updateStatusProductOrder(String oid, String newStatus) throws Exception;
 

@@ -1133,7 +1133,6 @@ public class ProductDAOImpl implements ProductDAO {
 			while (resultSet.next()) {
 				DistributorCounter++;
 				distributor.setName(resultSet.getString(2));
-				distributor.setAddressId(resultSet.getInt(3));
 				distributor.setEmailId(resultSet.getString(4));
 				distributor.setPhoneNo(resultSet.getString(5));
 			}
@@ -1155,6 +1154,8 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 		return distributor;
 	}
+	
+	
 
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException {
 		Connection connection;
