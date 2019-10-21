@@ -911,7 +911,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		finally {
 			
 			
-			statement.close();
+			//statement.close();
 			
 			connection.close();
 		}

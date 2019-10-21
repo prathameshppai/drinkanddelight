@@ -24,10 +24,10 @@ public interface QueryMapper {
 		public static final String CHECKPROCESSDATE = "select deliveryDate, expiryDate from RMStock where orderID = ?";
 		
 		public static final String RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK = "SELECT name, priceperunit, quantityValue, quantityUnit, totalprice, warehouseId, dateofdelivery  FROM ProductOrders where orderId = ? ";
-		public static final String INSERTPRODUCTSTOCK = "INSERT INTO ProductStock(orderId, name, price_per_unit, quantutyValue, quantityUnit, price, warehouseId, deliveryDate) values (?, ?, ?, ?, ?, ?, ?, ?)"; 
+		public static final String INSERTPRODUCTSTOCK = "INSERT INTO ProductStock(orderId, name, price_per_unit, quantityValue, quantityUnit, price, warehouseId, deliveryDate) values (?, ?, ?, ?, ?, ?, ?, ?)"; 
 		
-		public static final String RETRIEVERMORDERDETAILSFORRMSTOCK = "SELECT name, priceperunit, quantityValue, quantityUnit, totalprice, warehouseId, dateofdelivery  FROM ProductOrders where orderId = ? ";
-		public static final String INSERTRMSTOCK = "INSERT INTO ProductStock(name, price_per_unit, quantutyValue, quantityUnit, price, warehouseId, deliveryDate) values (?, ?, ?, ?, ?, ?, ?) where orderId = ? "; 
+		public static final String RETRIEVERMORDERDETAILSFORRMSTOCK = "SELECT name, priceperunit, quantityValue, quantityUnit, totalprice, warehouseId, dateofdelivery  FROM RawmaterialOrders where orderId = ? ";
+		public static final String INSERTRMSTOCK = "INSERT INTO RMStock(orderId, name, price_per_unit, quantityValue, quantityUnit, price, warehouseId, deliveryDate) values (?,?, ?, ?, ?, ?, ?, ?)"; 
 		
 		
 		public static final String CHECKEXITDATE = "select manufacturingDate, expiryDate from ProductStock where orderID = ?";
