@@ -903,7 +903,14 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 		finally {
 
-			statement.close();
+			
+			
+			//statement.close();
+			
+
+
+			//statement.close();
+
 
 			connection.close();
 		}
@@ -1100,9 +1107,10 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				SupplierCounter++;
 
 				supplierDetails.setName(resultSet.getString(2));
-				supplierDetails.setPhoneNo(resultSet.getString(3));
+				supplierDetails.setPhoneNo(resultSet.getString(5));
 				supplierDetails.setEmailId(resultSet.getString(4));
-				supplierDetails.setAddress(resultSet.getString(5));
+				supplierDetails.setAddress(resultSet.getString(3));
+
 			}
 			if (SupplierCounter == 0)
 				throw new DoesNotExistException(Constants.SUPPLIER_ID_DOES_NOT_EXISTS_EXCEPTION);

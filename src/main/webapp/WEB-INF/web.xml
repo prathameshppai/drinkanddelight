@@ -369,4 +369,15 @@
     <servlet-name>ChangePasswordServlet</servlet-name>
     <url-pattern>/ChangePasswordServlet</url-pattern>
   </servlet-mapping>
+   <servlet>
+    <description></description>
+    <display-name>DisplayDistributorDetailsServlet</display-name>
+    <servlet-name>DisplayDistributorDetailsServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.DisplayDistributorDetailsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DisplayDistributorDetailsServlet</servlet-name>
+    <url-pattern>/DisplayDistributorDetailsServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
+

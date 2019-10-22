@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.Select;
 
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
@@ -21,8 +22,8 @@ public class TrackRMStepDefinition {
 	
 	WebDriver driver;
 	
-	@Given("User is on track raw material order page")
-	public void user_is_on_track_raw_material_order_page() {
+	@Given("User is on login page")
+	public void user_is_on_login_page() {
 		ChromeOptions options=new ChromeOptions();
 		options.addArguments("start-maximized");
 		
@@ -31,7 +32,52 @@ public class TrackRMStepDefinition {
 		
 		System.setProperty("webdriver.chrome.driver","C:\\Users\\gauragai\\Downloads\\chromedriver.exe");
 		driver = new ChromeDriver(options);
-		driver.get("http://localhost:4200/track-rawmaterial-order");
+		driver.get("http://localhost:4200/");
+	}
+
+	@Given("User enters login credentials")
+	public void user_enters_login_credentials() {
+		driver.findElement(By.name("username")).sendKeys("ankit_40");
+		driver.findElement(By.name("password")).sendKeys("qwerty");
+		WebElement loginBtn = driver.findElement(By.xpath("//*[@id=\"homepage\"]/div/div/div/div[2]/form/button"));
+		JavascriptExecutor jsButton = (JavascriptExecutor)driver;
+		jsButton.executeScript("arguments[0].click();", loginBtn);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			
+		}
+		
+	}
+
+	@Given("User selects Track Raw Material Option from Raw Material dropdown")
+	public void user_selects_Track_Raw_Material_Option_from_Raw_Material_dropdown() {
+		
+		WebElement rmBtn = driver.findElement(By.xpath("/html/body/app-root/body/app-header/nav/div/ul/li[2]/div/button"));
+		JavascriptExecutor jsRMButton = (JavascriptExecutor)driver;
+		jsRMButton.executeScript("arguments[0].click();", rmBtn);
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			
+		}
+//		Select drpDownRawMaterial = new Select(driver.findElement(By.xpath("//*[@id=\"collapsibleNavbar\"]/ul/li[2]/div/div")));
+//	    drpDownRawMaterial.selectByVisibleText("Track Raw Material Order");
+	    
+	    WebElement trackBtn = driver.findElement(By.xpath("//*[@id=\"collapsibleNavbar\"]/ul/li[2]/div/div/a[6]"));
+		JavascriptExecutor jsButton = (JavascriptExecutor)driver;
+		jsButton.executeScript("arguments[0].click();", trackBtn);
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			
+		}
+	  
+	}
+	
+	@Given("User is on track raw material order page")
+	public void user_is_on_track_raw_material_order_page() {
 		String currentUrl = driver.getCurrentUrl();
 		 Assert.assertEquals("http://localhost:4200/track-rawmaterial-order", currentUrl);
 	}
@@ -39,18 +85,29 @@ public class TrackRMStepDefinition {
 	@When("User enters number in the order ID field as {string}")
 	public void user_enters_number_in_the_order_ID_field_as(String string) {
 		driver.findElement(By.name("orderID")).sendKeys(string);
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			
+		}
 	}
 
 	@When("user clicks on track order button present below")
 	public void user_clicks_on_track_order_button_present_below() {
-		WebElement randomClick = driver.findElement(By.xpath("//*[@id=\"navbardrop\"]"));
+		WebElement randomClick = driver.findElement(By.xpath("/html/body/app-root/body/app-track-rawmaterial-order/div[1]/div/h2"));
 		JavascriptExecutor jsRandom = (JavascriptExecutor)driver;
 		jsRandom.executeScript("arguments[0].click();", randomClick);
 		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			
+		}
 		
-		WebElement loginBtn = driver.findElement(By.xpath("/html/body/app-root/body/app-track-rawmaterial-order/div[1]/form/button"));
+		
+		WebElement trackBtn = driver.findElement(By.xpath("/html/body/app-root/body/app-track-rawmaterial-order/div[1]/form/button"));
 		JavascriptExecutor jsButton = (JavascriptExecutor)driver;
-		jsButton.executeScript("arguments[0].click();", loginBtn);
+		jsButton.executeScript("arguments[0].click();", trackBtn);
 	}
 
 	@Then("The shelf life of the given order Id {int} is displayed below")

@@ -1,6 +1,7 @@
 package com.capgemini.dnd.dto;
 
 public class Supplier {
+ 
 	private String supplierId;
 	private String name;
 	private String address;
@@ -64,5 +65,6 @@ public class Supplier {
 		return "Supplier [supplierId=" + supplierId + ", name=" + name + ", address=" + address + ", emailId=" + emailId
 				+ ", phoneNo=" + phoneNo + "]";
 	}
+
 
 }

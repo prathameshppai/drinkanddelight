@@ -724,15 +724,16 @@ public class ProductDAOImpl implements ProductDAO {
 			// throw new
 			// ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-
+		
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 
 		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_PRODUCT_STOCK);
 		preparedStatement.setInt(1, oid);
 		resultSet = preparedStatement.executeQuery();
-
+		
 		while (resultSet.next()) {
+			
 			int pId = resultSet.getInt(1);
 			if (pId == oid) {
 				productOrderIdFound = true;
@@ -742,11 +743,12 @@ public class ProductDAOImpl implements ProductDAO {
 
 		connection.close();
 		if (productOrderIdFound) {
+			
 			return productOrderIdFound;
 		}
 		if (!productOrderIdFound) {
 			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
-			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			return productOrderIdFound;
 		}
 
 		return productOrderIdFound;
@@ -1025,12 +1027,13 @@ public class ProductDAOImpl implements ProductDAO {
 		PreparedStatement statement2 = null;
 		PreparedStatement statement1 = null;
 		try {
-
+			
 			connection = DBUtil.getInstance().getConnection();
-
+			
 			boolean orderIdcheckInStock = false;
 			orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
 			if (orderIdcheckInStock == false) {
+				
 				statement = connection.prepareStatement(QueryMapper.RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK);
 				statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
 				resultSet = statement.executeQuery();
@@ -1043,6 +1046,7 @@ public class ProductDAOImpl implements ProductDAO {
 				Date dateofdelivery = null;
 
 				while (resultSet.next()) {
+					
 					name = resultSet.getString(1);
 					priceperunit = resultSet.getDouble(2);
 					quantityValue = resultSet.getDouble(3);
@@ -1051,7 +1055,7 @@ public class ProductDAOImpl implements ProductDAO {
 					warehouseId = resultSet.getString(6);
 					dateofdelivery = resultSet.getDate(7);
 				}
-
+				
 				statement2 = connection.prepareStatement(QueryMapper.INSERTPRODUCTSTOCK);
 				statement2.setInt(1, Integer.parseInt(productStock.getOrderId()));
 				statement2.setString(2, name);
@@ -1063,11 +1067,12 @@ public class ProductDAOImpl implements ProductDAO {
 				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
 
 				statement2.executeUpdate();
+				
 				resultSet.close();
 				statement.close();
 				statement2.close();
 			}
-
+			
 			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
 			statement1.setDate(1, DBUtil.stringtoDate(productStock.getManufacturingDate()));
 			statement1.setDate(2, DBUtil.stringtoDate(productStock.getExpiryDate()));
@@ -1093,7 +1098,7 @@ public class ProductDAOImpl implements ProductDAO {
 		finally {
 			try {
 
-				statement1.close();
+				//statement1.close();
 
 				connection.close();
 			} catch (SQLException exception) {
@@ -1125,7 +1130,6 @@ public class ProductDAOImpl implements ProductDAO {
 			while (resultSet.next()) {
 				DistributorCounter++;
 				distributor.setName(resultSet.getString(2));
-				distributor.setAddressId(resultSet.getInt(3));
 				distributor.setEmailId(resultSet.getString(4));
 				distributor.setPhoneNo(resultSet.getString(5));
 			}
@@ -1147,6 +1151,8 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 		return distributor;
 	}
+	
+	
 
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException {
 		Connection connection;
