@@ -55,13 +55,7 @@ public class UpdateExitDateServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		doGet(request, response);
-//		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-//		HttpSession session = request.getSession();
-//		if(session.getAttribute("username") == null) {
-//			RequestDispatcher rd = request.getRequestDispatcher("/loginpage.html");
-//			rd.include(request, response);
-//		}
+
 		ProductService productServiceObject = new ProductServiceImpl();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -106,33 +100,26 @@ public class UpdateExitDateServlet extends HttpServlet {
 			if (errorMessage.isEmpty()) {
 				if (productServiceObject.exitDateCheck(new ProductStock(id, exitDate))) {
 					String exitDateJsonMessage = productServiceObject.updateExitDateinStock(new ProductStock(id, exitDate));
-//					response.getWriter()
-//							.write("<script> alert(\"" + "Exit date updated successfully!" + "\")</script>");
+
 					
 					response.getWriter().write(exitDateJsonMessage);
 
-//					RequestDispatcher rd1 = request.getRequestDispatcher("/updateExitDate.html");
-//					rd1.include(request, response);
+
 				}
 			} else {
 				String errorJsonMessage = JsonUtil.convertJavaToJson(errorMessage);
-//				response.getWriter().write("<script> alert(\"" + errorMessage + "\")</script>");
+
 				
 				response.getWriter().write(errorJsonMessage);
-//				
+			
 				RequestDispatcher rd1 = request.getRequestDispatcher("/updateExitDate.html");
-//				rd1.include(request, response);
+
 			}
 		} catch (ExitDateException | SQLException | ConnectionException exception) {
 			errorMessage += exception.getMessage();
 			String errorJsonMessage = JsonUtil.convertJavaToJson(errorMessage);
-			
-//			response.getWriter().write("<script> alert(\"" + errorMessage + "\")</script>");
 			response.getWriter().write(errorJsonMessage);
-			
-			
-//			RequestDispatcher rd1 = request.getRequestDispatcher("/updateExitDate.html");
-//			rd1.include(request, response);
+
 		}
 	}
 	}

@@ -61,8 +61,8 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		System.out.println("entered servlet");
-		doGet(req, res);
+		
+		
 		res.setContentType("application/json");
 		res.setHeader("Access-Control-Allow-Origin", "*");
 		res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With");

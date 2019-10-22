@@ -48,11 +48,10 @@ public class ForgotPasswordServlet extends HttpServlet {
 			throws ServletException, IOException {
 	}
 
-
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		doGet(request, response);
+		
 
 		response.setContentType("application/json");
 		response.setHeader("Access-Control-Allow-Origin", "*");

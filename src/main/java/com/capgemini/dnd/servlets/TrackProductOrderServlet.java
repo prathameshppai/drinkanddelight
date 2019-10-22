@@ -49,19 +49,14 @@ public class TrackProductOrderServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-//		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-//		HttpSession session = request.getSession();
-//		if(session.getAttribute("username") == null) {
-//			RequestDispatcher rd = request.getRequestDispatcher("/loginpage.html");
-//			rd.include(request, response);
-//		}
+		
+
 		response.setContentType("application/json");
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		
 		response.setHeader("Access-Control-Allow-Headers" ,"Content-Type, Authorization, Content-Length, X-Requested-With");
 		response.setHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
-//		String id = request.getParameter("OrderId");
+
 		ProductService productServiceObject = new ProductServiceImpl();
 		
 		StringBuffer jb = new StringBuffer();
@@ -83,16 +78,12 @@ public class TrackProductOrderServlet extends HttpServlet {
 			if(productServiceObject.doesProductOrderIdExist(id)) {
 				String jsonMessage = productServiceObject.trackProductOrder(new ProductStock(id));
 				
-//				response.getWriter().write("<script> alert(\"" + jsonMessage + "\")</script>");
+
 				response.getWriter().write(jsonMessage);
-//				RequestDispatcher reqd=request.getRequestDispatcher("/trackProductOrder.html");  
-//			    reqd.include(request, response);
-//			    response.getWriter().write("<script> document.getElementById(\"trackbox\").innerHTML =  \"" +productServiceObject.trackProductOrder(new ProductStock(id))+ "\"</script>");
+
 			}	
 		} catch (ConnectionException | SQLException | ProductOrderIDDoesNotExistException exception) {
-//			response.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//			RequestDispatcher rd1=request.getRequestDispatcher("/trackProductOrder.html");
-//			rd1.include(request, response);
+
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			response.getWriter().write(errorJsonMessage);
 		}

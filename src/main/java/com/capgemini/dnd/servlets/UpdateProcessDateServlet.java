@@ -56,17 +56,11 @@ public class UpdateProcessDateServlet extends HttpServlet {
 
  
 
-        doGet(request, response);
-//        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-//		HttpSession session = req.getSession();
-//		if(session.getAttribute("username") == null) {
-//			RequestDispatcher rd = req.getRequestDispatcher("/loginpage.html");
-//			rd.include(req, res);
-//		}
+    
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         RawMaterialService rawMaterialServiceObject = new RawMaterialServiceImpl();
         
-//        String OrderId = req.getParameter("OrderId");
+
         Date processDate = null;
         response.setContentType("application/json");
 		response.setHeader("Access-Control-Allow-Origin", "*");
@@ -100,31 +94,23 @@ public class UpdateProcessDateServlet extends HttpServlet {
                         if (rawMaterialServiceObject.processDateCheck(new RawMaterialStock(id, processDate))) {
                         	String processDateJsonMessage	 =rawMaterialServiceObject.updateProcessDateinStock(new RawMaterialStock(id, processDate));
                         	response.getWriter().write(processDateJsonMessage);
-//                        	response.getWriter().write("<script> alert(\"" + "Process date updated" + "\")</script>");
-//                            RequestDispatcher rd=request.getRequestDispatcher("/updateProcessDate.html");  
-//                            rd.include(request, response);
+
                         }
                     } catch (ProcessDateException exception) {
                     	String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
                     	response.getWriter().write(errorJsonMessage);
-//                    	response.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//                        RequestDispatcher rd = request.getRequestDispatcher("/updateProcessDate.html");
-//                        rd.include(request, response);
+
                     }
                 } catch (ParseException exception) {
                 	String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
                 	response.getWriter().write(errorJsonMessage);
-//                	response.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//                    RequestDispatcher rd = request.getRequestDispatcher("/updateProcessDate.html");
-//                    rd.include(request, response);
+
                 }
             }
         } catch (RMOrderIDDoesNotExistException | ConnectionException | SQLException exception) {
         	String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
         	response.getWriter().write(errorJsonMessage);
-//        	response.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//			RequestDispatcher rd = request.getRequestDispatcher("/updateProcessDate.html");
-//            rd.include(request, response);
+
         }
     }
     

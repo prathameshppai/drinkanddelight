@@ -68,7 +68,7 @@ public class DisplayAllProductsServlet extends HttpServlet {
 
  
 
-        doGet(req, res);
+        
         res.setContentType("application/json");
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With");
@@ -95,8 +95,7 @@ public class DisplayAllProductsServlet extends HttpServlet {
         String DistributorIDVar = fieldValueMap.get("distributorid");
         String date1Var = fieldValueMap.get("startdate");
         String date2Var = fieldValueMap.get("endDate");
-        System.out.println(date1Var);
-        System.out.println(date2Var);
+       
         
 
  

@@ -39,7 +39,7 @@ public class UpdateProductStockServlet extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
+
 	}
 	
 	@Override
@@ -58,13 +58,7 @@ public class UpdateProductStockServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-//		  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-//			HttpSession session = req.getSession();
-//			if(session.getAttribute("username") == null) {
-//				RequestDispatcher rd = req.getRequestDispatcher("/loginpage.html");
-//				rd.include(req, res);
-//			}
+
 		
 		response.setContentType("application/json");
 		response.setHeader("Access-Control-Allow-Origin", "*");
@@ -76,7 +70,7 @@ public class UpdateProductStockServlet extends HttpServlet {
 		ProductService productServiceObject = new ProductServiceImpl();
 		String errorMessage = "";
 
-//		String OrderId = req.getParameter("OrderId");
+
 		Date manufacturingDate = null;
 		Date expiryDate = null;
 		StringBuffer jb = new StringBuffer();
@@ -105,9 +99,7 @@ public class UpdateProductStockServlet extends HttpServlet {
 								String qaStatus = myMap.get("QAStatus");
 								String message = productServiceObject.updateProductStock(new ProductStock(id, manufacturingDate, expiryDate, qaStatus));
 								response.getWriter().write(message);
-//								res.getWriter().write("<script> alert(\"" + "Product Stock details updated successfully!" + "\")</script>");
-//								RequestDispatcher rd=req.getRequestDispatcher("/UpdateProductStock.html");  
-//							    rd.include(req, res);
+
 							    
 							}
 						} catch (ParseException | ExpiryDateException exception) {
@@ -115,10 +107,7 @@ public class UpdateProductStockServlet extends HttpServlet {
 							String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 				        	response.getWriter().write(errorJsonMessage);
 							
-//							res.getWriter().write(exception.getMessage());
-//							
-//							RequestDispatcher rd=req.getRequestDispatcher("/UpdateProductStock.html");  
-//						    rd.include(req, res);
+
 						}
 					}
 				} catch (ParseException | ManufacturingDateException exception) {
@@ -126,9 +115,7 @@ public class UpdateProductStockServlet extends HttpServlet {
 					String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 		        	response.getWriter().write(errorJsonMessage);
 					
-//					res.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//					RequestDispatcher rd=req.getRequestDispatcher("/UpdateProductStock.html");  
-//				    rd.include(req, res);
+
 				}
 			}
 		} catch (ProductOrderIDDoesNotExistException | ConnectionException | SQLException exception) {
@@ -136,9 +123,7 @@ public class UpdateProductStockServlet extends HttpServlet {
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
         	response.getWriter().write(errorJsonMessage);
 			
-//			res.getWriter().write(exception.getMessage());
-//			RequestDispatcher rd=req.getRequestDispatcher("/UpdateRMStock.html");  
-//		    rd.include(req, res);
+
 		}
 		
 

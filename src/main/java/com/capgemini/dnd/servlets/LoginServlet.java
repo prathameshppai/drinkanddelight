@@ -26,7 +26,10 @@ public class LoginServlet extends HttpServlet {
 		super();
 	}
 
-	
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+	}
 	
 	@Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) {

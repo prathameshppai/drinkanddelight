@@ -1,14 +1,10 @@
 package com.capgemini.dnd.servlets;
 
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,12 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
-import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
-import com.capgemini.dnd.dto.ProductOrder;
+
 import com.capgemini.dnd.service.ProductService;
 import com.capgemini.dnd.service.ProductServiceImpl;
 import com.capgemini.dnd.util.JsonUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public class GetProductDetailsServlet extends HttpServlet {
 
