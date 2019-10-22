@@ -64,20 +64,6 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 		String SupplierIDVar = fieldValueMap.get("supplierid");
 		String date1Var = fieldValueMap.get("startdate");
 		String date2Var = fieldValueMap.get("endDate");
-//	        if( date1Var != null && date1Var != null )
-//	        		{
-//	        	
-//	        	Calendar c = Calendar.getInstance();
-//	        	try {
-//					c.setTime(sdf.parse(date2Var));
-//				} catch (ParseException e) {
-//					
-//					e.printStackTrace();
-//				}
-//	        	c.add(Calendar.DATE, 1);  // number of days to add
-//	        	date2Var = sdf.format(c.getTime());  
-//	        	System.out.println(date2Var);
-//	        		}
 
 		displayRawMaterialOrderObject.setDeliveryStatus(DeliveryStatusVar);
 		displayRawMaterialOrderObject.setSupplierid(SupplierIDVar);
@@ -94,10 +80,6 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 		if (errorMessage.isEmpty()) {
 			out.write(jsonMessage);
 		}
-//		else {
-//			String errorJsonMessage = JsonUtil.convertJavaToJson1(errorMessage);
-//			out.write(errorJsonMessage);
-//
-//		}
+
 	}
 }
