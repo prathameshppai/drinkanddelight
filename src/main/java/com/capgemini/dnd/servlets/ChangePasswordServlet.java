@@ -75,7 +75,7 @@ public class ChangePasswordServlet extends HttpServlet {
 		try {
 			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
 				((ObjectNode) dataResponse).put("success", true);
-				((ObjectNode) dataResponse).put("message", "Password changed successfully.");
+				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);
 				((ObjectNode) dataResponse).put("username", actualEmployee.getUsername());
 			}
 		} catch (UnregisteredEmployeeException | WrongSecurityAnswerException | PasswordException | BackEndException
