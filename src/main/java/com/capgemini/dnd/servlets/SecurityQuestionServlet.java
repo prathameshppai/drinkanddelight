@@ -58,11 +58,9 @@ public class SecurityQuestionServlet extends HttpServlet {
 		EmployeeService employeeService = new EmployeeServiceImpl();
 		Employee employee = new Employee();
 		employee.setUsername(fieldValueMap.get("username"));
-		System.out.println(employee.getUsername());
 		Employee idealEmployee = new Employee();
 		try {
 			idealEmployee=employeeService.fetchOneConfidentialDetail(employee); 
-			System.out.println(idealEmployee.getSecurityQuestion());
 			String jsonQuestion = JsonUtil.convertJavaToJson(idealEmployee.getSecurityQuestion());
 			response.getWriter().write(jsonQuestion);
 		} catch (Exception exception) {
