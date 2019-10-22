@@ -23,7 +23,7 @@ public class LogOutServlet extends HttpServlet {
      */
     public LogOutServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
     
     @Override
@@ -47,12 +47,11 @@ public class LogOutServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-//        response.getWriter().append("Served at: ").append(request.getContextPath());
+
         HttpSession session = request.getSession();
         session.removeAttribute("username");
         session.invalidate();
-//        RequestDispatcher rd = request.getRequestDispatcher("/loginpage.html");
-//        rd.include(request, response);
+
         
         response.getWriter().write(ServletConstants.LOGOUT_SUCCESSFUL_MESSAGE);
         response.sendRedirect("loginpage.html");

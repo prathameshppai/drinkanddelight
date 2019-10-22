@@ -29,7 +29,7 @@ public class TrackRawMaterialOrderServlet extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
+
 		
 	}
 	
@@ -49,20 +49,10 @@ public class TrackRawMaterialOrderServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-//		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-//		HttpSession session = request.getSession();
-//		if(session.getAttribute("username") == null) {
-//			RequestDispatcher rd = request.getRequestDispatcher("/loginpage.html");
-//			rd.include(request, response);
-//		}
-//		String id = request.getParameter("OrderId");
+
 		
 		response.setContentType("application/json");
-//		response.setHeader("Access-Control-Allow-Origin", "*");
-//		
-//		response.setHeader("Access-Control-Allow-Headers" ,"Content-Type, Authorization, Content-Length, X-Requested-With");
-//		response.setHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
+
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 		response.setHeader("Access-Control-Allow-Methods","ACL, CANCELUPLOAD, CHECKIN, CHECKOUT, COPY, DELETE, GET, HEAD, LOCK, MKCALENDAR, MKCOL, MOVE, OPTIONS, POST, PROPFIND, PROPPATCH, PUT, REPORT, SEARCH, UNCHECKOUT, UNLOCK, UPDATE, VERSION-CONTROL");
@@ -87,18 +77,12 @@ public class TrackRawMaterialOrderServlet extends HttpServlet {
 		
 		try {
 			if(rawMaterialServiceObject.doesRawMaterialOrderIdExist(id)) {
-//				response.getWriter().write("<script> alert(\"" + rawMaterialServiceObject.trackRawMaterialOrder(new RawMaterialStock(id)) + "\")</script>");
-//				RequestDispatcher rd1=request.getRequestDispatcher("/trackRawMaterial.html");  
-//			    rd1.include(request, response);
-//			    response.getWriter().write("<script> document.getElementById(\"trackbox\").innerHTML =  \"" +rawMaterialServiceObject.trackRawMaterialOrder(new RawMaterialStock(id))+ "\"</script>");
-			
+
 				response.getWriter().write(rawMaterialServiceObject.trackRawMaterialOrder(new RawMaterialStock(id)));
 				
 			}	
 		} catch (RMOrderIDDoesNotExistException | ConnectionException | SQLException exception) {
-//			response.getWriter().write("<script> alert(\"" + exception.getMessage() + "\")</script>");
-//			RequestDispatcher rd1=request.getRequestDispatcher("/trackRawMaterial.html");
-//			rd1.include(request, response);
+
 			
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			response.getWriter().write(errorJsonMessage);

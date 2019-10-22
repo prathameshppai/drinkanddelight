@@ -46,8 +46,8 @@ public class DisplayDistributorDetailsServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(req, res);
+		
+		
 		String errorMessage="";
 		String jsonMessage="";
 		res.setContentType("application/json");
