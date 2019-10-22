@@ -18,15 +18,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.hibernate.Session;
+
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.dao.Constants;
-import com.capgemini.dnd.dto.ProductOrder; 
+import com.capgemini.dnd.entity.ProductOrdersEntity; 
 import com.capgemini.dnd.service.ProductService;
 import com.capgemini.dnd.service.ProductServiceImpl;
 import com.capgemini.dnd.util.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.capgemini.dnd.util.HibernateUtil;
 
 public class PlaceProductOrderServlet extends HttpServlet {
 	private static final long serialVersionUID = 1028319732394752L;
@@ -79,9 +82,9 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		myMap = objectMapper.readValue(jb.toString(), HashMap.class);
 			
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
-		ProductOrder productOrder = null;
+		ProductOrdersEntity productOrder = null;
 		try {
-			productOrder = new ProductOrder(myMap.get("name"),myMap.get("distributorId"),Double.parseDouble(myMap.get("quantityValue")),myMap.get("quantityUnit"),sdf.parse(myMap.get("dateOfDelivery")),Double.parseDouble(myMap.get("pricePerUnit")),myMap.get("warehouseId"));
+			productOrder = new ProductOrdersEntity(myMap.get("name"),myMap.get("distributorId"),Double.parseDouble(myMap.get("quantityValue")),myMap.get("quantityUnit"),sdf.parse(myMap.get("dateOfDelivery")),Double.parseDouble(myMap.get("pricePerUnit")),myMap.get("warehouseId"));
 		} catch (NumberFormatException | ParseException exception) {
 			response.getWriter().write(JsonUtil.convertJavaToJson(exception.getMessage()));
 		}
@@ -89,15 +92,19 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		Date today = new Date();
 		productOrder.setDateOfOrder(today);
 		productOrder.setDeliveryStatus("Pending");
-		
-		
-		try {
-				String jsonMessage = productService.placeProductOrder(productOrder);
-				response.getWriter().write(jsonMessage);
-			
-		} catch (ProductOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
-			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
-			response.getWriter().write(errorJsonMessage);
-		}
+		Session session = HibernateUtil.getSessionFactory().openSession();//
+		session.beginTransaction();
+		session.save(productOrder);
+		session.getTransaction().commit();
+		HibernateUtil.shutdown();
+
+//		try {
+//				String jsonMessage = productService.placeProductOrder(productOrder);
+//				response.getWriter().write(jsonMessage);
+//			
+//		} catch (ProductOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
+//			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
+//			response.getWriter().write(errorJsonMessage);
+//		}
 	}
 }

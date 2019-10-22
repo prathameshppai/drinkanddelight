@@ -11,7 +11,8 @@ public class HibernateUtil {
     private static SessionFactory buildSessionFactory() {
         try {
             // Create the SessionFactory from hibernate.cfg.xml
-            return new AnnotationConfiguration().configure(new File("D:\\Latest Setup\\eclipse_juno_workspace\\corejavaTest\\hibernate.cgf.xml")).buildSessionFactory();
+        	System.out.println();
+            return new AnnotationConfiguration().configure(new File("C:\\Users\\prapai\\eclipse-workspace\\drinkanddelight\\hibernate.cgf.xml")).buildSessionFactory();
  
         }
         catch (Throwable ex) {
