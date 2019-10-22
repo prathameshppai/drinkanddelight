@@ -13,3 +13,4 @@ target/m2e-wtp/web-resources/META-INF/maven/com.capgemini/drinkanddelight/pom.pr
 /target/
 target/drinkanddelight-0.0.1-SNAPSHOT.war
 target/maven-archiver/pom.properties
+src/main/resources/jdbc.properties

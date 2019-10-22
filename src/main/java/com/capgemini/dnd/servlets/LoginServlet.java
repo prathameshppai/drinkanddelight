@@ -26,19 +26,7 @@ public class LoginServlet extends HttpServlet {
 		super();
 	}
 
-	@Override
-	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		response.setContentType("application/json");
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setHeader("Access-Control-Allow-Headers",
-				"Content-Type, Authorization, Content-Length, X-Requested-With");
-		response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	}
+	
 	
 	@Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
