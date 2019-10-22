@@ -27,7 +27,7 @@ public class TrackRMStepDefinition {
 		ChromeOptions options=new ChromeOptions();
 		options.addArguments("start-maximized");
 		
-		options.addArguments("disable-web-security");
+//		options.addArguments("disable-web-security");
 		
 		
 		System.setProperty("webdriver.chrome.driver","C:\\Users\\gauragai\\Downloads\\chromedriver.exe");
@@ -37,8 +37,8 @@ public class TrackRMStepDefinition {
 
 	@Given("User enters login credentials")
 	public void user_enters_login_credentials() {
-		driver.findElement(By.name("username")).sendKeys("ankit_40");
-		driver.findElement(By.name("password")).sendKeys("qwerty");
+		driver.findElement(By.name("username")).sendKeys("ram_40");
+		driver.findElement(By.name("password")).sendKeys("hello");
 		WebElement loginBtn = driver.findElement(By.xpath("//*[@id=\"homepage\"]/div/div/div/div[2]/form/button"));
 		JavascriptExecutor jsButton = (JavascriptExecutor)driver;
 		jsButton.executeScript("arguments[0].click();", loginBtn);
@@ -62,8 +62,7 @@ public class TrackRMStepDefinition {
 		} catch (InterruptedException e) {
 			
 		}
-//		Select drpDownRawMaterial = new Select(driver.findElement(By.xpath("//*[@id=\"collapsibleNavbar\"]/ul/li[2]/div/div")));
-//	    drpDownRawMaterial.selectByVisibleText("Track Raw Material Order");
+
 	    
 	    WebElement trackBtn = driver.findElement(By.xpath("//*[@id=\"collapsibleNavbar\"]/ul/li[2]/div/div/a[6]"));
 		JavascriptExecutor jsButton = (JavascriptExecutor)driver;
@@ -94,12 +93,12 @@ public class TrackRMStepDefinition {
 
 	@When("user clicks on track order button present below")
 	public void user_clicks_on_track_order_button_present_below() {
-		WebElement randomClick = driver.findElement(By.xpath("/html/body/app-root/body/app-track-rawmaterial-order/div[1]/div/h2"));
+		WebElement randomClick = driver.findElement(By.xpath("/html/body/app-root/body/app-header/nav/div/ul/li[2]/div/button"));
 		JavascriptExecutor jsRandom = (JavascriptExecutor)driver;
 		jsRandom.executeScript("arguments[0].click();", randomClick);
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			
 		}

@@ -5,8 +5,10 @@ Feature: Update Product Stock
 Scenario: Updating Product stock details for a valid order ID
 
  
-
-Given user is on update Product Stock page 
+Given User is on DND homepage to login
+And User enters his login credentials given to him 
+And User selects Update Stock Option from Product dropdown
+And user is on update Product Stock page 
 When User enters the order ID as "5"
 And User gives manufacturing Date as "2019-09-20"
 And User gives expiry Date as "2020-02-10"
@@ -22,7 +24,10 @@ Scenario: Updating Product stock details for an invalid order ID
 
  
 
-Given user is on update Product Stock page 
+Given User is on DND homepage to login
+And User enters his login credentials given to him 
+And User selects Update Stock Option from Product dropdown
+And user is on update Product Stock page 
 When User enters the order ID as "500"
 And User gives manufacturing Date as "2019-09-20"
 And User gives expiry Date as "2020-02-10"
@@ -38,7 +43,10 @@ Scenario: Updating product stock details by entering invalid manufacturing and e
 
  
 
-Given user is on update Product Stock page 
+Given User is on DND homepage to login
+And User enters his login credentials given to him 
+And User selects Update Stock Option from Product dropdown
+And user is on update Product Stock page 
 When User enters the order ID as "5"
 And User gives manufacturing Date as "2019-09-20"
 And User gives expiry Date as "2019-09-10"

@@ -119,10 +119,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
 		String message = productDAO.trackProductOrder(productStock);
-//		List<String> list = new ArrayList<String>();
-//		list.add(message);
-//		list.add("Data inserted");
-//		System.out.println(list);
+
 		String jsonMessage = JsonUtil.convertJavaToJson(message);
 		return jsonMessage;
 	}

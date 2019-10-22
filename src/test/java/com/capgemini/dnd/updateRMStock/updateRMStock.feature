@@ -2,7 +2,10 @@ Feature: Update Raw Material Stock
 
 Scenario: Updating raw material stock details for a particular order ID
 
-Given user is on update RM Stock page 
+Given User is on DND homepage
+And User enters his login credentials 
+And User selects Update Stock Option from Raw Material dropdown
+And user is on update RM Stock page 
 When User enters the field order ID as "5"
 And User enters manufacturing Date as "2019-09-20"
 And User enters expiry Date as "2020-02-10"
@@ -14,7 +17,10 @@ Then The message "Data inserted" is displayed
 
 Scenario: Updating raw material stock details for a wrong order ID
 
-Given user is on update RM Stock page 
+Given User is on DND homepage
+And User enters his login credentials 
+And User selects Update Stock Option from Raw Material dropdown
+And user is on update RM Stock page 
 When User enters the field order ID as "500"
 And User enters manufacturing Date as "2019-09-20"
 And User enters expiry Date as "2020-02-10"
@@ -26,7 +32,10 @@ Then The message "RawMaterial Order ID does not exist" is displayed
 
 Scenario: Updating raw material stock details by entering invalid manufacturing and expiry date
 
-Given user is on update RM Stock page 
+Given User is on DND homepage
+And User enters his login credentials 
+And User selects Update Stock Option from Raw Material dropdown
+And user is on update RM Stock page 
 When User enters the field order ID as "5"
 And User enters manufacturing Date as "2019-09-20"
 And User enters expiry Date as "2019-09-10"
