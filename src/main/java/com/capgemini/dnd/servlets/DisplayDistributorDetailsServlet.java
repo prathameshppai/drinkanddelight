@@ -40,8 +40,7 @@ public class DisplayDistributorDetailsServlet extends HttpServlet {
 		res.setHeader("Access-Control-Allow-Headers" ,"Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.setHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
 		PrintWriter out = res.getWriter();
-
-		ProductService productServiceObject = new ProductServiceImpl();
+        ProductService productServiceObject = new ProductServiceImpl();
 		Distributor distributorDetails = new Distributor();
 		Map<String,String> fieldValueMap = new HashMap<String, String>();
 		fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(req);
@@ -49,8 +48,6 @@ public class DisplayDistributorDetailsServlet extends HttpServlet {
 		int addressId = Integer.parseInt(fieldValueMap.get("addressId"));
 		distributorDetails.setDistributorId(DistributorID);
 		distributorDetails.setAddressId(addressId);
-		System.out.println(DistributorID);
-		System.out.println(addressId);
 		try {
 	 jsonMessage = productServiceObject.fetchCompleteDistributorDetail(distributorDetails);
 	
