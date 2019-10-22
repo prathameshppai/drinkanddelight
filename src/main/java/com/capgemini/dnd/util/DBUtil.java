@@ -17,19 +17,16 @@ public class DBUtil {
 	private static Properties props = null;
 	private static MysqlDataSource dataSource = null;
 
-
 	/*************************************************************************************
-	 *  - Private Constructor
-	 *  - Author : CAPGEMINI 
-	 *  - Desc:Loads the  jdbc.properties file and Driver Class and gets the connection
+	 * - Private Constructor - Author : CAPGEMINI - Desc:Loads the jdbc.properties
+	 * file and Driver Class and gets the connection
 	 ***************************************************************************************/
 	private DBUtil() throws Exception {
 		try {
 			props = loadProperties();
 			dataSource = prepareDataSource();
 		} catch (IOException e) {
-			throw new Exception(
-					" Could not read the database details from properties file ");
+			throw new Exception(" Could not read the database details from properties file ");
 		} catch (SQLException e) {
 			throw new Exception(e.getMessage());
 		}
@@ -37,14 +34,11 @@ public class DBUtil {
 	}
 
 	/*****************************************************************
-	 *  - Method Name:getInstance() 
-	 *  - Input Parameters : 
-	 *  - Return Type :DBConnection instance
-	 *  - Throws : DonorException 
-	 *  - Author : CAPGEMINI 
-	 *  - Description : Singleton and Thread safe class
+	 * - Method Name:getInstance() - Input Parameters : - Return Type :DBConnection
+	 * instance - Throws : DonorException - Author : CAPGEMINI - Description :
+	 * Singleton and Thread safe class
 	 *******************************************************************/
-	
+
 	public static DBUtil getInstance() throws Exception {
 		synchronized (DBUtil.class) {
 			if (instance == null) {
@@ -53,13 +47,11 @@ public class DBUtil {
 		}
 		return instance;
 	}
-	
+
 	/*****************************************************************
-	 *  - Method Name:getConnection() 
-	 *  - Input Parameters : 
-	 *  - Return Type :DBConnection instance 
-	 *  - Author : CAPGEMINI 
-	 *  - Description :  Returns connection object
+	 * - Method Name:getConnection() - Input Parameters : - Return Type
+	 * :DBConnection instance - Author : CAPGEMINI - Description : Returns
+	 * connection object
 	 *******************************************************************/
 	public Connection getConnection() throws Exception {
 		try {
@@ -71,27 +63,24 @@ public class DBUtil {
 		}
 		return conn;
 	}
-	
+
 	/*****************************************************************
-	 *  - Method Name:loadProperties()
-	 *  - Input Parameters : 
-	 *  - Return Type :Properties object
-	 *  - Author : CAPGEMINI 
-	 *  - Description : Returns Properties object
+	 * - Method Name:loadProperties() - Input Parameters : - Return Type :Properties
+	 * object - Author : CAPGEMINI - Description : Returns Properties object
 	 *******************************************************************/
-	
+
 	private Properties loadProperties() throws IOException {
 
 		if (props == null) {
 			Properties newProps = new Properties();
-			
+
 //			StringBuilder pwdPath = new StringBuilder(new File(".").getAbsolutePath());			
 //			String fileName = "C:\\Users\\akum1031\\eclipse-workspace\\drinkanddelight\\src\\main\\resources\\jdbc.properties";
-			
-			String fileName = DBUtil.class.getClassLoader().getResource("").getPath()+"/jdbc.properties";
-            InputStream inputStream = new FileInputStream(fileName);
-            newProps.load(inputStream);
-            
+
+			String fileName = DBUtil.class.getClassLoader().getResource("").getPath() + "/jdbc.properties";
+			InputStream inputStream = new FileInputStream(fileName);
+			newProps.load(inputStream);
+
 			inputStream.close();
 
 			return newProps;
@@ -100,13 +89,10 @@ public class DBUtil {
 		}
 	}
 
-
 	/*****************************************************************
-	 *  - Method Name:prepareDataSource() 
-	 *  - Input Parameters : 
-	 *  - Return Type :MysqlSource object
-	 *  - Author : CAPGEMINI 
-	 *  - Description : Returns MysqlSource object
+	 * - Method Name:prepareDataSource() - Input Parameters : - Return Type
+	 * :MysqlSource object - Author : CAPGEMINI - Description : Returns MysqlSource
+	 * object
 	 *******************************************************************/
 	private MysqlDataSource prepareDataSource() throws SQLException {
 
@@ -124,17 +110,14 @@ public class DBUtil {
 		}
 		return dataSource;
 	}
+
 	public static Date stringtoDate(java.util.Date m_d) {
-        return new Date(m_d.getTime());
-        
-    }
+		return new Date(m_d.getTime());
 
- 
+	}
 
-    public static long diffBetweenDays(Date afterDate, Date beforeDate) {
-        long diff = afterDate.getTime() - beforeDate.getTime();
-        return  TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-    }
+	public static long diffBetweenDays(Date afterDate, Date beforeDate) {
+		long diff = afterDate.getTime() - beforeDate.getTime();
+		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+	}
 }
-
-

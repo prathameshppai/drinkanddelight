@@ -49,6 +49,15 @@ public class SecurityQuestionServlet extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Credentials", "true");
     }
 
+	@Override
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/json");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Headers",
+				"Content-Type, Authorization, Content-Length, X-Requested-With");
+		response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
+	}
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -64,11 +73,9 @@ public class SecurityQuestionServlet extends HttpServlet {
 		EmployeeService employeeService = new EmployeeServiceImpl();
 		Employee employee = new Employee();
 		employee.setUsername(fieldValueMap.get("username"));
-		System.out.println(employee.getUsername());
 		Employee idealEmployee = new Employee();
 		try {
 			idealEmployee=employeeService.fetchOneConfidentialDetail(employee); 
-			System.out.println(idealEmployee.getSecurityQuestion());
 			String jsonQuestion = JsonUtil.convertJavaToJson(idealEmployee.getSecurityQuestion());
 			response.getWriter().write(jsonQuestion);
 		} catch (Exception exception) {

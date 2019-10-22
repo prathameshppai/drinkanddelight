@@ -171,14 +171,7 @@ public class ProductServiceImpl implements ProductService {
         return jsonMessage;
     }
 
-	
-//	public static void main(String[] args) throws BackEndException, DoesNotExistException {
-//		Distributor distributor=new Distributor();
-//		distributor.setDistributorId("d001");
-//		ProductService pd=new ProductServiceImpl();
-//		distributor=pd.fetchCompleteDistributorDetail(distributor);
-//		System.out.println(distributor);
-//	}
+
 
 	@Override
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException {

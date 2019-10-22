@@ -68,19 +68,17 @@ public class ChangePasswordServlet extends HttpServlet {
 		actualEmployee.setSecurityAnswer(fieldValueMap.get("answer"));
 		actualEmployee.setPassword(fieldValueMap.get("newPassword"));
 		actualEmployee.setConfirmPassword(fieldValueMap.get("confirmPassword"));
-		System.out.println(actualEmployee.getUsername()+" "+actualEmployee.getSecurityAnswer()+" "+actualEmployee.getPassword()+" "+actualEmployee.getConfirmPassword());
+		
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
 		
 		try {
 			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
-				((ObjectNode) dataResponse).put("success", true);
-				((ObjectNode) dataResponse).put("message", "Password changed successfully.");
+				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);
 				((ObjectNode) dataResponse).put("username", actualEmployee.getUsername());
 			}
 		} catch (UnregisteredEmployeeException | WrongSecurityAnswerException | PasswordException | BackEndException
 				| InvalidPasswordException | RowNotFoundException exception) {
-			((ObjectNode) dataResponse).put("success", false);
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
 		} finally {
 			out.print(dataResponse);

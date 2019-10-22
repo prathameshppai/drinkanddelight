@@ -31,6 +31,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages;
  */
 public class DisplayRawMaterialServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
    
     public DisplayRawMaterialServlet() {
         super();
@@ -56,74 +57,47 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
 	
+
 	}
 
-	
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		System.out.println("entered servlet");
 		doGet(req, res);
 		res.setContentType("application/json");
 		res.setHeader("Access-Control-Allow-Origin", "*");
-		res.setHeader("Access-Control-Allow-Headers" ,"Content-Type, Authorization, Content-Length, X-Requested-With");
-		res.setHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
+		res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With");
+		res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
 		PrintWriter out = res.getWriter();
-		String jsonMessage="";
+		String jsonMessage = "";
 		String errorMessage = "";
-		
+
 		List<RawMaterialOrder> rmoList = new ArrayList<RawMaterialOrder>();
 		RawMaterialService rawmaterialServiceObject = new RawMaterialServiceImpl();
-		DisplayRawMaterialOrder displayRawMaterialOrderObject = new DisplayRawMaterialOrder();	
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	
-	 Map<String,String> fieldValueMap = new HashMap<String, String>();
-	 fieldValueMap =MappingUtil.convertJsonObjectToFieldValueMap(req);
-	
-	        String DeliveryStatusVar= fieldValueMap.get("deliveryStatus");
-	        String SupplierIDVar= fieldValueMap.get("supplierid");
-	        String  date1Var= fieldValueMap.get("startdate");
-	        String  date2Var= fieldValueMap.get("endDate");
-//	        if( date1Var != null && date1Var != null )
-//	        		{
-//	        	
-//	        	Calendar c = Calendar.getInstance();
-//	        	try {
-//					c.setTime(sdf.parse(date2Var));
-//				} catch (ParseException e) {
-//					
-//					e.printStackTrace();
-//				}
-//	        	c.add(Calendar.DATE, 1);  // number of days to add
-//	        	date2Var = sdf.format(c.getTime());  
-//	        	System.out.println(date2Var);
-//	        		}
-	     
-	    displayRawMaterialOrderObject.setDeliveryStatus(DeliveryStatusVar);
+		DisplayRawMaterialOrder displayRawMaterialOrderObject = new DisplayRawMaterialOrder();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Map<String, String> fieldValueMap = new HashMap<String, String>();
+		fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(req);
+
+		String DeliveryStatusVar = fieldValueMap.get("deliveryStatus");
+		String SupplierIDVar = fieldValueMap.get("supplierid");
+		String date1Var = fieldValueMap.get("startdate");
+		String date2Var = fieldValueMap.get("endDate");
+
+		displayRawMaterialOrderObject.setDeliveryStatus(DeliveryStatusVar);
 		displayRawMaterialOrderObject.setSupplierid(SupplierIDVar);
 		displayRawMaterialOrderObject.setStartdate(date1Var);
 		displayRawMaterialOrderObject.setEndDate(date2Var);
 
 		try {
 			jsonMessage = rawmaterialServiceObject.displayRawmaterialOrders(displayRawMaterialOrderObject);
-			
+
 		} catch (Exception e) {
-			
+
 			errorMessage = e.getMessage();
 		}
-			if(errorMessage.isEmpty()) {
+		if (errorMessage.isEmpty()) {
 			out.write(jsonMessage);
 		}
-//		else {
-//			String errorJsonMessage = JsonUtil.convertJavaToJson1(errorMessage);
-//			out.write(errorJsonMessage);
-//
-//		}
+
 	}
 }
-			
-
-	
-	
-
-	
-	
-	
-
