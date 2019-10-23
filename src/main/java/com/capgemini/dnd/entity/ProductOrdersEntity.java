@@ -24,7 +24,6 @@ public class ProductOrdersEntity {
     @Column(name = "orderId")
 	private int orderId;
 	
-
     @Column(name = "name")
 	private String name;
     
