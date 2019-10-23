@@ -30,10 +30,21 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.dao.QueryMapper;
+
+import org.hibernate.query.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+//import org.hibernate.service.ServiceRegistryBuilder;
+
 public class ProductDAOImpl implements ProductDAO {
 
 	// private static final Distributor supplier = null;
@@ -879,53 +890,115 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-
-			statement = connection.prepareStatement(QueryMapper.TRACKPRODUCTORDER);
-			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-			resultSet = statement.executeQuery();
-
-			String warehouseId = null;
-			java.sql.Date exitDate = null;
-			java.sql.Date manDate = null;
-
-			while (resultSet.next()) {
-
-				exitDate = resultSet.getDate(1);
-
-				manDate = resultSet.getDate(2);
-
-				warehouseId = resultSet.getString(3);
-
-			}
-
-			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
-					+ manDate.toString() + " to " + exitDate.toString() + "("
-					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-
-			return message;
-
-		} catch (SQLException e) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
-		}
-
-		catch (Exception e) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		} finally {
-			try {
-				resultSet.close();
-				statement.close();
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-			}
-		}
+//		Connection connection = null;
+//		PreparedStatement statement = null;
+//		ResultSet resultSet = null;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//
+//			statement = connection.prepareStatement(QueryMapper.TRACKPRODUCTORDER);
+//			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//			resultSet = statement.executeQuery();
+//
+//			String warehouseId = null;
+//			java.sql.Date exitDate = null;
+//			java.sql.Date manDate = null;
+//
+//			while (resultSet.next()) {
+//
+//				exitDate = resultSet.getDate(1);
+//
+//				manDate = resultSet.getDate(2);
+//
+//				warehouseId = resultSet.getString(3);
+//
+//			}
+//
+//			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+//					+ manDate.toString() + " to " + exitDate.toString() + "("
+//					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+//
+//			return message;
+//
+//		} catch (SQLException e) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
+//		}
+//
+//		catch (Exception e) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//		} finally {
+//			try {
+//				resultSet.close();
+//				statement.close();
+//				connection.close();
+//			} catch (SQLException exception) {
+//				logger.error(exception.getMessage());
+//			}
+//		}
+		
+		
+		
+		
+//		Transaction transaction = null;
+//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+//            
+//            transaction = session.beginTransaction();
+//            
+//            String hql = "select exitDate, manufacturingDate, warehouseID from ProductStock where orderID = :orderId";
+//            Query q = session.createQuery(hql);
+//            q.setParameter(0, Integer.parseInt(productStock.getOrderId()));
+//            Object[] trackDetails = (Object[]) q.uniqueResult();
+//            
+//            
+//            System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);
+//            
+//            
+//            transaction.commit();
+//            
+//            
+//            return "Hello";
+//            
+//        } catch (Exception e) {
+//            if (transaction != null) {
+//                transaction.rollback();
+//            }
+//            e.printStackTrace();
+//            return "HelloException";
+//        }
+		
+		
+//		Configuration config = new Configuration().configure().addAnnotatedClass(ProductStockEntity.class);    
+//        ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+//        SessionFactory sf = config.buildSessionFactory(registry);   
+//        Session session = sf.openSession();
+		
+		Session session = HibernateUtil.getASession(); 
+        
+        session.beginTransaction();
+		
+        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
+	      Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      Object[] trackDetails = (Object[]) q.uniqueResult();
+	      
+	      session.getTransaction().commit();
+	      
+	      				Date exitDate = (Date) trackDetails[0];
+	      
+	      				Date manDate = (Date) trackDetails[1];
+	      
+	      				String warehouseId = (String) trackDetails[2];
+	      
+	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
+	      
+	      			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+	      					+ manDate.toString() + " to " + exitDate.toString() + "("
+	      					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+	      
+	      			return message;
+	    
 	}
 
 	/*******************************************************************************************************
@@ -1455,3 +1528,12 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 }
+
+
+//class App {
+//public static void main(String[] args) {
+//	ProductDAOImpl p = new ProductDAOImpl();
+//	String str = p.trackProductOrder(new ProductStock("5"));
+//	System.out.println(str);
+//}
+//}
