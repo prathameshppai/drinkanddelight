@@ -116,7 +116,7 @@ public class DBUtil {
 
 	}
 
-	public static long diffBetweenDays(Date afterDate, Date beforeDate) {
+	public static long diffBetweenDays(java.util.Date afterDate, java.util.Date beforeDate) {
 		long diff = afterDate.getTime() - beforeDate.getTime();
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
