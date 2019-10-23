@@ -12,13 +12,13 @@ public class HibernateUtil {
         try {
             // Create the SessionFactory from hibernate.cfg.xml
         	System.out.println();
-            return new AnnotationConfiguration().configure(new File("C:\\Users\\prapai\\eclipse-workspace\\drinkanddelight\\hibernate.cgf.xml")).buildSessionFactory();
+            return new AnnotationConfiguration().configure(new File("C:\\Users\\akdeep\\eclipse-workspace\\drinkanddelight\\hibernate.cgf.xml")).buildSessionFactory();
  
         }
-        catch (Throwable ex) {
+        catch (Throwable exception) {
             // Make sure you log the exception, as it might be swallowed
-            System.err.println("Initial SessionFactory creation failed." + ex);
-            throw new ExceptionInInitializerError(ex);
+            System.err.println("Initial SessionFactory creation failed." + exception);
+            throw new ExceptionInInitializerError(exception);
         }
     }
  
