@@ -67,7 +67,7 @@ public class ProductOrdersEntity {
 		this.dateOfOrder = new Date();
 		this.dateofDelivery = dateofDelivery;
 		this.deliveryStatus = "pending";
-		this.pricePerUnit = pricePerUnit;
+		this.pricePerUnit = this.pricePerUnit * this.quantityValue;
 		this.warehouseId = warehouseId;
 	}
 
