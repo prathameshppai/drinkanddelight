@@ -21,8 +21,6 @@ package com.capgemini.dnd.entity;
 		 @Column(name = "name")
 		private String name;
 		 private static int orderIdCount = 1;
-		 @Column(name = "rmid")
-		private String rmId;
 		 @Column(name = "supplierid")
 		private String supplierId;
 		 @Column(name = "quantityvalue")
@@ -42,16 +40,14 @@ package com.capgemini.dnd.entity;
 		 @Column(name = "warehouseid")
 		private String warehouseId;
 
-		public RawMaterialOrderEntity(String name, String rmId, String supplierId, double quantityValue, String quantityUnit,
-				Date dateOfOrder, Date dateOfDelivery, double pricePerUnit, String warehouseId) {
+		public RawMaterialOrderEntity(String name, String supplierId, double quantityValue, String quantityUnit,
+				Date dateOfDelivery, double pricePerUnit, String warehouseId) {
 			super();
-			//this.orderId = "OID" + orderIdCount++;
 			this.name = name;
-			this.rmId = rmId;
 			this.supplierId = supplierId;
 			this.quantityValue = quantityValue;
 			this.quantityUnit = quantityUnit;
-			this.dateOfOrder = dateOfOrder;
+			this.dateOfOrder = new Date();
 			this.dateOfDelivery = dateOfDelivery;
 			this.pricePerUnit = pricePerUnit;
 			this.totalPrice = this.quantityValue * this.pricePerUnit;
@@ -61,7 +57,7 @@ package com.capgemini.dnd.entity;
 
 		@Override
 		public String toString() {
-			return "RawMaterialOrder [orderId=" + orderId + ", name=" + name + ", rmId=" + rmId + ", supplierId="
+			return "RawMaterialOrder [orderId=" + orderId + ", name=" + name + ", supplierId="
 					+ supplierId + ", quantityValue=" + quantityValue + ", quantityUnit=" + quantityUnit + ", dateOfOrder="
 					+ dateOfOrder + ", dateOfDelivery=" + dateOfDelivery + ", pricePerUnit=" + pricePerUnit
 					+ ", totalPrice=" + totalPrice + ", deliveryStatus=" + deliveryStatus + ", warehouseId=" + warehouseId
@@ -97,14 +93,6 @@ package com.capgemini.dnd.entity;
 			this.totalPrice = totalPrice;
 		}
 
-//		public String getOrderId() {
-//			return orderId;
-//		}
-
-//		public void setOrderId(String orderId) {
-//			this.orderId = orderId;
-//		}
-
 		public static int getOrderIdCount() {
 			return orderIdCount;
 		}
@@ -119,14 +107,6 @@ package com.capgemini.dnd.entity;
 
 		public void setName(String name) {
 			this.name = name;
-		}
-
-		public String getRmId() {
-			return rmId;
-		}
-
-		public void setRmId(String rmId) {
-			this.rmId = rmId;
 		}
 
 		public String getSupplierId() {

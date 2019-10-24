@@ -60,7 +60,7 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
 
 		Map<String, String> myMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
-
+		System.out.println(myMap);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		ProductOrder productOrder = null;
 		try {
@@ -75,27 +75,6 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		Date today = new Date();
 		productOrder.setDateOfOrder(today);
 		productOrder.setDeliveryStatus("Pending");
-
-	/*	Session session = HibernateUtil.getSessionFactory().openSession();//
-		session.beginTransaction();
-		session.save(productOrder);
-		session.getTransaction().commit();
-		HibernateUtil.shutdown();
-*/
-//		try {
-//				String jsonMessage = productService.placeProductOrder(productOrder);
-//				response.getWriter().write(jsonMessage);
-//			
-//		} catch (ProductOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
-//			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
-//			response.getWriter().write(errorJsonMessage);
-//		}
-
-//		Session session = HibernateUtil.getSessionFactory().openSession();//
-//		session.beginTransaction();
-//		session.save(productOrder);
-//		session.getTransaction().commit();
-//		HibernateUtil.shutdown();
 
 		ProductService productService = new ProductServiceImpl();
 		try {
