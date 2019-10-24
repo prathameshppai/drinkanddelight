@@ -736,8 +736,8 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	@Override
-	public boolean doesProductOrderIdExistInStock(String orderId)
-			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException {
+	public boolean doesProductOrderIdExistInStock(String orderId) throws SQLException
+			 {
 
 		boolean productOrderIdFound = false;
 		int oid = -1;
@@ -749,22 +749,23 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 		Connection connection;
 		try {
-
+			System.out.println("c1");
 			connection = DBUtil.getInstance().getConnection();
+			System.out.println("c2");
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return false;
 			// throw new
 			// ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		
+		System.out.println("c3");
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 
 		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_PRODUCT_STOCK);
 		preparedStatement.setInt(1, oid);
 		resultSet = preparedStatement.executeQuery();
-		
+		System.out.println("c4");
 		while (resultSet.next()) {
 			
 			int pId = resultSet.getInt(1);
@@ -773,13 +774,14 @@ public class ProductDAOImpl implements ProductDAO {
 				break;
 			}
 		}
-
+		System.out.println("c5");
 		connection.close();
 		if (productOrderIdFound) {
-			
+			System.out.println("c6");
 			return productOrderIdFound;
 		}
 		if (!productOrderIdFound) {
+			System.out.println("c7");
 			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
 			return productOrderIdFound;
 		}
@@ -969,11 +971,7 @@ public class ProductDAOImpl implements ProductDAO {
 //            return "HelloException";
 //        }
 		
-		
-//		Configuration config = new Configuration().configure().addAnnotatedClass(ProductStockEntity.class);    
-//        ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-//        SessionFactory sf = config.buildSessionFactory(registry);   
-//        Session session = sf.openSession();
+
 		
 		Session session = HibernateUtil.getASession(); 
         
@@ -1247,16 +1245,19 @@ public class ProductDAOImpl implements ProductDAO {
         session.beginTransaction();
         try {
         boolean orderIdcheckInStock = false;
+        System.out.println("1");
 		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
+		System.out.println("2");
 		if (orderIdcheckInStock == false) {
-			String hql = "insert into ProductStockEntity(name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  "select name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			System.out.println("3");
+			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
 			Query q = session.createQuery(hql);
 		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 			
 			int result = q.executeUpdate();
-			System.out.println(result);
+			System.out.println(result + ":");
 		}
-		
+		System.out.println("4");
 		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
 		Query q1 = session.createQuery(hql);
 	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
@@ -1266,12 +1267,12 @@ public class ProductDAOImpl implements ProductDAO {
 	      
 	      int result = q1.executeUpdate();
 			System.out.println(result);
-        
+			System.out.println("5");
 			session.getTransaction().commit();
 		      
 		      return Constants.DATA_INSERTED_MESSAGE;
         }   
-		      catch (Exception exception) {
+		      catch (SQLException exception) {
 					logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
 					return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
 				}

@@ -85,5 +85,6 @@ public class PlaceProductOrderServlet extends HttpServlet {
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			response.getWriter().write(errorJsonMessage);
 		}
+
 	}
 }

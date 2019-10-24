@@ -29,25 +29,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public boolean login(Employee employee) throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
 		return employeeDAO.login(employee);
 	}
-
-	@Override
-	public boolean changePassword(Employee employee, Scanner scanner) throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException{
-		return employeeDAO.changePassword(employee, scanner);
-	}
 	
 	@Override
-	public int doesEmployeeExist(Employee employee) throws BackEndException, RowNotFoundException{
-		return (employeeDAO.doesEmployeeExist(employee));
+	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException{
+		return (employeeDAO.employeeExists(employee));
 	}
 	
 	@Override
 	public Employee fetchOneConfidentialDetail(Employee employee) throws BackEndException {
 		return(employeeDAO.fetchOneConfidentialDetail(employee));
 	}
-
+    /*
 	@Override
 	public boolean changePassword(Employee idealEmployee, Employee actualEmployee) throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException, InvalidPasswordException, RowNotFoundException {
 		return(employeeDAO.changePassword(idealEmployee, actualEmployee));
 	}
-	
+	*/
 }

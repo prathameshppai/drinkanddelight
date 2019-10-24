@@ -7,10 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Scanner;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -114,83 +112,30 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 	// -----------------------------------------------------------------------------------------------------------------------------------
 
-	public int doesEmployeeExist(Employee employee) throws BackEndException, RowNotFoundException {
-		int employeeCount = 0;
-		Connection connection;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-			throw new BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		try {
-			preparedStatement = connection.prepareStatement(QueryMapper.SELECT_ONE_EMPLOYEE_LOGIN_CREDENTIAL);
-			preparedStatement.setString(1, employee.getUsername());
-			resultSet = preparedStatement.executeQuery();
-
-			while (resultSet.next()) {
-				employeeCount++;
-			}
-
-			if (employeeCount == 0) {
-				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_RECORD_NOT_FOUND);
-				throw new RowNotFoundException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
-			}
-			return employeeCount;
-		} catch (SQLException exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
-			throw new BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
-		}
-	}
-
-	public boolean setLoggedIn(Employee employee) throws BackEndException, RowNotFoundException {
-		Connection connection;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-			throw new BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-		}
-		PreparedStatement preparedStatement1 = null;
-		ResultSet resultSet = null;
+	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException {
 		boolean result = false;
+		Session session = null;
+		Transaction transaction = null;
 		try {
-			preparedStatement1 = connection.prepareStatement(QueryMapper.FETCH_CREDENTIALS);
-			preparedStatement1.setString(1, employee.getUsername());
-			resultSet = preparedStatement1.executeQuery();
-
-			String hash = null;
-			String salt = null;
-			while (resultSet.next()) {
-				hash = resultSet.getString("Hash");
-				salt = resultSet.getString("Salt");
-			}
-
-			if (CryptoFunction.isExpectedPassword(employee.getPassword(), salt, hash)) {
+			session = HibernateUtil.getASession();
+			transaction = session.beginTransaction();
+			@SuppressWarnings("rawtypes")
+			Query query = session.createNamedQuery("GetOneConfidentialDetail");
+			query.setParameter("username", employee.getUsername());
+			if (query.getResultList().size() == 1) {
 				result = true;
+				transaction.commit();
 			} else {
-				logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
-				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED);
+				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED);
 			}
-		} catch (SQLException exception) {
+		} catch (Exception exception) {
 			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
-			throw new BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
+			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
 		} finally {
 			try {
-				preparedStatement1.close();
-				connection.close();
-			} catch (SQLException exception) {
+				session.close();
+			} catch (Exception exception) {
 				logger.error(exception.getMessage());
 				throw new BackEndException(exception.getMessage());
 			}
@@ -198,48 +143,53 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		return result;
 	}
 
-	/*
-	 * public List <SupplierEntity> getSuppliers() { try (Session session =
-	 * HibernateUtil.getSessionFactory().openSession()) { return
-	 * session.createQuery("from SupplierEntity", SupplierEntity.class).list(); } }
-	 */
+	@SuppressWarnings("unchecked")
+	public boolean setLoggedIn(Employee employee) throws BackEndException, RowNotFoundException {
+		boolean result = false;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = HibernateUtil.getASession();
+			transaction = session.beginTransaction();
+			@SuppressWarnings("rawtypes")
+			Query query = session.createNamedQuery("GetOneConfidentialDetail");
+			query.setParameter("username", employee.getUsername());
 
-	/*
-	 * public boolean setLoggedIn(Employee employee) throws BackEndException,
-	 * RowNotFoundException { boolean result = false; Session session = null;
-	 * Transaction transaction = null; try {
-	 * System.out.println("hey inside daotry"); session =
-	 * HibernateUtil.getSessionFactory().openSession();
-	 * System.out.println("hi are you outside?"); transaction =
-	 * session.beginTransaction();
-	 * 
-	 * @SuppressWarnings("rawtypes") Query query = session.
-	 * createQuery("SELECT Salt, Hash FROM EmployeeCredentials WHERE Username:=username"
-	 * ); query.setParameter("username", employee.getUsername()); List<String> list
-	 * = query.list(); System.out.println("hi are you inside?"); if
-	 * (CryptoFunction.isExpectedPassword(employee.getPassword(), list.get(0),
-	 * list.get(1))) { result = true; System.out.println(result); } else {
-	 * logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND); throw new
-	 * RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND); }
-	 * transaction.commit(); } catch (HibernateException exception) { if
-	 * (transaction != null) transaction.rollback();
-	 * logger.error(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED +
-	 * exception.getMessage()); throw new
-	 * BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED +
-	 * exception.getMessage()); } finally { try { session.close(); } catch
-	 * (Exception exception) { logger.error(exception.getMessage()); throw new
-	 * BackEndException(exception.getMessage()); } } return result; }
-	 */
+			List<EmployeeCredentialEntity> empCredentialEntitylist = (List<EmployeeCredentialEntity>) query.list();
+
+			if (CryptoFunction.isExpectedPassword(employee.getPassword(), empCredentialEntitylist.get(0))) {
+				result = true;
+			} else {
+				logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+			}
+
+			transaction.commit();
+		} catch (Exception exception) {
+			if (transaction != null)
+				transaction.rollback();
+			logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+		} finally {
+			try {
+				session.close();
+			} catch (Exception exception) {
+				logger.error(exception.getMessage());
+				throw new BackEndException(exception.getMessage());
+			}
+		}
+		return result;
+	}
 
 	public boolean login(Employee employee)
 			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
 		employeeDAO = new EmployeeDAOImpl();
 		boolean result = false;
 		try {
-			if (employeeDAO.doesEmployeeExist(employee) == 1) {
+			if (employeeDAO.employeeExists(employee)) {
 				try {
 					result = employeeDAO.setLoggedIn(employee);
-				} catch (RowNotFoundException e) {
+				} catch (RowNotFoundException exception) {
 					logger.error(Constants.INCORRECT_PASSWORD_MESSAGE);
 					throw new WrongPasswordException(Constants.INCORRECT_PASSWORD_MESSAGE);
 				}
@@ -369,53 +319,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		return result;
 	}
 
-	public boolean changePassword(Employee employee, Scanner scanner)
-			throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException {
-		employeeDAO = new EmployeeDAOImpl();
-		boolean result = false;
-		String answer = "";
-		String newPassword = "";
-		String confirmPassword = "";
-		try {
-			if (employeeDAO.doesEmployeeExist(employee) > 0) {
-				employee = employeeDAO.fetchOneConfidentialDetail(employee);
-				System.out.println(employee.getSecurityQuestion());
-				answer = scanner.nextLine();
-				if (answer.equals(employee.getSecurityAnswer())) {
-					System.out.println("Type the new password:");
-					newPassword = scanner.nextLine();
-					newPassword = newPassword.trim();
-					if (!newPassword.equals("")) {
-						if (!CryptoFunction.isExpectedPassword(newPassword, employee.getSalt(), employee.getHash())) {
-							System.out.println("Re-type to confirm the new password:");
-							confirmPassword = scanner.nextLine();
-							if (newPassword.equals(confirmPassword)) {
-								employee.setPassword(newPassword);
-								result = employeeDAO.setPassword(employee);
-							} else {
-								logger.error("Passwords do not match!!!");
-								throw new PasswordException("Passwords do not match!!!");
-							}
-						} else {
-							logger.error("New password matches with old password!!!");
-							throw new PasswordException("New password matches with old password!!!");
-						}
-					} else {
-						logger.error("Password can't be empty or just spaces!!!");
-						throw new PasswordException("Password can't be empty or just spaces!!!");
-					}
-				} else {
-					logger.error("Answer to security question is wrong!!!");
-					throw new WrongSecurityAnswerException("Answer to security question is wrong!!!");
-				}
-			}
-		} catch (RowNotFoundException exception) {
-			logger.error("You are not a registered user!!!");
-			throw new UnregisteredEmployeeException("You are not a registered user!!!");
-		}
-		return result;
-	}
-
 	@Override
 	public boolean changePassword(Employee idealEmployee, Employee actualEmployee)
 			throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException,
@@ -444,4 +347,5 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		return result;
 	}
+
 }

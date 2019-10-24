@@ -8,6 +8,8 @@ import java.util.Random;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import com.capgemini.dnd.entity.EmployeeCredentialEntity;
+
 public class CryptoFunction {
 	private static final Random RANDOM = new SecureRandom();
 	private static final int ITERATIONS = 10000;
@@ -41,9 +43,21 @@ public class CryptoFunction {
 		}
 	}
 
-	public static boolean isExpectedPassword(String pass, String saltStr, String expectedHashStr) {
-		byte[] expectedHash = expectedHashStr.getBytes(StandardCharsets.UTF_8);
-		byte[] pwdHash = hash(pass, saltStr).getBytes(StandardCharsets.UTF_8);
+	public static boolean isExpectedPassword(String pass,  EmployeeCredentialEntity empCredential) {
+		byte[] expectedHash = empCredential.getHash().getBytes(StandardCharsets.UTF_8);
+		byte[] pwdHash = hash(pass, empCredential.getSalt()).getBytes(StandardCharsets.UTF_8);
+		if (pwdHash.length != expectedHash.length)
+			return false;
+		for (int i = 0; i < pwdHash.length; i++) {
+			if (pwdHash[i] != expectedHash[i])
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isExpectedPassword(String pass,  String hash, String salt) {
+		byte[] expectedHash = hash.getBytes(StandardCharsets.UTF_8);
+		byte[] pwdHash = hash(pass, salt).getBytes(StandardCharsets.UTF_8);
 		if (pwdHash.length != expectedHash.length)
 			return false;
 		for (int i = 0; i < pwdHash.length; i++) {
