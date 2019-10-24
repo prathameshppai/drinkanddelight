@@ -19,6 +19,7 @@ public class ProductStockEntity {
 	private int orderId;
 	private Date exitDate;
 	private Date manufacturingDate;
+	private Date expiryDate;
 	private String warehouseId;
 	
 	

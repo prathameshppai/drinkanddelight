@@ -992,56 +992,85 @@ public class ProductDAOImpl implements ProductDAO {
 	@Override
 	public boolean exitDateCheck(ProductStock productStock)
 			throws ExitDateException, SQLException, ConnectionException {
-		Connection connection = null;
+//		Connection connection = null;
+//		boolean datecheck = false;
+//		PreparedStatement statement = null;
+//		ResultSet resultSet = null;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//			statement = connection.prepareStatement(QueryMapper.CHECKEXITDATE);
+//			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//			resultSet = statement.executeQuery();
+//
+//			java.sql.Date manufacturingDate = null;
+//			java.sql.Date expiryDate = null;
+//
+//			while (resultSet.next()) {
+//
+//				manufacturingDate = resultSet.getDate(1);
+//
+//				expiryDate = resultSet.getDate(2);
+//
+//				if (productStock.getExitDate().after(manufacturingDate)
+//						&& productStock.getExitDate().before(expiryDate)) {
+//					datecheck = true;
+//					return datecheck;
+//				}
+//			}
+//			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
+//
+//		} catch (SQLException exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			throw new SQLException(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//
+//		}
+//
+//		catch (ExitDateException exception) {
+//			logger.error(exception.getMessage());
+//			throw exception;
+//
+//		}
+//
+//		catch (Exception exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			throw new ConnectionException(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//
+//		}
+//
+//		finally {
+//			resultSet.close();
+//			statement.close();
+//			connection.close();
+//		}
+	try {
 		boolean datecheck = false;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-			statement = connection.prepareStatement(QueryMapper.CHECKEXITDATE);
-			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-			resultSet = statement.executeQuery();
-
-			java.sql.Date manufacturingDate = null;
-			java.sql.Date expiryDate = null;
-
-			while (resultSet.next()) {
-
-				manufacturingDate = resultSet.getDate(1);
-
-				expiryDate = resultSet.getDate(2);
-
-				if (productStock.getExitDate().after(manufacturingDate)
-						&& productStock.getExitDate().before(expiryDate)) {
-					datecheck = true;
-					return datecheck;
-				}
+		Session session = HibernateUtil.getASession(); 
+        session.beginTransaction();
+        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
+        Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      Object[] dateDetails = (Object[]) q.uniqueResult();
+	      
+	      session.getTransaction().commit();
+	      
+	      Date manufacturingDate = (Date) dateDetails[0];
+	      
+			Date expiryDate = (Date) dateDetails[1];
+			
+			if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
+				datecheck = true;
+				return datecheck;
 			}
+			
 			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
-
-		} catch (SQLException exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			throw new SQLException(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-
-		}
-
+		}	
+			
 		catch (ExitDateException exception) {
-			logger.error(exception.getMessage());
-			throw exception;
-
-		}
-
-		catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			throw new ConnectionException(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-
-		}
-
-		finally {
-			resultSet.close();
-			statement.close();
-			connection.close();
-		}
+				logger.error(exception.getMessage());
+				throw exception;
+	
+			}
+		
 
 	}
 
@@ -1054,34 +1083,42 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public String updateExitDateinStock(ProductStock productStock) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-
-			statement = connection.prepareStatement(QueryMapper.UPDATEEXITDATE);
-			statement.setDate(1, DBUtil.stringtoDate(productStock.getExitDate()));
-			statement.setInt(2, Integer.parseInt(productStock.getOrderId()));
-			statement.executeUpdate();
-			return Constants.DATA_INSERTED_MESSAGE;
-		}
-
-		catch (SQLException exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
-
-		} catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		} finally {
-			try {
-				statement.close();
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-			}
-
-		}
+//		Connection connection = null;
+//		PreparedStatement statement = null;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//
+//			statement = connection.prepareStatement(QueryMapper.UPDATEEXITDATE);
+//			statement.setDate(1, DBUtil.stringtoDate(productStock.getExitDate()));
+//			statement.setInt(2, Integer.parseInt(productStock.getOrderId()));
+//			statement.executeUpdate();
+//			return Constants.DATA_INSERTED_MESSAGE;
+//		}
+//
+//		catch (SQLException exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
+//
+//		} catch (Exception exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//		} finally {
+//			try {
+//				statement.close();
+//				connection.close();
+//			} catch (SQLException exception) {
+//				logger.error(exception.getMessage());
+//			}
+//
+//		}
+		
+		
+		Session session = HibernateUtil.getASession(); 
+        session.beginTransaction();
+        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
+        Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      q.setParameter("exitDateVariable", productStock.getExitDate());
 
 	}
 
