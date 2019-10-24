@@ -1,12 +1,9 @@
 package com.capgemini.dnd.dao;
 
-import com.capgemini.dnd.customexceptions.RowNotAddedException;
-
-import java.util.Scanner;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
 import com.capgemini.dnd.customexceptions.PasswordException;
+import com.capgemini.dnd.customexceptions.RowNotAddedException;
 import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
 import com.capgemini.dnd.customexceptions.WrongPasswordException;
@@ -29,9 +26,8 @@ public interface EmployeeDAO {
 
 	public boolean setPassword(Employee employee) throws BackEndException, RowNotFoundException;
 
-	//public boolean changePassword(Employee employee, Scanner scanner)
-		//	throws BackEndException, UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException;
-	
-	//boolean changePassword(Employee idealEmployee, Employee actualEmployee) throws UnregisteredEmployeeException,
-		//	WrongSecurityAnswerException, PasswordException, BackEndException, InvalidPasswordException, RowNotFoundException;
+	boolean changePassword(Employee idealEmployee, Employee actualEmployee)
+			throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException,
+			InvalidPasswordException, RowNotFoundException;
+
 }

@@ -54,4 +54,16 @@ public class CryptoFunction {
 		}
 		return true;
 	}
+	
+	public static boolean isExpectedPassword(String pass,  String hash, String salt) {
+		byte[] expectedHash = hash.getBytes(StandardCharsets.UTF_8);
+		byte[] pwdHash = hash(pass, salt).getBytes(StandardCharsets.UTF_8);
+		if (pwdHash.length != expectedHash.length)
+			return false;
+		for (int i = 0; i < pwdHash.length; i++) {
+			if (pwdHash[i] != expectedHash[i])
+				return false;
+		}
+		return true;
+	}
 }
