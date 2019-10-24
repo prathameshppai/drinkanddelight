@@ -4,14 +4,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
@@ -1167,52 +1174,63 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	}
 
 	@Override
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
+	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
 			throws Exception {
 		String hql="";
 		Session session=null;
-		SessionFactory sessionFactory=null;
-		 List<RawMaterialOrder> list = new ArrayList<RawMaterialOrder>();
+	    Transaction tx = null;
+	    Criteria cr = null;
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SessionFactory sessionFactory = null;
+		 List<RawMaterialOrderEntity > list = new ArrayList<RawMaterialOrderEntity>();
 		PreparedStatement pst = null;
 		int isFetched = 0;
 		
-			String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
-			String generateQuery = "";
 			
-				if (deliveryStatus.equals("ALL"))
-					hql = "from RawMaterialOrderEntity where deliveryStatus in (select deliveryStatus from RawMaterialOrderEntity)";
-				else
-					hql = "from RawMaterialOrderEntity where deliveryStatus in ( '" + deliveryStatus + "')";
-
-		
-             String supplierId = displayRawMaterialOrderObject.getSupplierid();
-			
-				if (supplierId.equals("ALL"))
-					hql += " AND supplierId in (select supplierId from RawMaterialOrderEntity)";
-				else
-
-					hql += "  AND supplierId in ( '" + supplierId + "' )";
-			
-
-			String startDate = displayRawMaterialOrderObject.getStartdate();
-			String endDate = displayRawMaterialOrderObject.getEndDate();
-
-			if (startDate != null && endDate != null) {
-				
-					hql += " AND  dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
-				}
-            System.out.println(hql);
-            System.out.println("dao");
             
 			try {
 				System.out.println("hello");
-//			    sessionFactory = HibernateUtil.getSessionFactory();
-				// session =sessionFactory.openSession();
-			    session =sessionFactory.getCurrentSession();
-				session.beginTransaction();
-				 Query q = session.createQuery(hql);
-				list =  q.list();
-				System.out.println(list);
+			   
+				
+				 session = HibernateUtil.getASession();
+			   
+				tx = session.beginTransaction();
+				String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
+				
+				
+				CriteriaBuilder builder = session.getCriteriaBuilder();
+				CriteriaQuery<RawMaterialOrderEntity> criteria = builder.createQuery(RawMaterialOrderEntity.class);
+				Root<RawMaterialOrderEntity> root = criteria.from(RawMaterialOrderEntity.class);
+
+					if (deliveryStatus.equals("ALL")) {
+						
+						;
+	            }	
+					else {
+
+			       criteria.select(root).where(builder.equal(root.get("deliveryStatus"),deliveryStatus));
+             
+					}
+	             String supplierId = displayRawMaterialOrderObject.getSupplierid();
+				
+					if (supplierId.equals("ALL"))
+						;
+					else
+						 criteria.select(root).where(builder.equal(root.get("supplierId"),supplierId));
+						
+				
+
+				String startDate = displayRawMaterialOrderObject.getStartdate();
+				String endDate = displayRawMaterialOrderObject.getEndDate();
+
+				if (startDate != null && endDate != null) {
+					criteria.select(root).where(builder.between(root.get("dateOfDelivery"),sdf.parse(startDate),sdf.parse(endDate)));
+				
+					}
+     
+				 Query<RawMaterialOrderEntity> q=session.createQuery(criteria);
+				 list = q.list();
+
 				 if (list.isEmpty()) {
 						logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 						throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
@@ -1231,8 +1249,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	       finally {
 		
-            session.close();
-			sessionFactory.close();
+//           session.flush();
+           session.close();
+		//sessionFactory.close();
 		}
 		return list;
 
