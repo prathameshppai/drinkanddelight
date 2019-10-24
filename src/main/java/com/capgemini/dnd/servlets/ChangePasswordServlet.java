@@ -77,7 +77,7 @@ public class ChangePasswordServlet extends HttpServlet {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
-		/*
+		
 		try {
 			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
 				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);
@@ -88,7 +88,7 @@ public class ChangePasswordServlet extends HttpServlet {
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
 		} finally {
 			out.print(dataResponse);
-		}*/
+		}
 
 	}
 

@@ -120,7 +120,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		try {
 			return rawMaterialDAO.processDateCheck(rawMaterialStock);
 		} catch (ProcessDateException e) {
-			throw new ProcessDateException("Process date cannot be before its arrival(date of delivery)");
+			throw new ProcessDateException(e.getMessage());
 		} catch (SQLException | ConnectionException e) {
 
 			return false;
