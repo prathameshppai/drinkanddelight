@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -19,6 +19,7 @@ import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
+import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RMIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
@@ -33,6 +34,7 @@ import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
@@ -544,63 +546,25 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public boolean addRawMaterialOrder(RawMaterialOrder newRMO)
 			throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
-		Connection con;
-		try {
-			con = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null, preparedStatement1 = null;
 		boolean added = false;
-		String rmId = null;
+		RawMaterialOrderEntity rawMaterialOrderEntity = new RawMaterialOrderEntity(newRMO.getName(), newRMO.getSupplierId(), newRMO.getQuantityValue(), newRMO.getQuantityUnit(), newRMO.getDateOfDelivery(), newRMO.getPricePerUnit(), newRMO.getWarehouseId());
+		
 		try {
-			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_RMID_FROM_RMNAME);
-			preparedStatement1.setString(1, newRMO.getName().toUpperCase());
-			ResultSet rs = preparedStatement1.executeQuery();
-			while (rs.next()) {
-				rmId = rs.getString(1);
-				System.out.println(rmId);
-			}
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+			Session session = HibernateUtil.getASession();
+			session.beginTransaction();
+		    session.save(rawMaterialOrderEntity);
+			session.getTransaction().commit();
+			added = true;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			System.out.println("Exception 638");
 		}
-
-		try {
-
-			preparedStatement = con.prepareStatement(QueryMapper.ADDRMORDER);
-			preparedStatement.setString(1, newRMO.getName().toUpperCase());
-			preparedStatement.setString(2, rmId.toUpperCase());
-			preparedStatement.setString(3, newRMO.getSupplierId().toUpperCase());
-			preparedStatement.setDouble(4, newRMO.getQuantityValue());
-			preparedStatement.setString(5, newRMO.getQuantityUnit().toLowerCase());
-			preparedStatement.setDate(6, DBUtil.stringtoDate(newRMO.getDateOfOrder()));
-			preparedStatement.setDate(7, DBUtil.stringtoDate(newRMO.getDateOfDelivery()));
-			preparedStatement.setDouble(8, newRMO.getPricePerUnit());
-			preparedStatement.setDouble(9, newRMO.getTotalPrice());
-			preparedStatement.setString(10, newRMO.getDeliveryStatus().toUpperCase());
-			preparedStatement.setString(11, newRMO.getWarehouseId().toLowerCase());
-
-			int noOfRows = preparedStatement.executeUpdate();
-
-			con.close();
-
-			if (noOfRows == 1) {
-				added = true;
-			}
-
-			if (!added) {
-				throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
-			}
-			return added;
-		} catch (RMOrderNotAddedException | SQLException exception) {
-			logger.error(Constants.RM_ORDER_NOT_ADDED);
-			throw exception;
-		} finally {
-			con.close();
+		
+		if (!added) {
+			throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
 		}
+		return added;
+	
 	}
 
 	public boolean doesRawMaterialOrderIdExist(String orderId)
@@ -1203,12 +1167,12 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	}
 
 	@Override
-	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
+	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
 			throws Exception {
 		String hql="";
 		Session session=null;
 		SessionFactory sessionFactory=null;
-		 List<RawMaterialOrderEntity > list = new ArrayList<RawMaterialOrderEntity>();
+		 List<RawMaterialOrder> list = new ArrayList<RawMaterialOrder>();
 		PreparedStatement pst = null;
 		int isFetched = 0;
 		
@@ -1242,7 +1206,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
             
 			try {
 				System.out.println("hello");
-			    sessionFactory = HibernateUtil.getSessionFactory();
+//			    sessionFactory = HibernateUtil.getSessionFactory();
 				// session =sessionFactory.openSession();
 			    session =sessionFactory.getCurrentSession();
 				session.beginTransaction();
