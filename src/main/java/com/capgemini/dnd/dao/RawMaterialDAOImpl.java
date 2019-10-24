@@ -1609,11 +1609,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		return warehouseIdsList;
 	}
 
-	@Override
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }
