@@ -82,7 +82,7 @@ public class ProductOrdersEntity {
 		this.dateOfOrder = dateOfOrder;
 		this.dateofDelivery = dateofDelivery;
 		this.pricePerUnit = pricePerUnit;
-		this.totalPrice = totalPrice;
+		this.totalPrice = this.quantityValue * this.pricePerUnit;
 		this.deliveryStatus = deliveryStatus;
 		this.warehouseId = warehouseId;
 	}
