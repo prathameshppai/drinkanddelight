@@ -1002,7 +1002,7 @@ public class ProductDAOImpl implements ProductDAO {
 	      				String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
 	      					+ manDate.toString() + " to " + exitDate.toString() + "("
 	      					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-	      
+	      				session.close();
 	      			return message;
 	    
 	}
@@ -1068,9 +1068,11 @@ public class ProductDAOImpl implements ProductDAO {
 //			statement.close();
 //			connection.close();
 //		}
+		
+		Session session = null;
 	try {
 		boolean datecheck = false;
-		Session session = HibernateUtil.getASession(); 
+		session = HibernateUtil.getASession(); 
         session.beginTransaction();
 //        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
 //        Query q = session.createQuery(hql);
@@ -1097,6 +1099,10 @@ public class ProductDAOImpl implements ProductDAO {
 				throw exception;
 	
 			}
+	
+	finally {
+		session.close();
+	}
 		
 
 	}
@@ -1148,7 +1154,7 @@ public class ProductDAOImpl implements ProductDAO {
 	      q.setParameter("exitDateVariable", productStock.getExitDate());
 	      int result = q.executeUpdate();
 	      session.getTransaction().commit();
-	      
+	      session.close();
 	      return Constants.DATA_INSERTED_MESSAGE;
 
 	}
@@ -1277,7 +1283,7 @@ public class ProductDAOImpl implements ProductDAO {
 			System.out.println(result);
 			System.out.println("5");
 			session.getTransaction().commit();
-		      
+		    session.close();
 		      return Constants.DATA_INSERTED_MESSAGE;
         }   
 		      catch (SQLException exception) {
