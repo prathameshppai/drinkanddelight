@@ -18,7 +18,7 @@ public interface EmployeeDAO {
 
 	public boolean register(Employee employee) throws BackEndException, RowNotAddedException;
 
-	public int doesEmployeeExist(Employee employee) throws BackEndException, RowNotFoundException;
+	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException;
 
 	public boolean setLoggedIn(Employee employee) throws BackEndException, RowNotFoundException;
 
@@ -29,9 +29,9 @@ public interface EmployeeDAO {
 
 	public boolean setPassword(Employee employee) throws BackEndException, RowNotFoundException;
 
-	public boolean changePassword(Employee employee, Scanner scanner)
-			throws BackEndException, UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException;
+	//public boolean changePassword(Employee employee, Scanner scanner)
+		//	throws BackEndException, UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException;
 	
-	boolean changePassword(Employee idealEmployee, Employee actualEmployee) throws UnregisteredEmployeeException,
-			WrongSecurityAnswerException, PasswordException, BackEndException, InvalidPasswordException, RowNotFoundException;
+	//boolean changePassword(Employee idealEmployee, Employee actualEmployee) throws UnregisteredEmployeeException,
+		//	WrongSecurityAnswerException, PasswordException, BackEndException, InvalidPasswordException, RowNotFoundException;
 }
