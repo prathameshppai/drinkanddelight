@@ -64,8 +64,7 @@ public interface ProductDAO {
 
 	public String updateProductStock(ProductStock productStock);
 
-	public boolean doesProductOrderIdExistInStock(String orderId)
-			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException;
+	public boolean doesProductOrderIdExistInStock(String orderId) throws SQLException;
 
 	public Distributor fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException;
 	
