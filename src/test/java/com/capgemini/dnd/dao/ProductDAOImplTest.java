@@ -67,7 +67,7 @@ class ProductDAOImplTest {
 		ProductDAO productDao = new ProductDAOImpl();
 		try {
 			assertTrue(productDao.doesProductOrderIdExistInStock("3"));
-		} catch (ConnectionException | SQLException | ProductOrderIDDoesNotExistException e) {
+		} catch ( SQLException e) {
 		}
 	}
 
@@ -76,7 +76,7 @@ class ProductDAOImplTest {
 		ProductDAO productDao = new ProductDAOImpl();
 		try {
 			assertFalse(productDao.doesProductOrderIdExistInStock("100"));
-		} catch (ConnectionException | SQLException | ProductOrderIDDoesNotExistException e) {
+		} catch (SQLException e) {
 		}
 	}
 

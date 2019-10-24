@@ -122,4 +122,11 @@ public class EmployeeCredentialEntity {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+
+	@Override
+	public String toString() {
+		return "EmployeeCredentialEntity [empId=" + empId + ", userName=" + userName + ", securityQuestion="
+				+ securityQuestion + ", securityAnswer=" + securityAnswer + ", activeStatus=" + activeStatus + ", hash="
+				+ hash + ", salt=" + salt + "]";
+	}
 }
