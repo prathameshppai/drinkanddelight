@@ -582,7 +582,7 @@ public class ProductDAOImpl implements ProductDAO {
 	 ********************************************************************************************************/
 
 	@Override
-	public boolean addProductOrder(ProductOrdersEntity newPO)
+	public boolean addProductOrder(ProductOrder newPO)
 			throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
 //		Connection con;
@@ -639,18 +639,19 @@ public class ProductDAOImpl implements ProductDAO {
 //			throw exception;
 //		}
 
+		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(), newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(), newPO.getWarehouseId());
+		
 		try {
-			Session session = HibernateUtil.getSessionFactory().openSession();
-			System.out.println("633");
+			Session session = HibernateUtil.getASession();
 			session.beginTransaction();
-			session.save(newPO);
+			session.save(productOrdersEntity);
 			session.getTransaction().commit();
+			added = true;
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			System.out.println("Exception 638");
 		}
 		//HibernateUtil.shutdown();
-		added = true;
 		
 		if (!added) {
 			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
