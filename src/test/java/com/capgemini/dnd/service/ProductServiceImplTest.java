@@ -1,6 +1,8 @@
 package com.capgemini.dnd.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -12,9 +14,7 @@ import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
-import com.capgemini.dnd.customexceptions.WrongPasswordException;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.dto.RawMaterialStock;
 
 class ProductServiceImplTest {
 

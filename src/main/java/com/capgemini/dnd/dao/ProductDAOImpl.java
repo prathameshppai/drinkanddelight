@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
@@ -28,7 +30,20 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
+import com.capgemini.dnd.util.HibernateUtil;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.dao.QueryMapper;
+
+import org.hibernate.query.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+//import org.hibernate.service.ServiceRegistryBuilder;
 
 public class ProductDAOImpl implements ProductDAO {
 
@@ -567,63 +582,80 @@ public class ProductDAOImpl implements ProductDAO {
 	 ********************************************************************************************************/
 
 	@Override
-	public boolean addProductOrder(ProductOrder newPO)
+	public boolean addProductOrder(ProductOrdersEntity newPO)
 			throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
-		Connection con;
-		try {
-			con = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null, preparedStatement1 = null;
+//		Connection con;
+//		try {
+//			con = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null, preparedStatement1 = null;
 		boolean added = false;
-		String pId = null;
-		try {
-			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
-			preparedStatement1.setString(1, newPO.getName().toUpperCase());
-			ResultSet rs = preparedStatement1.executeQuery();
-			while (rs.next()) {
-				pId = rs.getString(1);
-			}
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		}
+//		String pId = null;
+//		try {
+//			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
+//			preparedStatement1.setString(1, newPO.getName().toUpperCase());
+//			ResultSet rs = preparedStatement1.executeQuery();
+//			while (rs.next()) {
+//				pId = rs.getString(1);
+//			}
+//		} catch (SQLException sqlException) {
+//			logger.error(sqlException.getMessage());
+//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//		}
+//
+//		try {
+//			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
+//			preparedStatement.setString(1, newPO.getName().toUpperCase());
+//			preparedStatement.setString(2, pId.toUpperCase());
+//			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
+//			preparedStatement.setDouble(4, newPO.getQuantityValue());
+//			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
+//			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
+//			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
+//			preparedStatement.setDouble(8, newPO.getPricePerUnit());
+//			preparedStatement.setDouble(9, newPO.getTotalPrice());
+//			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
+//			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
+//
+//			int noOfRows = preparedStatement.executeUpdate();
+//
+//			con.close();
+//
+//			if (noOfRows == 1) {
+//				added = true;
+//			}
+//
+//			if (!added) {
+//				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
+//			}
+//			return added;
+//		} catch (ProductOrderNotAddedException | SQLException exception) {
+//			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
+//			throw exception;
+//		}
 
 		try {
-			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
-			preparedStatement.setString(1, newPO.getName().toUpperCase());
-			preparedStatement.setString(2, pId.toUpperCase());
-			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
-			preparedStatement.setDouble(4, newPO.getQuantityValue());
-			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
-			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
-			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
-			preparedStatement.setDouble(8, newPO.getPricePerUnit());
-			preparedStatement.setDouble(9, newPO.getTotalPrice());
-			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
-			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
-
-			int noOfRows = preparedStatement.executeUpdate();
-
-			con.close();
-
-			if (noOfRows == 1) {
-				added = true;
-			}
-
-			if (!added) {
-				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
-			}
-			return added;
-		} catch (ProductOrderNotAddedException | SQLException exception) {
-			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
-			throw exception;
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			System.out.println("633");
+			session.beginTransaction();
+			session.save(newPO);
+			session.getTransaction().commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			System.out.println("Exception 638");
 		}
-
+		//HibernateUtil.shutdown();
+		added = true;
+		
+		if (!added) {
+			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
+		}
+		return added;
 	}
 
 	public boolean doesProductOrderIdExist(String orderId)
@@ -858,53 +890,115 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-
-			statement = connection.prepareStatement(QueryMapper.TRACKPRODUCTORDER);
-			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-			resultSet = statement.executeQuery();
-
-			String warehouseId = null;
-			java.sql.Date exitDate = null;
-			java.sql.Date manDate = null;
-
-			while (resultSet.next()) {
-
-				exitDate = resultSet.getDate(1);
-
-				manDate = resultSet.getDate(2);
-
-				warehouseId = resultSet.getString(3);
-
-			}
-
-			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
-					+ manDate.toString() + " to " + exitDate.toString() + "("
-					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-
-			return message;
-
-		} catch (SQLException e) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
-		}
-
-		catch (Exception e) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		} finally {
-			try {
-				resultSet.close();
-				statement.close();
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-			}
-		}
+//		Connection connection = null;
+//		PreparedStatement statement = null;
+//		ResultSet resultSet = null;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//
+//			statement = connection.prepareStatement(QueryMapper.TRACKPRODUCTORDER);
+//			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//			resultSet = statement.executeQuery();
+//
+//			String warehouseId = null;
+//			java.sql.Date exitDate = null;
+//			java.sql.Date manDate = null;
+//
+//			while (resultSet.next()) {
+//
+//				exitDate = resultSet.getDate(1);
+//
+//				manDate = resultSet.getDate(2);
+//
+//				warehouseId = resultSet.getString(3);
+//
+//			}
+//
+//			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+//					+ manDate.toString() + " to " + exitDate.toString() + "("
+//					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+//
+//			return message;
+//
+//		} catch (SQLException e) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
+//		}
+//
+//		catch (Exception e) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//		} finally {
+//			try {
+//				resultSet.close();
+//				statement.close();
+//				connection.close();
+//			} catch (SQLException exception) {
+//				logger.error(exception.getMessage());
+//			}
+//		}
+		
+		
+		
+		
+//		Transaction transaction = null;
+//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+//            
+//            transaction = session.beginTransaction();
+//            
+//            String hql = "select exitDate, manufacturingDate, warehouseID from ProductStock where orderID = :orderId";
+//            Query q = session.createQuery(hql);
+//            q.setParameter(0, Integer.parseInt(productStock.getOrderId()));
+//            Object[] trackDetails = (Object[]) q.uniqueResult();
+//            
+//            
+//            System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);
+//            
+//            
+//            transaction.commit();
+//            
+//            
+//            return "Hello";
+//            
+//        } catch (Exception e) {
+//            if (transaction != null) {
+//                transaction.rollback();
+//            }
+//            e.printStackTrace();
+//            return "HelloException";
+//        }
+		
+		
+//		Configuration config = new Configuration().configure().addAnnotatedClass(ProductStockEntity.class);    
+//        ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+//        SessionFactory sf = config.buildSessionFactory(registry);   
+//        Session session = sf.openSession();
+		
+		Session session = HibernateUtil.getASession(); 
+        
+        session.beginTransaction();
+		
+        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
+	      Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      Object[] trackDetails = (Object[]) q.uniqueResult();
+	      
+	      session.getTransaction().commit();
+	      
+	      				Date exitDate = (Date) trackDetails[0];
+	      
+	      				Date manDate = (Date) trackDetails[1];
+	      
+	      				String warehouseId = (String) trackDetails[2];
+	      
+	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
+	      
+	      			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+	      					+ manDate.toString() + " to " + exitDate.toString() + "("
+	      					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+	      
+	      			return message;
+	    
 	}
 
 	/*******************************************************************************************************
@@ -1434,3 +1528,12 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 }
+
+
+//class App {
+//public static void main(String[] args) {
+//	ProductDAOImpl p = new ProductDAOImpl();
+//	String str = p.trackProductOrder(new ProductStock("5"));
+//	System.out.println(str);
+//}
+//}
