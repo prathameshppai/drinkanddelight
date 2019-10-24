@@ -10,6 +10,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -29,7 +33,9 @@ import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
+import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.util.DBUtil;
+import com.capgemini.dnd.util.HibernateUtil;
 
 public class RawMaterialDAOImpl implements RawMaterialDAO {
 
@@ -1197,94 +1203,77 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	}
 
 	@Override
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
+	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
 			throws Exception {
-		List<RawMaterialOrder> rmoList1 = new ArrayList<RawMaterialOrder>();
-		Connection con = DBUtil.getInstance().getConnection();
-		System.out.println("in dao");
+		String hql="";
+		Session session=null;
+		SessionFactory sessionFactory=null;
+		 List<RawMaterialOrderEntity > list = new ArrayList<RawMaterialOrderEntity>();
 		PreparedStatement pst = null;
 		int isFetched = 0;
-		try {
-			String DeliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
+		
+			String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
 			String generateQuery = "";
-			{
-				if (DeliveryStatus.equals("ALL"))
-					generateQuery = "select * from RawmaterialOrders where DeliveryStatus in "
-							+ "( select DeliveryStatus from RawmaterialOrders )";
+			
+				if (deliveryStatus.equals("ALL"))
+					hql = "from RawMaterialOrderEntity where deliveryStatus in (select deliveryStatus from RawMaterialOrderEntity)";
 				else
-					generateQuery = "select * from RawmaterialOrders where DeliveryStatus in ( '" + DeliveryStatus
-							+ "')";
+					hql = "from RawMaterialOrderEntity where deliveryStatus in ( '" + deliveryStatus + "')";
 
-			}
-
-			String supplierid = displayRawMaterialOrderObject.getSupplierid();
-			{
-				if (supplierid.equals("ALL"))
-					generateQuery += " AND supplierid in ( select supplierid  from RawmaterialOrders )";
+		
+             String supplierId = displayRawMaterialOrderObject.getSupplierid();
+			
+				if (supplierId.equals("ALL"))
+					hql += " AND supplierId in (select supplierId from RawMaterialOrderEntity)";
 				else
 
-					generateQuery += " AND supplierid in ( '" + supplierid + "' )";
-			}
+					hql += "  AND supplierId in ( '" + supplierId + "' )";
+			
 
 			String startDate = displayRawMaterialOrderObject.getStartdate();
 			String endDate = displayRawMaterialOrderObject.getEndDate();
-			System.out.println(startDate);
-			System.out.println(endDate);
 
 			if (startDate != null && endDate != null) {
-				generateQuery += " AND  dateofdelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
-			}
-
-			System.out.println(generateQuery);
-
-			pst = con.prepareStatement(generateQuery);
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String rawMaterialId = rs.getString(index++);
-				String supplierId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				rmoList1.add(new RawMaterialOrder(orderId, name, rawMaterialId, supplierId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-			}
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
+				
+					hql += " AND  dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
+				}
+            System.out.println(hql);
+            System.out.println("dao");
+            
 			try {
-				// resultSet.close();
-				pst.close();
-				con.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+				System.out.println("hello");
+			    sessionFactory = HibernateUtil.getSessionFactory();
+				// session =sessionFactory.openSession();
+			    session =sessionFactory.getCurrentSession();
+				session.beginTransaction();
+				 Query q = session.createQuery(hql);
+				list =  q.list();
+				System.out.println(list);
+				 if (list.isEmpty()) {
+						logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+						throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
 
+					} 
+				 else {
+						logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+
+					}
+			} catch (Exception e) {
+				
+				e.printStackTrace();
 			}
+	       
+			
+
+	       finally {
+		
+            session.close();
+			sessionFactory.close();
 		}
-		return rmoList1;
+		return list;
 
 	}
+
 
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
