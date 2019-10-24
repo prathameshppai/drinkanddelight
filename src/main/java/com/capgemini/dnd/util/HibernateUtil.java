@@ -37,15 +37,10 @@ public class HibernateUtil {
 //    	getSessionFactory().close();
 //    }
 	
-	public static Session getASession() {
-	
-	Configuration config = new Configuration().configure().addAnnotatedClass(ProductStockEntity.class);    
-    ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-    SessionFactory sf = config.buildSessionFactory(registry);   
-    return sf.openSession();
-    
+	public static Session getASession() {	
+		Configuration config = new Configuration().configure().addAnnotatedClass(ProductStockEntity.class).addAnnotatedClass(EmployeeCredentialEntity.class);    
+		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+		SessionFactory sf = config.buildSessionFactory(registry);   
+		return sf.openSession();
 	}
-	
-	
-	
 }

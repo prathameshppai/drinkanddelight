@@ -2,6 +2,9 @@ package com.capgemini.dnd.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -22,8 +25,10 @@ name = "EmployeeCredentials",
 )
 
 public class EmployeeCredentialEntity {
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "EmpId")
-	private int empId;
+	private String empId;
 
 	@Column(name = "Username")
 	private String userName;
@@ -46,17 +51,6 @@ public class EmployeeCredentialEntity {
 	public EmployeeCredentialEntity() {
 	}
 
-	public EmployeeCredentialEntity(int empId, String userName, String securityQuestion, String securityAnswer,
-			boolean activeStatus, String hash, String salt) {
-		this.empId = empId;
-		this.userName = userName;
-		this.securityQuestion = securityQuestion;
-		this.securityAnswer = securityAnswer;
-		this.activeStatus = activeStatus;
-		this.hash = hash;
-		this.salt = salt;
-	}
-
 	public EmployeeCredentialEntity(String userName, String securityQuestion, String securityAnswer,
 			boolean activeStatus, String hash, String salt) {
 		this.userName = userName;
@@ -67,11 +61,11 @@ public class EmployeeCredentialEntity {
 		this.salt = salt;
 	}
 
-	public int getEmpId() {
+	public String getEmpId() {
 		return empId;
 	}
 
-	public void setEmpId(int empId) {
+	public void setEmpId(String empId) {
 		this.empId = empId;
 	}
 

@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
@@ -31,6 +33,8 @@ import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.dao.QueryMapper;
 
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -40,7 +44,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 //import org.hibernate.service.ServiceRegistryBuilder;
-
 
 public class ProductDAOImpl implements ProductDAO {
 
@@ -579,63 +582,80 @@ public class ProductDAOImpl implements ProductDAO {
 	 ********************************************************************************************************/
 
 	@Override
-	public boolean addProductOrder(ProductOrder newPO)
+	public boolean addProductOrder(ProductOrdersEntity newPO)
 			throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
-		Connection con;
-		try {
-			con = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null, preparedStatement1 = null;
+//		Connection con;
+//		try {
+//			con = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null, preparedStatement1 = null;
 		boolean added = false;
-		String pId = null;
-		try {
-			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
-			preparedStatement1.setString(1, newPO.getName().toUpperCase());
-			ResultSet rs = preparedStatement1.executeQuery();
-			while (rs.next()) {
-				pId = rs.getString(1);
-			}
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		}
+//		String pId = null;
+//		try {
+//			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
+//			preparedStatement1.setString(1, newPO.getName().toUpperCase());
+//			ResultSet rs = preparedStatement1.executeQuery();
+//			while (rs.next()) {
+//				pId = rs.getString(1);
+//			}
+//		} catch (SQLException sqlException) {
+//			logger.error(sqlException.getMessage());
+//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//		}
+//
+//		try {
+//			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
+//			preparedStatement.setString(1, newPO.getName().toUpperCase());
+//			preparedStatement.setString(2, pId.toUpperCase());
+//			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
+//			preparedStatement.setDouble(4, newPO.getQuantityValue());
+//			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
+//			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
+//			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
+//			preparedStatement.setDouble(8, newPO.getPricePerUnit());
+//			preparedStatement.setDouble(9, newPO.getTotalPrice());
+//			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
+//			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
+//
+//			int noOfRows = preparedStatement.executeUpdate();
+//
+//			con.close();
+//
+//			if (noOfRows == 1) {
+//				added = true;
+//			}
+//
+//			if (!added) {
+//				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
+//			}
+//			return added;
+//		} catch (ProductOrderNotAddedException | SQLException exception) {
+//			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
+//			throw exception;
+//		}
 
 		try {
-			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
-			preparedStatement.setString(1, newPO.getName().toUpperCase());
-			preparedStatement.setString(2, pId.toUpperCase());
-			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
-			preparedStatement.setDouble(4, newPO.getQuantityValue());
-			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
-			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
-			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
-			preparedStatement.setDouble(8, newPO.getPricePerUnit());
-			preparedStatement.setDouble(9, newPO.getTotalPrice());
-			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
-			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
-
-			int noOfRows = preparedStatement.executeUpdate();
-
-			con.close();
-
-			if (noOfRows == 1) {
-				added = true;
-			}
-
-			if (!added) {
-				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
-			}
-			return added;
-		} catch (ProductOrderNotAddedException | SQLException exception) {
-			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
-			throw exception;
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			System.out.println("633");
+			session.beginTransaction();
+			session.save(newPO);
+			session.getTransaction().commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			System.out.println("Exception 638");
 		}
-
+		//HibernateUtil.shutdown();
+		added = true;
+		
+		if (!added) {
+			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
+		}
+		return added;
 	}
 
 	public boolean doesProductOrderIdExist(String orderId)

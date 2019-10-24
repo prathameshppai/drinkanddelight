@@ -69,19 +69,19 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		Date today = new Date();
 		productOrder.setDateOfOrder(today);
 		productOrder.setDeliveryStatus("Pending");
-		Session session = HibernateUtil.getSessionFactory().openSession();//
-		session.beginTransaction();
-		session.save(productOrder);
-		session.getTransaction().commit();
-		HibernateUtil.shutdown();
+//		Session session = HibernateUtil.getSessionFactory().openSession();//
+//		session.beginTransaction();
+//		session.save(productOrder);
+//		session.getTransaction().commit();
+//		HibernateUtil.shutdown();
 
-//		try {
-//				String jsonMessage = productService.placeProductOrder(productOrder);
-//				response.getWriter().write(jsonMessage);
-//			
-//		} catch (ProductOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
-//			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
-//			response.getWriter().write(errorJsonMessage);
-//		}
+		try {
+				String jsonMessage = productService.placeProductOrder(productOrder);
+				response.getWriter().write(jsonMessage);
+			
+		} catch (ProductOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
+			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
+			response.getWriter().write(errorJsonMessage);
+		}
 	}
 }
