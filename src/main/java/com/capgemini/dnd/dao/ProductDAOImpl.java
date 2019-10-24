@@ -1139,6 +1139,10 @@ public class ProductDAOImpl implements ProductDAO {
         Query q = session.createQuery(hql);
 	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 	      q.setParameter("exitDateVariable", productStock.getExitDate());
+	      
+	      session.getTransaction().commit();
+	      
+	      return Constants.DATA_INSERTED_MESSAGE;
 
 	}
 
