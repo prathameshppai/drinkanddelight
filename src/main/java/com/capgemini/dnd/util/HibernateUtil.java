@@ -9,6 +9,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.capgemini.dnd.entity.EmployeeCredentialEntity;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 
 public class HibernateUtil {
@@ -38,7 +40,11 @@ public class HibernateUtil {
 //    }
 	
 	public static Session getASession() {	
-		Configuration config = new Configuration().configure().addAnnotatedClass(ProductStockEntity.class).addAnnotatedClass(EmployeeCredentialEntity.class);    
+		Configuration config = new Configuration().configure()
+				.addPackage("com.capgemini.dnd.entity")
+				.addAnnotatedClass(ProductStockEntity.class)
+				.addAnnotatedClass(EmployeeCredentialEntity.class)
+				.addAnnotatedClass(ProductOrdersEntity.class);
 		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
 		SessionFactory sf = config.buildSessionFactory(registry);   
 		return sf.openSession();
