@@ -1140,7 +1140,7 @@ public class ProductDAOImpl implements ProductDAO {
         Query q = session.createQuery(hql);
 	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 	      q.setParameter("exitDateVariable", productStock.getExitDate());
-	      
+	      int result = q.executeUpdate();
 	      session.getTransaction().commit();
 	      
 	      return Constants.DATA_INSERTED_MESSAGE;
@@ -1157,91 +1157,124 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public String updateProductStock(ProductStock productStock) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		PreparedStatement statement2 = null;
-		PreparedStatement statement1 = null;
-		try {
+//		Connection connection = null;
+//		PreparedStatement statement = null;
+//		ResultSet resultSet = null;
+//		PreparedStatement statement2 = null;
+//		PreparedStatement statement1 = null;
+//		try {
+//			
+//			connection = DBUtil.getInstance().getConnection();
+//			
+//			boolean orderIdcheckInStock = false;
+//			orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
+//			if (orderIdcheckInStock == false) {
+//				
+//				statement = connection.prepareStatement(QueryMapper.RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK);
+//				statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//				resultSet = statement.executeQuery();
+//				String name = null;
+//				double priceperunit = 0;
+//				double quantityValue = 0;
+//				String quantityUnit = null;
+//				double totalprice = 0;
+//				String warehouseId = null;
+//				Date dateofdelivery = null;
+//
+//				while (resultSet.next()) {
+//					
+//					name = resultSet.getString(1);
+//					priceperunit = resultSet.getDouble(2);
+//					quantityValue = resultSet.getDouble(3);
+//					quantityUnit = resultSet.getString(4);
+//					totalprice = resultSet.getDouble(5);
+//					warehouseId = resultSet.getString(6);
+//					dateofdelivery = resultSet.getDate(7);
+//				}
+//				
+//				statement2 = connection.prepareStatement(QueryMapper.INSERTPRODUCTSTOCK);
+//				statement2.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//				statement2.setString(2, name);
+//				statement2.setDouble(3, priceperunit);
+//				statement2.setDouble(4, quantityValue);
+//				statement2.setString(5, quantityUnit);
+//				statement2.setDouble(6, totalprice);
+//				statement2.setString(7, warehouseId);
+//				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
+//
+//				statement2.executeUpdate();
+//				
+//				resultSet.close();
+//				statement.close();
+//				statement2.close();
+//			}
+//			
+//			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
+//			statement1.setDate(1, DBUtil.stringtoDate(productStock.getManufacturingDate()));
+//			statement1.setDate(2, DBUtil.stringtoDate(productStock.getExpiryDate()));
+//			statement1.setString(3, productStock.getQualityCheck());
+//			statement1.setInt(4, Integer.parseInt(productStock.getOrderId()));
+//			statement1.executeUpdate();
+//
+//			return Constants.DATA_INSERTED_MESSAGE;
+//
+//		}
+//
+//		catch (SQLException exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//
+//		}
+//
+//		catch (Exception exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//		}
+//
+//		finally {
+//			try {
+//
+//				//statement1.close();
+//
+//				connection.close();
+//			} catch (SQLException exception) {
+//				logger.error(exception.getMessage());
+//			}
+//		}
+		
+		
+		Session session = HibernateUtil.getASession(); 
+        session.beginTransaction();
+        try {
+        boolean orderIdcheckInStock = false;
+		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
+		if (orderIdcheckInStock == false) {
+			String hql = "insert into ProductStockEntity(name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  "select name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			Query q = session.createQuery(hql);
+		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 			
-			connection = DBUtil.getInstance().getConnection();
-			
-			boolean orderIdcheckInStock = false;
-			orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
-			if (orderIdcheckInStock == false) {
-				
-				statement = connection.prepareStatement(QueryMapper.RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK);
-				statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-				resultSet = statement.executeQuery();
-				String name = null;
-				double priceperunit = 0;
-				double quantityValue = 0;
-				String quantityUnit = null;
-				double totalprice = 0;
-				String warehouseId = null;
-				Date dateofdelivery = null;
-
-				while (resultSet.next()) {
-					
-					name = resultSet.getString(1);
-					priceperunit = resultSet.getDouble(2);
-					quantityValue = resultSet.getDouble(3);
-					quantityUnit = resultSet.getString(4);
-					totalprice = resultSet.getDouble(5);
-					warehouseId = resultSet.getString(6);
-					dateofdelivery = resultSet.getDate(7);
+			int result = q.executeUpdate();
+			System.out.println(result);
+		}
+		
+		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
+		Query q1 = session.createQuery(hql);
+	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      q1.setParameter("manDate", productStock.getManufacturingDate());
+	      q1.setParameter("expDate", productStock.getExpiryDate());
+	      q1.setParameter("qaCheck", productStock.getQualityCheck());
+	      
+	      int result = q1.executeUpdate();
+			System.out.println(result);
+        
+			session.getTransaction().commit();
+		      
+		      return Constants.DATA_INSERTED_MESSAGE;
+        }   
+		      catch (Exception exception) {
+					logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+					return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
 				}
-				
-				statement2 = connection.prepareStatement(QueryMapper.INSERTPRODUCTSTOCK);
-				statement2.setInt(1, Integer.parseInt(productStock.getOrderId()));
-				statement2.setString(2, name);
-				statement2.setDouble(3, priceperunit);
-				statement2.setDouble(4, quantityValue);
-				statement2.setString(5, quantityUnit);
-				statement2.setDouble(6, totalprice);
-				statement2.setString(7, warehouseId);
-				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
-
-				statement2.executeUpdate();
-				
-				resultSet.close();
-				statement.close();
-				statement2.close();
-			}
-			
-			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
-			statement1.setDate(1, DBUtil.stringtoDate(productStock.getManufacturingDate()));
-			statement1.setDate(2, DBUtil.stringtoDate(productStock.getExpiryDate()));
-			statement1.setString(3, productStock.getQualityCheck());
-			statement1.setInt(4, Integer.parseInt(productStock.getOrderId()));
-			statement1.executeUpdate();
-
-			return Constants.DATA_INSERTED_MESSAGE;
-
-		}
-
-		catch (SQLException exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-
-		}
-
-		catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		}
-
-		finally {
-			try {
-
-				//statement1.close();
-
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-			}
-		}
-
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
