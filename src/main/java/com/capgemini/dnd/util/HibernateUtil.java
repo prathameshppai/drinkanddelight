@@ -12,6 +12,8 @@ import org.hibernate.service.ServiceRegistry;
 import com.capgemini.dnd.entity.EmployeeCredentialEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
+import com.capgemini.dnd.entity.RawMaterialOrderEntity;
+import com.capgemini.dnd.entity.RawMaterialStockEntity;
 
 public class HibernateUtil {
 //	private static final SessionFactory sessionFactory = buildSessionFactory();
@@ -44,7 +46,9 @@ public class HibernateUtil {
 				.addPackage("com.capgemini.dnd.entity")
 				.addAnnotatedClass(ProductStockEntity.class)
 				.addAnnotatedClass(EmployeeCredentialEntity.class)
-				.addAnnotatedClass(ProductOrdersEntity.class);
+				.addAnnotatedClass(ProductOrdersEntity.class)
+				.addAnnotatedClass(RawMaterialStockEntity.class)
+				.addAnnotatedClass(RawMaterialOrderEntity.class);
 		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
 		SessionFactory sf = config.buildSessionFactory(registry);   
 		return sf.openSession();

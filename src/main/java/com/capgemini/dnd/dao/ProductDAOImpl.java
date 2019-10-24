@@ -977,22 +977,29 @@ public class ProductDAOImpl implements ProductDAO {
         
         session.beginTransaction();
 		
-        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
-	      Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      Object[] trackDetails = (Object[]) q.uniqueResult();
+//        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
+//	      Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      Object[] trackDetails = (Object[]) q.uniqueResult();
+        
+        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
 	      
 	      session.getTransaction().commit();
 	      
-	      				Date exitDate = (Date) trackDetails[0];
+	      				Date exitDate = productStockEntity.getExitDate();
 	      
-	      				Date manDate = (Date) trackDetails[1];
+	      				Date manDate = productStockEntity.getManufacturingDate();
 	      
-	      				String warehouseId = (String) trackDetails[2];
+	      				String warehouseId = productStockEntity.getWarehouseId();
 	      
-	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
+//	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
 	      
-	      			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+	      			
+	      				if(exitDate == null || manDate == null) {
+	      					return "Data Incomplete...Please check database and update required information";
+	      				}
+	      				
+	      				String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
 	      					+ manDate.toString() + " to " + exitDate.toString() + "("
 	      					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
 	      
@@ -1065,16 +1072,17 @@ public class ProductDAOImpl implements ProductDAO {
 		boolean datecheck = false;
 		Session session = HibernateUtil.getASession(); 
         session.beginTransaction();
-        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
-        Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      Object[] dateDetails = (Object[]) q.uniqueResult();
+//        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
+//        Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      Object[] dateDetails = (Object[]) q.uniqueResult();
 	      
+        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
 	      session.getTransaction().commit();
 	      
-	      Date manufacturingDate = (Date) dateDetails[0];
+	      Date manufacturingDate = productStockEntity.getManufacturingDate();
 	      
-			Date expiryDate = (Date) dateDetails[1];
+			Date expiryDate = productStockEntity.getExpiryDate();
 			
 			if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
 				datecheck = true;
