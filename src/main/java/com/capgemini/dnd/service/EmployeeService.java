@@ -1,7 +1,5 @@
 package com.capgemini.dnd.service;
 
-import java.util.Scanner;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
 import com.capgemini.dnd.customexceptions.PasswordException;
@@ -18,12 +16,12 @@ public interface EmployeeService {
 	
 	public boolean login(Employee employee) throws UnregisteredEmployeeException, WrongPasswordException, BackEndException;
 	
-	public boolean changePassword(Employee employee, Scanner scanner) throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException;
-
-	int doesEmployeeExist(Employee employee) throws BackEndException, RowNotFoundException;
+	boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException;
 
 	Employee fetchOneConfidentialDetail(Employee employee) throws BackEndException;
 
-	public boolean changePassword(Employee idealEmployee, Employee actualEmployee) throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException, InvalidPasswordException, RowNotFoundException;
+	boolean changePassword(Employee idealEmployee, Employee actualEmployee)
+			throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException,
+			InvalidPasswordException, RowNotFoundException;
 
 }

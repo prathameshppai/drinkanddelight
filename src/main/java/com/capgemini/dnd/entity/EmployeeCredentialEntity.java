@@ -8,12 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.NamedQuery;
+
 /*
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 */
 
 @Entity
+@NamedQuery(name="GetOneConfidentialDetail", query="FROM EmployeeCredentialEntity WHERE Username=:username") 
 @Table (
 name = "EmployeeCredentials", 
 	uniqueConstraints = { 
@@ -25,6 +28,9 @@ name = "EmployeeCredentials",
 )
 
 public class EmployeeCredentialEntity {
+	
+	
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "EmpId")
@@ -115,5 +121,12 @@ public class EmployeeCredentialEntity {
 
 	public void setSalt(String salt) {
 		this.salt = salt;
+	}
+
+	@Override
+	public String toString() {
+		return "EmployeeCredentialEntity [empId=" + empId + ", userName=" + userName + ", securityQuestion="
+				+ securityQuestion + ", securityAnswer=" + securityAnswer + ", activeStatus=" + activeStatus + ", hash="
+				+ hash + ", salt=" + salt + "]";
 	}
 }

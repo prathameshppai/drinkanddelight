@@ -26,9 +26,8 @@ public class ProductOrdersEntity {
 	
     @Column(name = "name")
 	private String name;
-    
-    @Column(name = "productid")
-	private String pid;
+  
+    //Product ID removed
     
     @Column(name = "distributorid")
 	private String distributorId;
@@ -62,23 +61,21 @@ public class ProductOrdersEntity {
 		super();
 //		this.orderId = "PID" + orderIdCount++;
 		this.name = name;
-//		this.pid = pid;
 		this.distributorId = distributorId;
 		this.quantityValue = quantityValue;
 		this.quantityUnit = quantityUnit;
-//		this.dateOfOrder = dateOfOrder;
+		this.dateOfOrder = new Date();
 		this.dateofDelivery = dateofDelivery;
 		this.deliveryStatus = "pending";
 		this.pricePerUnit = pricePerUnit;
 		this.warehouseId = warehouseId;
 	}
 
-	public ProductOrdersEntity(String name, String pid, String distributorId, double quantityValue,
+	public ProductOrdersEntity(String name, String distributorId, double quantityValue,
 			String quantityUnit, Date dateOfOrder, Date dateofDelivery, double pricePerUnit, double totalPrice,
 			String deliveryStatus, String warehouseId) {
 		super();
 		this.name = name;
-		this.pid = pid;
 		this.distributorId = distributorId;
 		this.quantityValue = quantityValue;
 		this.quantityUnit = quantityUnit;
@@ -102,13 +99,6 @@ public class ProductOrdersEntity {
 //		ProductOrdersEntity.orderIdCount = orderIdCount;
 //	}
 
-	public String getPid() {
-		return this.pid;
-	}
-
-	public void setPid(String pid) {
-		this.pid = pid;
-	}
 
 	public String getDistributorId() {
 		return this.distributorId;
@@ -192,7 +182,7 @@ public class ProductOrdersEntity {
 
 	@Override
 	public String toString() {
-		return "ProductOrderEntity [orderId=" + this.orderId + ", name=" + this.name + ", pid=" + this.pid + ", distributorId="
+		return "ProductOrderEntity [orderId=" + this.orderId + ", name=" + this.name + ", distributorId="
 				+ this.distributorId + ", quantityValue=" + this.quantityValue + ", quantityUnit=" + this.quantityUnit
 				+ ", dateOfOrder=" + this.dateOfOrder + ", dateofDelivery=" + this.dateofDelivery + ", pricePerUnit="
 				+ this.pricePerUnit + ", totalPrice=" + this.totalPrice + ", deliveryStatus=" + this.deliveryStatus + ", warehouseId="

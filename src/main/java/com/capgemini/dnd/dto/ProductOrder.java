@@ -7,7 +7,6 @@ public class ProductOrder {
 	private String orderId;
 	private static int orderIdCount = 1;
 	private String name;
-	private String pid;
 	private String distributorId;
 	private double quantityValue; 
 	private String quantityUnit;
@@ -23,11 +22,10 @@ public class ProductOrder {
 		super();
 		this.orderId = "PID" + orderIdCount++;
 		this.name = name;
-//		this.pid = pid;
 		this.distributorId = distributorId;
 		this.quantityValue = quantityValue;
 		this.quantityUnit = quantityUnit;
-//		this.dateOfOrder = dateOfOrder;
+		this.dateOfOrder = new Date();
 		this.dateofDelivery = dateofDelivery;
 		this.deliveryStatus = "pending";
 		this.pricePerUnit = pricePerUnit;
@@ -40,7 +38,6 @@ public class ProductOrder {
 		super();
 		this.orderId = orderId;
 		this.name = name;
-		this.pid = pid;
 		this.distributorId = distributorId;
 		this.quantityValue = quantityValue;
 		this.quantityUnit = quantityUnit;
@@ -62,14 +59,6 @@ public class ProductOrder {
 
 	public static void setOrderIdCount(int orderIdCount) {
 		ProductOrder.orderIdCount = orderIdCount;
-	}
-
-	public String getPid() {
-		return this.pid;
-	}
-
-	public void setPid(String pid) {
-		this.pid = pid;
 	}
 
 	public String getDistributorId() {
@@ -154,7 +143,7 @@ public class ProductOrder {
 
 	@Override
 	public String toString() {
-		return "ProductOrder [orderId=" + this.orderId + ", name=" + this.name + ", pid=" + this.pid + ", distributorId="
+		return "ProductOrder [orderId=" + this.orderId + ", name=" + this.name + ", distributorId="
 				+ this.distributorId + ", quantityValue=" + this.quantityValue + ", quantityUnit=" + this.quantityUnit
 				+ ", dateOfOrder=" + this.dateOfOrder + ", dateofDelivery=" + this.dateofDelivery + ", pricePerUnit="
 				+ this.pricePerUnit + ", totalPrice=" + this.totalPrice + ", deliveryStatus=" + this.deliveryStatus + ", warehouseId="

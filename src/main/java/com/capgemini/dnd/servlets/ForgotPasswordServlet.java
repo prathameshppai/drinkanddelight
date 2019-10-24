@@ -65,7 +65,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 		employee.setUsername(fieldValueMap.get("username"));
 
 		try {
-			if (employeeService.doesEmployeeExist(employee) == 1) {
+			if (employeeService.employeeExists(employee)) {
 				String jsonMessage = JsonUtil.convertJavaToJson(ServletConstants.USERNAME_EXISTS_MESSAGE);
 				response.getWriter().write(jsonMessage);
 			}

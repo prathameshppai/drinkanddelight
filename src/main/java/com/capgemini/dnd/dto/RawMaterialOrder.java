@@ -6,7 +6,6 @@ public class RawMaterialOrder {
 	private String orderId;
 	private static int orderIdCount = 1;
 	private String name;
-	private String rmId;
 	private String supplierId;
 	private double quantityValue;
 	private String quantityUnit;
@@ -14,7 +13,7 @@ public class RawMaterialOrder {
 	private Date dateOfDelivery;
 	private double pricePerUnit;
 	private double totalPrice;
-	private String deliveryStatus; // enum later
+	private String deliveryStatus;
 	private String warehouseId;
 
 	public RawMaterialOrder(String name, String supplierId, double quantityValue, String quantityUnit,
@@ -34,7 +33,7 @@ public class RawMaterialOrder {
 
 	@Override
 	public String toString() {
-		return "RawMaterialOrder [orderId=" + orderId + ", name=" + name + ", rmId=" + rmId + ", supplierId="
+		return "RawMaterialOrder [orderId=" + orderId + ", name=" + name + ", supplierId="
 				+ supplierId + ", quantityValue=" + quantityValue + ", quantityUnit=" + quantityUnit + ", dateOfOrder="
 				+ dateOfOrder + ", dateOfDelivery=" + dateOfDelivery + ", pricePerUnit=" + pricePerUnit
 				+ ", totalPrice=" + totalPrice + ", deliveryStatus=" + deliveryStatus + ", warehouseId=" + warehouseId
@@ -47,7 +46,6 @@ public class RawMaterialOrder {
 		super();
 		this.orderId = orderId;
 		this.name = name;
-		this.rmId = rmId;
 		this.supplierId = supplierId;
 		this.quantityValue = quantityValue;
 		this.quantityUnit = quantityUnit;
@@ -93,15 +91,7 @@ public class RawMaterialOrder {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getRmId() {
-		return rmId;
-	}
-
-	public void setRmId(String rmId) {
-		this.rmId = rmId;
-	}
-
+	
 	public String getSupplierId() {
 		return supplierId;
 	}
