@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
@@ -31,6 +33,8 @@ import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.dao.QueryMapper;
 
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -40,7 +44,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 //import org.hibernate.service.ServiceRegistryBuilder;
-
 
 public class ProductDAOImpl implements ProductDAO {
 
@@ -582,60 +585,78 @@ public class ProductDAOImpl implements ProductDAO {
 	public boolean addProductOrder(ProductOrder newPO)
 			throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
-		Connection con;
-		try {
-			con = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null, preparedStatement1 = null;
+//		Connection con;
+//		try {
+//			con = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null, preparedStatement1 = null;
 		boolean added = false;
-		String pId = null;
+//		String pId = null;
+//		try {
+//			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
+//			preparedStatement1.setString(1, newPO.getName().toUpperCase());
+//			ResultSet rs = preparedStatement1.executeQuery();
+//			while (rs.next()) {
+//				pId = rs.getString(1);
+//			}
+//		} catch (SQLException sqlException) {
+//			logger.error(sqlException.getMessage());
+//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//		}
+//
+//		try {
+//			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
+//			preparedStatement.setString(1, newPO.getName().toUpperCase());
+//			preparedStatement.setString(2, pId.toUpperCase());
+//			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
+//			preparedStatement.setDouble(4, newPO.getQuantityValue());
+//			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
+//			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
+//			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
+//			preparedStatement.setDouble(8, newPO.getPricePerUnit());
+//			preparedStatement.setDouble(9, newPO.getTotalPrice());
+//			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
+//			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
+//
+//			int noOfRows = preparedStatement.executeUpdate();
+//
+//			con.close();
+//
+//			if (noOfRows == 1) {
+//				added = true;
+//			}
+//
+//			if (!added) {
+//				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
+//			}
+//			return added;
+//		} catch (ProductOrderNotAddedException | SQLException exception) {
+//			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
+//			throw exception;
+//		}
+
+		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(), newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(), newPO.getWarehouseId());
+		
 		try {
-			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
-			preparedStatement1.setString(1, newPO.getName().toUpperCase());
-			ResultSet rs = preparedStatement1.executeQuery();
-			while (rs.next()) {
-				pId = rs.getString(1);
-			}
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+			Session session = HibernateUtil.getASession();
+			session.beginTransaction();
+			session.save(productOrdersEntity);
+			session.getTransaction().commit();
+			added = true;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			System.out.println("Exception 638");
 		}
-
-		try {
-			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
-			preparedStatement.setString(1, newPO.getName().toUpperCase());
-			preparedStatement.setString(2, pId.toUpperCase());
-			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
-			preparedStatement.setDouble(4, newPO.getQuantityValue());
-			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
-			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
-			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
-			preparedStatement.setDouble(8, newPO.getPricePerUnit());
-			preparedStatement.setDouble(9, newPO.getTotalPrice());
-			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
-			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
-
-			int noOfRows = preparedStatement.executeUpdate();
-
-			con.close();
-
-			if (noOfRows == 1) {
-				added = true;
-			}
-
-			if (!added) {
-				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
-			}
-			return added;
-		} catch (ProductOrderNotAddedException | SQLException exception) {
-			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
-			throw exception;
+		//HibernateUtil.shutdown();
+		
+		if (!added) {
+			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
 		}
-
+		return added;
 	}
 
 	public boolean doesProductOrderIdExist(String orderId)
@@ -992,56 +1013,85 @@ public class ProductDAOImpl implements ProductDAO {
 	@Override
 	public boolean exitDateCheck(ProductStock productStock)
 			throws ExitDateException, SQLException, ConnectionException {
-		Connection connection = null;
+//		Connection connection = null;
+//		boolean datecheck = false;
+//		PreparedStatement statement = null;
+//		ResultSet resultSet = null;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//			statement = connection.prepareStatement(QueryMapper.CHECKEXITDATE);
+//			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//			resultSet = statement.executeQuery();
+//
+//			java.sql.Date manufacturingDate = null;
+//			java.sql.Date expiryDate = null;
+//
+//			while (resultSet.next()) {
+//
+//				manufacturingDate = resultSet.getDate(1);
+//
+//				expiryDate = resultSet.getDate(2);
+//
+//				if (productStock.getExitDate().after(manufacturingDate)
+//						&& productStock.getExitDate().before(expiryDate)) {
+//					datecheck = true;
+//					return datecheck;
+//				}
+//			}
+//			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
+//
+//		} catch (SQLException exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			throw new SQLException(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//
+//		}
+//
+//		catch (ExitDateException exception) {
+//			logger.error(exception.getMessage());
+//			throw exception;
+//
+//		}
+//
+//		catch (Exception exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			throw new ConnectionException(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//
+//		}
+//
+//		finally {
+//			resultSet.close();
+//			statement.close();
+//			connection.close();
+//		}
+	try {
 		boolean datecheck = false;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-			statement = connection.prepareStatement(QueryMapper.CHECKEXITDATE);
-			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-			resultSet = statement.executeQuery();
-
-			java.sql.Date manufacturingDate = null;
-			java.sql.Date expiryDate = null;
-
-			while (resultSet.next()) {
-
-				manufacturingDate = resultSet.getDate(1);
-
-				expiryDate = resultSet.getDate(2);
-
-				if (productStock.getExitDate().after(manufacturingDate)
-						&& productStock.getExitDate().before(expiryDate)) {
-					datecheck = true;
-					return datecheck;
-				}
+		Session session = HibernateUtil.getASession(); 
+        session.beginTransaction();
+        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
+        Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      Object[] dateDetails = (Object[]) q.uniqueResult();
+	      
+	      session.getTransaction().commit();
+	      
+	      Date manufacturingDate = (Date) dateDetails[0];
+	      
+			Date expiryDate = (Date) dateDetails[1];
+			
+			if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
+				datecheck = true;
+				return datecheck;
 			}
+			
 			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
-
-		} catch (SQLException exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			throw new SQLException(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-
-		}
-
+		}	
+			
 		catch (ExitDateException exception) {
-			logger.error(exception.getMessage());
-			throw exception;
-
-		}
-
-		catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			throw new ConnectionException(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-
-		}
-
-		finally {
-			resultSet.close();
-			statement.close();
-			connection.close();
-		}
+				logger.error(exception.getMessage());
+				throw exception;
+	
+			}
+		
 
 	}
 
@@ -1054,34 +1104,46 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public String updateExitDateinStock(ProductStock productStock) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-
-			statement = connection.prepareStatement(QueryMapper.UPDATEEXITDATE);
-			statement.setDate(1, DBUtil.stringtoDate(productStock.getExitDate()));
-			statement.setInt(2, Integer.parseInt(productStock.getOrderId()));
-			statement.executeUpdate();
-			return Constants.DATA_INSERTED_MESSAGE;
-		}
-
-		catch (SQLException exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
-
-		} catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		} finally {
-			try {
-				statement.close();
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-			}
-
-		}
+//		Connection connection = null;
+//		PreparedStatement statement = null;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//
+//			statement = connection.prepareStatement(QueryMapper.UPDATEEXITDATE);
+//			statement.setDate(1, DBUtil.stringtoDate(productStock.getExitDate()));
+//			statement.setInt(2, Integer.parseInt(productStock.getOrderId()));
+//			statement.executeUpdate();
+//			return Constants.DATA_INSERTED_MESSAGE;
+//		}
+//
+//		catch (SQLException exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
+//
+//		} catch (Exception exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//		} finally {
+//			try {
+//				statement.close();
+//				connection.close();
+//			} catch (SQLException exception) {
+//				logger.error(exception.getMessage());
+//			}
+//
+//		}
+		
+		
+		Session session = HibernateUtil.getASession(); 
+        session.beginTransaction();
+        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
+        Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      q.setParameter("exitDateVariable", productStock.getExitDate());
+	      int result = q.executeUpdate();
+	      session.getTransaction().commit();
+	      
+	      return Constants.DATA_INSERTED_MESSAGE;
 
 	}
 
@@ -1095,91 +1157,124 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public String updateProductStock(ProductStock productStock) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		PreparedStatement statement2 = null;
-		PreparedStatement statement1 = null;
-		try {
+//		Connection connection = null;
+//		PreparedStatement statement = null;
+//		ResultSet resultSet = null;
+//		PreparedStatement statement2 = null;
+//		PreparedStatement statement1 = null;
+//		try {
+//			
+//			connection = DBUtil.getInstance().getConnection();
+//			
+//			boolean orderIdcheckInStock = false;
+//			orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
+//			if (orderIdcheckInStock == false) {
+//				
+//				statement = connection.prepareStatement(QueryMapper.RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK);
+//				statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//				resultSet = statement.executeQuery();
+//				String name = null;
+//				double priceperunit = 0;
+//				double quantityValue = 0;
+//				String quantityUnit = null;
+//				double totalprice = 0;
+//				String warehouseId = null;
+//				Date dateofdelivery = null;
+//
+//				while (resultSet.next()) {
+//					
+//					name = resultSet.getString(1);
+//					priceperunit = resultSet.getDouble(2);
+//					quantityValue = resultSet.getDouble(3);
+//					quantityUnit = resultSet.getString(4);
+//					totalprice = resultSet.getDouble(5);
+//					warehouseId = resultSet.getString(6);
+//					dateofdelivery = resultSet.getDate(7);
+//				}
+//				
+//				statement2 = connection.prepareStatement(QueryMapper.INSERTPRODUCTSTOCK);
+//				statement2.setInt(1, Integer.parseInt(productStock.getOrderId()));
+//				statement2.setString(2, name);
+//				statement2.setDouble(3, priceperunit);
+//				statement2.setDouble(4, quantityValue);
+//				statement2.setString(5, quantityUnit);
+//				statement2.setDouble(6, totalprice);
+//				statement2.setString(7, warehouseId);
+//				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
+//
+//				statement2.executeUpdate();
+//				
+//				resultSet.close();
+//				statement.close();
+//				statement2.close();
+//			}
+//			
+//			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
+//			statement1.setDate(1, DBUtil.stringtoDate(productStock.getManufacturingDate()));
+//			statement1.setDate(2, DBUtil.stringtoDate(productStock.getExpiryDate()));
+//			statement1.setString(3, productStock.getQualityCheck());
+//			statement1.setInt(4, Integer.parseInt(productStock.getOrderId()));
+//			statement1.executeUpdate();
+//
+//			return Constants.DATA_INSERTED_MESSAGE;
+//
+//		}
+//
+//		catch (SQLException exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//
+//		}
+//
+//		catch (Exception exception) {
+//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
+//		}
+//
+//		finally {
+//			try {
+//
+//				//statement1.close();
+//
+//				connection.close();
+//			} catch (SQLException exception) {
+//				logger.error(exception.getMessage());
+//			}
+//		}
+		
+		
+		Session session = HibernateUtil.getASession(); 
+        session.beginTransaction();
+        try {
+        boolean orderIdcheckInStock = false;
+		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
+		if (orderIdcheckInStock == false) {
+			String hql = "insert into ProductStockEntity(name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  "select name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			Query q = session.createQuery(hql);
+		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 			
-			connection = DBUtil.getInstance().getConnection();
-			
-			boolean orderIdcheckInStock = false;
-			orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
-			if (orderIdcheckInStock == false) {
-				
-				statement = connection.prepareStatement(QueryMapper.RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK);
-				statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-				resultSet = statement.executeQuery();
-				String name = null;
-				double priceperunit = 0;
-				double quantityValue = 0;
-				String quantityUnit = null;
-				double totalprice = 0;
-				String warehouseId = null;
-				Date dateofdelivery = null;
-
-				while (resultSet.next()) {
-					
-					name = resultSet.getString(1);
-					priceperunit = resultSet.getDouble(2);
-					quantityValue = resultSet.getDouble(3);
-					quantityUnit = resultSet.getString(4);
-					totalprice = resultSet.getDouble(5);
-					warehouseId = resultSet.getString(6);
-					dateofdelivery = resultSet.getDate(7);
+			int result = q.executeUpdate();
+			System.out.println(result);
+		}
+		
+		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
+		Query q1 = session.createQuery(hql);
+	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      q1.setParameter("manDate", productStock.getManufacturingDate());
+	      q1.setParameter("expDate", productStock.getExpiryDate());
+	      q1.setParameter("qaCheck", productStock.getQualityCheck());
+	      
+	      int result = q1.executeUpdate();
+			System.out.println(result);
+        
+			session.getTransaction().commit();
+		      
+		      return Constants.DATA_INSERTED_MESSAGE;
+        }   
+		      catch (Exception exception) {
+					logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
+					return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
 				}
-				
-				statement2 = connection.prepareStatement(QueryMapper.INSERTPRODUCTSTOCK);
-				statement2.setInt(1, Integer.parseInt(productStock.getOrderId()));
-				statement2.setString(2, name);
-				statement2.setDouble(3, priceperunit);
-				statement2.setDouble(4, quantityValue);
-				statement2.setString(5, quantityUnit);
-				statement2.setDouble(6, totalprice);
-				statement2.setString(7, warehouseId);
-				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
-
-				statement2.executeUpdate();
-				
-				resultSet.close();
-				statement.close();
-				statement2.close();
-			}
-			
-			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
-			statement1.setDate(1, DBUtil.stringtoDate(productStock.getManufacturingDate()));
-			statement1.setDate(2, DBUtil.stringtoDate(productStock.getExpiryDate()));
-			statement1.setString(3, productStock.getQualityCheck());
-			statement1.setInt(4, Integer.parseInt(productStock.getOrderId()));
-			statement1.executeUpdate();
-
-			return Constants.DATA_INSERTED_MESSAGE;
-
-		}
-
-		catch (SQLException exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-
-		}
-
-		catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-		}
-
-		finally {
-			try {
-
-				//statement1.close();
-
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-			}
-		}
-
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------

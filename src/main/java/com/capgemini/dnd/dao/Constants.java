@@ -24,7 +24,7 @@ public class Constants {
 	public static final String WAREHOUSE_ID_DOES_NOT_EXISTS_EXCEPTION = "Warehouse ID does not exist";
 	public static final String LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED = "Could not execute the query";
 	public static final String LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED = "Could not connect to the database";
-	public static final String EXIT_DATE_EXCEPTION = "Exit date cannot be before its manufacturing date";
+	public static final String EXIT_DATE_EXCEPTION = "Exit date cannot be before its manufacturing date or after its expiry date";
 	public static final String ROW_NOT_ADDED_MESSAGE = "Row not added";
 	public static final String PARSE_EXCEPTION_INVALID_FORMAT = "Invalid Date Format";
 	public static final String PROCESS_DATE_EXCEPTION_MESSAGE = "Process Date should be after manufacturing date and before expiry date";

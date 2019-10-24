@@ -29,7 +29,6 @@ import com.capgemini.dnd.util.CryptoFunction;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
-
 public class EmployeeDAOImpl implements EmployeeDAO {
 	private EmployeeDAO employeeDAO;
 	private Logger logger = Logger.getRootLogger();
@@ -146,7 +145,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		}
 		return result;
 	}
-	
+
 
 	@SuppressWarnings("unchecked")
 	public boolean setLoggedIn(Employee employee) throws BackEndException, RowNotFoundException {
@@ -168,6 +167,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 			}
+
 			transaction.commit();
 		} catch (Exception exception) {
 			if (transaction != null)
@@ -184,6 +184,39 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		}
 		return result;
 	}
+
+	/*
+	 * public List <SupplierEntity> getSuppliers() { try (Session session =
+	 * HibernateUtil.getSessionFactory().openSession()) { return
+	 * session.createQuery("from SupplierEntity", SupplierEntity.class).list(); } }
+	 */
+
+	/*
+	 * public boolean setLoggedIn(Employee employee) throws BackEndException,
+	 * RowNotFoundException { boolean result = false; Session session = null;
+	 * Transaction transaction = null; try {
+	 * System.out.println("hey inside daotry"); session =
+	 * HibernateUtil.getSessionFactory().openSession();
+	 * System.out.println("hi are you outside?"); transaction =
+	 * session.beginTransaction();
+	 * 
+	 * @SuppressWarnings("rawtypes") Query query = session.
+	 * createQuery("SELECT Salt, Hash FROM EmployeeCredentials WHERE Username:=username"
+	 * ); query.setParameter("username", employee.getUsername()); List<String> list
+	 * = query.list(); System.out.println("hi are you inside?"); if
+	 * (CryptoFunction.isExpectedPassword(employee.getPassword(), list.get(0),
+	 * list.get(1))) { result = true; System.out.println(result); } else {
+	 * logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND); throw new
+	 * RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND); }
+	 * transaction.commit(); } catch (HibernateException exception) { if
+	 * (transaction != null) transaction.rollback();
+	 * logger.error(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED +
+	 * exception.getMessage()); throw new
+	 * BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED +
+	 * exception.getMessage()); } finally { try { session.close(); } catch
+	 * (Exception exception) { logger.error(exception.getMessage()); throw new
+	 * BackEndException(exception.getMessage()); } } return result; }
+	 */
 
 	public boolean login(Employee employee)
 			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {

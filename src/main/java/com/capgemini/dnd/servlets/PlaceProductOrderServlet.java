@@ -1,6 +1,7 @@
 package com.capgemini.dnd.servlets;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,7 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 
-import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.customexceptions.ConnectionException;
+import com.capgemini.dnd.customexceptions.DisplayException;
+import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
+import com.capgemini.dnd.dto.ProductOrder;
+import com.capgemini.dnd.service.ProductService;
+import com.capgemini.dnd.service.ProductServiceImpl;
 import com.capgemini.dnd.util.HibernateUtil;
 import com.capgemini.dnd.util.JsonUtil;
 import com.capgemini.dnd.util.MappingUtil;
@@ -56,9 +62,9 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		Map<String, String> myMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		ProductOrdersEntity productOrder = null;
+		ProductOrder productOrder = null;
 		try {
-			productOrder = new ProductOrdersEntity(myMap.get("name"), myMap.get("distributorId"),
+			productOrder = new ProductOrder(myMap.get("name"), myMap.get("distributorId"),
 					Double.parseDouble(myMap.get("quantityValue")), myMap.get("quantityUnit"),
 					sdf.parse(myMap.get("dateOfDelivery")), Double.parseDouble(myMap.get("pricePerUnit")),
 					myMap.get("warehouseId"));
@@ -69,6 +75,7 @@ public class PlaceProductOrderServlet extends HttpServlet {
 		Date today = new Date();
 		productOrder.setDateOfOrder(today);
 		productOrder.setDeliveryStatus("Pending");
+
 	/*	Session session = HibernateUtil.getSessionFactory().openSession();//
 		session.beginTransaction();
 		session.save(productOrder);
@@ -83,5 +90,22 @@ public class PlaceProductOrderServlet extends HttpServlet {
 //			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 //			response.getWriter().write(errorJsonMessage);
 //		}
+
+//		Session session = HibernateUtil.getSessionFactory().openSession();//
+//		session.beginTransaction();
+//		session.save(productOrder);
+//		session.getTransaction().commit();
+//		HibernateUtil.shutdown();
+
+		ProductService productService = new ProductServiceImpl();
+		try {
+				String jsonMessage = productService.placeProductOrder(productOrder);
+				response.getWriter().write(jsonMessage);
+			
+		} catch (ProductOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
+			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
+			response.getWriter().write(errorJsonMessage);
+		}
+
 	}
 }
