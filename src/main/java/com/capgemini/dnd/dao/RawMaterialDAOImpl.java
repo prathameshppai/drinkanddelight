@@ -4,15 +4,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
@@ -51,72 +58,103 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public RawMaterialDAOImpl() {
 
 	}
-
-	public String updateStatusRawMaterialOrder(String oid, String newStatus) throws Exception {
-		Connection con = DBUtil.getInstance().getConnection();
-		PreparedStatement preparedStatement = null;
-		int queryResult = 0;
-		java.util.Date today_date = new Date();
-		if (newStatus.equalsIgnoreCase("RECEIVED")) {
-			try {
-				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_RM_DELIVERY_STATUS);
-				preparedStatement.setString(1, newStatus);
-				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
-				preparedStatement.setInt(3, Integer.parseInt(oid));
-				queryResult = preparedStatement.executeUpdate();
-				if (queryResult == 0) {
-					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-
-				} else {
-					logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
-					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-				}
-
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-			} finally {
-				try {
-					preparedStatement.close();
-					con.close();
-				} catch (SQLException sqlException) {
-					logger.error(sqlException.getMessage());
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-				}
-			}
-		} else {
-			try {
-				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_RM_DELIVERY_STATUS1);
-
-				preparedStatement.setString(1, newStatus);
-				preparedStatement.setInt(2, Integer.parseInt(oid));
-
-				queryResult = preparedStatement.executeUpdate();
-				if (queryResult == 0) {
-					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-
-				} else {
-					logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
-					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-				}
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-			} finally {
-				try {
-					preparedStatement.close();
-					con.close();
-				} catch (SQLException sqlException) {
-					logger.error(sqlException.getMessage());
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-				}
-			}
-		}
-	}
+	public String updateStatusRawMaterialOrder(String orderId,String deliveryStatus)  {
+		Session session = null;
+        Transaction transaction = null;
+        try {
+        	session = HibernateUtil.getASession();
+            // start a transaction
+            transaction = session.beginTransaction();
+            RawMaterialOrderEntity rawmaterialorder = (RawMaterialOrderEntity)session.get(RawMaterialOrderEntity.class,Integer.parseInt(orderId));
+            rawmaterialorder.setDeliveryStatus(deliveryStatus ); 
+            session.save(rawmaterialorder);
+            // commit transaction
+            transaction.commit();
+            return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+            //int result = query.executeUpdate();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            try
+            { 
+                // Throw an object of user defined exception 
+                throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY); 
+            } 
+            catch (UpdateException ex) 
+            { 
+            return ex.getMessage();
+        }
+    }
+        finally {
+        	session.close();
+        }
+}
+//	public String updateStatusRawMaterialOrder(String oid, String newStatus) throws Exception {
+//		Connection con = DBUtil.getInstance().getConnection();
+//		PreparedStatement preparedStatement = null;
+//		int queryResult = 0;
+//		java.util.Date today_date = new Date();
+//		if (newStatus.equalsIgnoreCase("RECEIVED")) {
+//			try {
+//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_RM_DELIVERY_STATUS);
+//				preparedStatement.setString(1, newStatus);
+//				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
+//				preparedStatement.setInt(3, Integer.parseInt(oid));
+//				queryResult = preparedStatement.executeUpdate();
+//				if (queryResult == 0) {
+//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
+//
+//				} else {
+//					logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
+//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+//				}
+//
+//			} catch (SQLException sqlException) {
+//				logger.error(sqlException.getMessage());
+//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//			} finally {
+//				try {
+//					preparedStatement.close();
+//					con.close();
+//				} catch (SQLException sqlException) {
+//					logger.error(sqlException.getMessage());
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//
+//				}
+//			}
+//		} else {
+//			try {
+//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_RM_DELIVERY_STATUS1);
+//
+//				preparedStatement.setString(1, newStatus);
+//				preparedStatement.setInt(2, Integer.parseInt(oid));
+//
+//				queryResult = preparedStatement.executeUpdate();
+//				if (queryResult == 0) {
+//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
+//
+//				} else {
+//					logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
+//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+//				}
+//			} catch (SQLException sqlException) {
+//				logger.error(sqlException.getMessage());
+//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//			} finally {
+//				try {
+//					preparedStatement.close();
+//					con.close();
+//				} catch (SQLException sqlException) {
+//					logger.error(sqlException.getMessage());
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//
+//				}
+//			}
+//		}
+//	}
 
 	/*****************************************************************
 	 * - Method Name: displayRawMaterialOrderDetails() - Input Parameters : - Throws
@@ -553,9 +591,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 		boolean added = false;
 		RawMaterialOrderEntity rawMaterialOrderEntity = new RawMaterialOrderEntity(newRMO.getName(), newRMO.getSupplierId(), newRMO.getQuantityValue(), newRMO.getQuantityUnit(), newRMO.getDateOfDelivery(), newRMO.getPricePerUnit(), newRMO.getWarehouseId());
-		
+		Session session=null;
 		try {
-			Session session = HibernateUtil.getASession();
+			session = HibernateUtil.getASession();
 			session.beginTransaction();
 		    session.save(rawMaterialOrderEntity);
 			session.getTransaction().commit();
@@ -564,7 +602,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			e.printStackTrace();
 			System.out.println("Exception 638");
 		}
-		
+		finally {
+			session.close();
+		}
 		if (!added) {
 			throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
 		}
@@ -1405,7 +1445,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //
 //			if (startDate != null && endDate != null) {
 //				
-//					hql += " AND  dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
+//	hql = " from RawMaterialOrderEntity where dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "' ";
 //				}
 //            System.out.println(hql);
 //            System.out.println("dao");
@@ -1443,6 +1483,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //		return list;
 //
 //	}
+
 
 //	@Override
 //	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
@@ -1516,6 +1557,93 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //
 //	}
 //
+
+	@Override
+	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException
+			 {
+		String hql="";
+		Session session=null;
+	    Transaction tx = null;
+	    Criteria cr = null;
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SessionFactory sessionFactory = null;
+		 List<RawMaterialOrderEntity > list = new ArrayList<RawMaterialOrderEntity>();
+		PreparedStatement pst = null;
+		int isFetched = 0;
+		
+			
+            
+			try {
+				System.out.println("hello");
+			   
+				
+				 session = HibernateUtil.getASession();
+			   
+				tx = session.beginTransaction();
+				String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
+				
+				
+				CriteriaBuilder builder = session.getCriteriaBuilder();
+				CriteriaQuery<RawMaterialOrderEntity> criteria = builder.createQuery(RawMaterialOrderEntity.class);
+				Root<RawMaterialOrderEntity> root = criteria.from(RawMaterialOrderEntity.class);
+
+					if (deliveryStatus.equals("ALL")) {
+						
+						;
+	            }	
+					else {
+
+			       criteria.select(root).where(builder.equal(root.get("deliveryStatus"),deliveryStatus));
+             
+					}
+	             String supplierId = displayRawMaterialOrderObject.getSupplierid();
+				
+					if (supplierId.equals("ALL"))
+						;
+					else
+						 criteria.select(root).where(builder.equal(root.get("supplierId"),supplierId));
+						
+				
+
+				String startDate = displayRawMaterialOrderObject.getStartdate();
+				String endDate = displayRawMaterialOrderObject.getEndDate();
+
+				if (startDate != null && endDate != null) {
+					criteria.select(root).where(builder.between(root.get("dateOfDelivery"),sdf.parse(startDate),sdf.parse(endDate)));
+				
+					}
+     
+				 Query<RawMaterialOrderEntity> q=session.createQuery(criteria);
+				 list = q.list();
+
+				 if (list.isEmpty()) {
+						logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+						throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
+
+					} 
+				 else {
+						logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+
+					}
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
+			}
+	       
+			
+
+	       finally {
+		
+
+          HibernateUtil.closeSession(session);
+		//sessionFactory.close();
+		}
+		return list;
+
+	}
+
+
 
 
 	@Override
@@ -1666,11 +1794,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		return warehouseIdsList;
 	}
 
-	@Override
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }

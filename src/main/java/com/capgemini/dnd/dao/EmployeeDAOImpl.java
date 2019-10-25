@@ -28,7 +28,6 @@ import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
 public class EmployeeDAOImpl implements EmployeeDAO {
-	private EmployeeDAO employeeDAO;
 	private Logger logger = Logger.getRootLogger();
 
 	public EmployeeDAOImpl() {
@@ -106,8 +105,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	}
 
 	public boolean register(Employee employee) throws BackEndException, RowNotAddedException {
-		employeeDAO = new EmployeeDAOImpl();
-		return employeeDAO.addEmployee(employee);
+		return addEmployee(employee);
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------------------------
@@ -133,12 +131,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 		} finally {
-			try {
-				session.close();
-			} catch (Exception exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
+			HibernateUtil.closeSession(session);
 		}
 		return result;
 	}
@@ -171,24 +164,18 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 		} finally {
-			try {
-				session.close();
-			} catch (Exception exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
+			HibernateUtil.closeSession(session);
 		}
 		return result;
 	}
 
 	public boolean login(Employee employee)
 			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
-		employeeDAO = new EmployeeDAOImpl();
 		boolean result = false;
 		try {
-			if (employeeDAO.employeeExists(employee)) {
+			if (employeeExists(employee)) {
 				try {
-					result = employeeDAO.setLoggedIn(employee);
+					result = setLoggedIn(employee);
 				} catch (RowNotFoundException exception) {
 					logger.error(Constants.INCORRECT_PASSWORD_MESSAGE);
 					throw new WrongPasswordException(Constants.INCORRECT_PASSWORD_MESSAGE);
@@ -216,7 +203,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			query.setParameter("username", employee.getUsername());
 			List<EmployeeCredentialEntity> empCredentialEntitylist = (List<EmployeeCredentialEntity>) query.list();
 			EmployeeCredentialEntity empCredentialEntity = empCredentialEntitylist.get(0);
-			System.out.println(empCredentialEntity);
 			idealEmployee = new Employee();
 			idealEmployee.setEmpId(empCredentialEntity.getEmpId());
 			idealEmployee.setSecurityQuestion(empCredentialEntity.getSecurityQuestion());
@@ -230,12 +216,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(exception.getMessage());
 			throw new BackEndException(exception.getMessage());
 		} finally {
-			try {
-				session.close();
-			} catch (Exception exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
+			HibernateUtil.closeSession(session);
 		}
 		return idealEmployee;
 	}
@@ -250,9 +231,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			EmployeeDAO empDAO = new EmployeeDAOImpl();
 			Employee tempEmployee=employee;
 			tempEmployee=empDAO.fetchOneConfidentialDetail(tempEmployee);
-			System.out.println(tempEmployee.getEmpId());
 			EmployeeCredentialEntity empCredentialEntity = session.load(EmployeeCredentialEntity.class, tempEmployee.getEmpId());
-			System.out.println(tempEmployee.getEmpId());
 			empCredentialEntity.setSalt(CryptoFunction.getNextSalt());
 			empCredentialEntity.setHash(CryptoFunction.hash(employee.getPassword(), empCredentialEntity.getSalt()));
 			session.update(empCredentialEntity);
@@ -268,12 +247,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(exception.getMessage());
 			throw new BackEndException(exception.getMessage());
 		} finally {
-			try {
-				session.close();
-			} catch (Exception exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
+			HibernateUtil.closeSession(session);
 		}
 		return passwordChanged;
 	}
@@ -282,7 +256,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public boolean changePassword(Employee idealEmployee, Employee actualEmployee)
 			throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException,
 			InvalidPasswordException, RowNotFoundException {
-		employeeDAO = new EmployeeDAOImpl();
 		boolean result = false;
 
 		if (idealEmployee.getSecurityAnswer().equals(actualEmployee.getSecurityAnswer())) {
@@ -290,7 +263,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 					idealEmployee.getSalt())) {
 				if (actualEmployee.getPassword().equals(actualEmployee.getConfirmPassword())) {
 					try {
-						result = employeeDAO.setPassword(actualEmployee);
+						result = setPassword(actualEmployee);
 					} catch (BackEndException exception) {
 						logger.error("Password could not be updated!!!");
 						throw new PasswordException("Password could not be updated!!!");

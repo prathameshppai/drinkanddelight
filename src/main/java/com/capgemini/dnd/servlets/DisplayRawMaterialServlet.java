@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.capgemini.dnd.customexceptions.BackEndException;
+import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.service.RawMaterialService;
 import com.capgemini.dnd.service.RawMaterialServiceImpl;
@@ -73,16 +75,16 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 		displayRawMaterialOrderObject.setStartdate(date1Var);
 		displayRawMaterialOrderObject.setEndDate(date2Var);
 
-		try {
-			jsonMessage = rawmaterialServiceObject.displayRawmaterialOrders(displayRawMaterialOrderObject);
-
-		} catch (Exception e) {
-
-			errorMessage = e.getMessage();
-		}
+		
+			try {
+				jsonMessage = rawmaterialServiceObject.displayRawmaterialOrders(displayRawMaterialOrderObject);
+			} catch (DisplayException | BackEndException e) {
+				errorMessage = e.getMessage();
+			}
+			
 		if (errorMessage.isEmpty()) {
 			out.write(jsonMessage);
 		}
-
+	
 	}
 }

@@ -89,7 +89,6 @@ public class ChangePasswordServlet extends HttpServlet {
 		} finally {
 			out.print(dataResponse);
 		}
-
 	}
 
 }
