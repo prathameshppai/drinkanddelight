@@ -74,7 +74,12 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 
 	public boolean doesRawMaterialOrderIdExist(String orderId)
 			throws RMOrderIDDoesNotExistException, ConnectionException, SQLException {
+		try {
 		return (rawMaterialDAO.doesRawMaterialOrderIdExist(orderId));
+		}
+		catch(RMOrderIDDoesNotExistException exception) {
+			throw exception;
+		}
 	}
 
 	public String doesRMNameExist(String name) throws RMNameDoesNotExistException, ConnectionException, SQLException {

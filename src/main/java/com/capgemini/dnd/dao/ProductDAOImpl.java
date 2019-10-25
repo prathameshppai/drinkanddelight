@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
@@ -23,6 +24,7 @@ import com.capgemini.dnd.customexceptions.ProductIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
+import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dto.Address;
@@ -662,36 +664,76 @@ public class ProductDAOImpl implements ProductDAO {
 	public boolean doesProductOrderIdExist(String orderId)
 			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException {
 
+//		boolean pOrderIdFound = false;
+//		Connection connection;
+//		try {
+//
+//			connection = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//
+//			logger.error(e.getMessage());
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//
+//		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_ALL_PRODUCT_ORDER);
+//		preparedStatement.setString(1, orderId);
+//		resultSet = preparedStatement.executeQuery();
+//
+//		while (resultSet.next()) {
+//			pOrderIdFound = true;
+//			break;
+//		}
+//
+//		if (!pOrderIdFound) {
+//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+//			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+//		}
+//
+//		connection.close();
+//		return pOrderIdFound;
+		
+		
 		boolean pOrderIdFound = false;
-		Connection connection;
+		int oid = -1;
 		try {
-
-			connection = DBUtil.getInstance().getConnection();
+			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-
 			logger.error(e.getMessage());
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+			return pOrderIdFound;
 		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_ALL_PRODUCT_ORDER);
-		preparedStatement.setString(1, orderId);
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			pOrderIdFound = true;
-			break;
-		}
-
-		if (!pOrderIdFound) {
-			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+		Session session = HibernateUtil.getASession(); 
+//        System.out.println("in ordr id exist mthod 1:" + oid);
+        session.beginTransaction();
+//		try {
+		ProductOrdersEntity productOrderEntity = session.load(ProductOrdersEntity.class, Integer.parseInt(orderId));
+		System.out.println(null == productOrderEntity);
+		 session.getTransaction().commit();
+//		 System.out.println("in ordr id exist mthod 2"); 
+//		 int pId = productOrderEntity.getOrderId();
+//		 System.out.println(pId);
+		 
+		 if (productOrderEntity.getDateOfOrder() != null) {
+			 	pOrderIdFound = true;
+				return pOrderIdFound;
+			}
+		
+		
+			session.close();
+			
 			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-		}
-
-		connection.close();
-		return pOrderIdFound;
+//	}
+//	catch(ObjectNotFoundException exception) {
+//		System.out.println("in ordr id exist mthod 3");
+//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+//			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+//	}
+		
+		
+		
+		
 	}
 
 	@Override
@@ -739,6 +781,55 @@ public class ProductDAOImpl implements ProductDAO {
 	public boolean doesProductOrderIdExistInStock(String orderId) throws SQLException
 			 {
 
+//		boolean productOrderIdFound = false;
+//		int oid = -1;
+//		try {
+//			oid = Integer.parseInt(orderId);
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//			return productOrderIdFound;
+//		}
+//		Connection connection;
+//		try {
+//			System.out.println("c1");
+//			connection = DBUtil.getInstance().getConnection();
+//			System.out.println("c2");
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//			return false;
+//			
+//		}
+//		System.out.println("c3");
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//
+//		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_PRODUCT_STOCK);
+//		preparedStatement.setInt(1, oid);
+//		resultSet = preparedStatement.executeQuery();
+//		System.out.println("c4");
+//		while (resultSet.next()) {
+//			
+//			int pId = resultSet.getInt(1);
+//			if (pId == oid) {
+//				productOrderIdFound = true;
+//				break;
+//			}
+//		}
+//		System.out.println("c5");
+//		connection.close();
+//		if (productOrderIdFound) {
+//			System.out.println("c6");
+//			return productOrderIdFound;
+//		}
+//		if (!productOrderIdFound) {
+//			System.out.println("c7");
+//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+//			return productOrderIdFound;
+//		}
+//
+//		return productOrderIdFound;
+		
+		
 		boolean productOrderIdFound = false;
 		int oid = -1;
 		try {
@@ -747,48 +838,36 @@ public class ProductDAOImpl implements ProductDAO {
 			logger.error(e.getMessage());
 			return productOrderIdFound;
 		}
-		Connection connection;
+		
+		Session session = HibernateUtil.getASession(); 
+        
+        session.beginTransaction();
 		try {
-			System.out.println("c1");
-			connection = DBUtil.getInstance().getConnection();
-			System.out.println("c2");
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return false;
-			// throw new
-			// ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-		System.out.println("c3");
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(orderId));
 
-		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_PRODUCT_STOCK);
-		preparedStatement.setInt(1, oid);
-		resultSet = preparedStatement.executeQuery();
-		System.out.println("c4");
-		while (resultSet.next()) {
-			
-			int pId = resultSet.getInt(1);
+		 session.getTransaction().commit();
+		 
+		 int pId = productStockEntity.getOrderId();
 			if (pId == oid) {
 				productOrderIdFound = true;
-				break;
+				return productOrderIdFound;
 			}
+		
+		
+			session.close();
 		}
-		System.out.println("c5");
-		connection.close();
-		if (productOrderIdFound) {
-			System.out.println("c6");
-			return productOrderIdFound;
-		}
-		if (!productOrderIdFound) {
-			System.out.println("c7");
+		catch(ObjectNotFoundException exception) {
 			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
 			return productOrderIdFound;
 		}
-
 		return productOrderIdFound;
+		 
+		}
 
-	}
+		
+		
+		
+	
 
 	public boolean doesDistributorIdExist(String distId)
 			throws DistributorIDDoesNotExistException, ConnectionException, SQLException {

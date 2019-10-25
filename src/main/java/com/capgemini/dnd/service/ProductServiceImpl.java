@@ -98,7 +98,12 @@ public class ProductServiceImpl implements ProductService {
 
 	public boolean doesProductOrderIdExist(String orderId)
 			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException {
+		try {
 		return (productDAO.doesProductOrderIdExist(orderId));
+		}
+		catch(ProductOrderIDDoesNotExistException exception) {
+			throw exception;
+		}
 	}
 
 	public boolean doesProductIdExist(String orderId, String name)

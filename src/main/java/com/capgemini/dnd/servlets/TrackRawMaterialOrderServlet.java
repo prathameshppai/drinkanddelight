@@ -64,12 +64,12 @@ public class TrackRawMaterialOrderServlet extends HttpServlet {
 
 		try {
 			if (rawMaterialServiceObject.doesRawMaterialOrderIdExist(id)) {
-
+				System.out.println("1");
 				response.getWriter().write(rawMaterialServiceObject.trackRawMaterialOrder(new RawMaterialStock(id)));
 
 			}
 		} catch (RMOrderIDDoesNotExistException | ConnectionException | SQLException exception) {
-
+			System.out.println("2");
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			response.getWriter().write(errorJsonMessage);
 

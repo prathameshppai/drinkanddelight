@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -20,6 +21,7 @@ import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
+import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RMIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMNameDoesNotExistException;
@@ -36,6 +38,7 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.entity.RawMaterialStockEntity;
 import com.capgemini.dnd.util.DBUtil;
@@ -571,74 +574,112 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	public boolean doesRawMaterialOrderIdExist(String orderId)
 			throws RMOrderIDDoesNotExistException, ConnectionException, SQLException {
-		boolean rmIdFound = false;
-		Connection con;
+//		boolean rmIdFound = false;
+//		Connection con;
+//		try {
+//
+//			con = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//
+//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//
+//		preparedStatement = con.prepareStatement(QueryMapper.SELECT_ALL_RM_ORDER);
+//		preparedStatement.setString(1, orderId);
+//		resultSet = preparedStatement.executeQuery();
+//
+//		while (resultSet.next()) {
+//			rmIdFound = true;
+//			break;
+//		}
+//
+//		if (!rmIdFound) {
+//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+//			throw new RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+//		}
+//
+//		con.close();
+//		return rmIdFound;
+		
+		
+		boolean rmOrderIdFound = false;
+		int oid = -1;
 		try {
-
-			con = DBUtil.getInstance().getConnection();
+			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-
-			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+			logger.error(e.getMessage());
+			return rmOrderIdFound;
 		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = con.prepareStatement(QueryMapper.SELECT_ALL_RM_ORDER);
-		preparedStatement.setString(1, orderId);
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			rmIdFound = true;
-			break;
-		}
-
-		if (!rmIdFound) {
-			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+		
+		
+		Session session = HibernateUtil.getASession(); 
+        
+        session.beginTransaction();
+//		try {
+		RawMaterialOrderEntity rmOrderEntity = session.load(RawMaterialOrderEntity.class, Integer.parseInt(orderId));
+		System.out.println(rmOrderEntity);
+		 session.getTransaction().commit();
+		 
+		 int pId = rmOrderEntity.getOrderId();
+		 
+		 if (pId == oid) {
+			 rmOrderIdFound = true;
+			return rmOrderIdFound;
+			}
+		
+		
+			session.close();
+			
 			throw new RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
-		}
-
-		con.close();
-		return rmIdFound;
+//		}
+//		catch(ObjectNotFoundException exception) {
+//			
+//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+//			throw new RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+//		}
+		
 	}
 
 	@Override
 	public boolean doesRawMaterialIdExist(String rmId, String name)
 			throws RMIDDoesNotExistException, ConnectionException, SQLException {
 		boolean rmIdFound = false;
-		Connection con;
-		try {
-
-			con = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = con.prepareStatement(QueryMapper.SELECT_RMSID_ORDER);
-		preparedStatement.setString(1, name.toUpperCase());
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			String rmsId = resultSet.getString(1);
-			if (rmsId.equalsIgnoreCase(rmId)) {
-				rmIdFound = true;
-				break;
-			}
-		}
-
-		con.close();
-		if (rmIdFound) {
-			return rmIdFound;
-		}
-		if (!rmIdFound) {
-			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
-			throw new RMIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
-		}
+//		Connection con;
+//		try {
+//
+//			con = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//
+//		preparedStatement = con.prepareStatement(QueryMapper.SELECT_RMSID_ORDER);
+//		preparedStatement.setString(1, name.toUpperCase());
+//		resultSet = preparedStatement.executeQuery();
+//
+//		while (resultSet.next()) {
+//			String rmsId = resultSet.getString(1);
+//			if (rmsId.equalsIgnoreCase(rmId)) {
+//				rmIdFound = true;
+//				break;
+//			}
+//		}
+//
+//		con.close();
+//		if (rmIdFound) {
+//			return rmIdFound;
+//		}
+//		if (!rmIdFound) {
+//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+//			throw new RMIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+//		}
 
 		return rmIdFound;
 	}
@@ -647,51 +688,86 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public boolean doesRawMaterialOrderIdExistInStock(String orderId)
 			throws SQLException, ConnectionException {
 
+//		boolean rmOrderIdFound = false;
+//		int oid = -1;
+//		try {
+//			oid = Integer.parseInt(orderId);
+//		} catch (Exception e) {
+//
+//		}
+//		Connection con;
+//		try {
+//
+//			con = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//
+//		preparedStatement = con.prepareStatement(QueryMapper.SELECT_RM_STOCK);
+//		preparedStatement.setInt(1, oid);
+//		resultSet = preparedStatement.executeQuery();
+//
+//		while (resultSet.next()) {
+//			int rmsId = resultSet.getInt(1);
+//			if (rmsId == oid) {
+//				rmOrderIdFound = true;
+//				break;
+//			}
+//		}
+//
+//		con.close();
+//		if (rmOrderIdFound) {
+//			return rmOrderIdFound;
+//		}
+//		if (!rmOrderIdFound) {
+//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+//			return false;
+//			// throw new
+//			// RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+//		}
+//
+//		return rmOrderIdFound;
+		
+		
 		boolean rmOrderIdFound = false;
 		int oid = -1;
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-
-		}
-		Connection con;
-		try {
-
-			con = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
 			logger.error(e.getMessage());
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = con.prepareStatement(QueryMapper.SELECT_RM_STOCK);
-		preparedStatement.setInt(1, oid);
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			int rmsId = resultSet.getInt(1);
-			if (rmsId == oid) {
-				rmOrderIdFound = true;
-				break;
-			}
-		}
-
-		con.close();
-		if (rmOrderIdFound) {
 			return rmOrderIdFound;
 		}
-		if (!rmOrderIdFound) {
+		
+		Session session = HibernateUtil.getASession(); 
+        
+        session.beginTransaction();
+		try {
+		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(orderId));
+
+		 session.getTransaction().commit();
+		 
+		 int rmId = rmStockEntity.getOrderId();
+			if (rmId == oid) {
+				rmOrderIdFound = true;
+				return rmOrderIdFound;
+			}
+		
+		
+			session.close();
+			
+	}
+	catch(ObjectNotFoundException exception) {
 			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
-			return false;
-			// throw new
-			// RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			return rmOrderIdFound;
+	}
+		return rmOrderIdFound;	 
 		}
 
-		return rmOrderIdFound;
-
-	}
+	
 
 	public boolean doesSupplierIdExist(String suppId)
 			throws SupplierIDDoesNotExistException, ConnectionException, SQLException {
@@ -1152,7 +1228,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
         Session session = HibernateUtil.getASession(); 
         
         session.beginTransaction();
-		System.out.println("1");
+		
 		System.out.println(rawMaterialStock.getOrderId());
 		
         RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
@@ -1368,78 +1444,78 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //
 //	}
 
-	@Override
-	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
-			throws Exception {
-		String hql="";
-		Session session=null;
-		SessionFactory sessionFactory=null;
-		 List<RawMaterialOrder> list = new ArrayList<RawMaterialOrder>();
-		PreparedStatement pst = null;
-		int isFetched = 0;
-		
-			String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
-			String generateQuery = "";
-			
-				if (deliveryStatus.equals("ALL"))
-					hql = "from RawMaterialOrderEntity where deliveryStatus in (select deliveryStatus from RawMaterialOrderEntity)";
-				else
-					hql = "from RawMaterialOrderEntity where deliveryStatus in ( '" + deliveryStatus + "')";
-
-		
-             String supplierId = displayRawMaterialOrderObject.getSupplierid();
-			
-				if (supplierId.equals("ALL"))
-					hql += " AND supplierId in (select supplierId from RawMaterialOrderEntity)";
-				else
-
-					hql += "  AND supplierId in ( '" + supplierId + "' )";
-			
-
-			String startDate = displayRawMaterialOrderObject.getStartdate();
-			String endDate = displayRawMaterialOrderObject.getEndDate();
-
-			if (startDate != null && endDate != null) {
-				
-					hql += " AND  dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
-				}
-            System.out.println(hql);
-            System.out.println("dao");
-            
-			try {
-				System.out.println("hello");
-//			    sessionFactory = HibernateUtil.getSessionFactory();
-				// session =sessionFactory.openSession();
-			    session =sessionFactory.getCurrentSession();
-				session.beginTransaction();
-				 Query q = session.createQuery(hql);
-				list =  q.list();
-				System.out.println(list);
-				 if (list.isEmpty()) {
-						logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-						throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
-
-					} 
-				 else {
-						logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-					}
-			} catch (Exception e) {
-				
-				e.printStackTrace();
-			}
-	       
-			
-
-	       finally {
-		
-            session.close();
-			sessionFactory.close();
-		}
-		return list;
-
-	}
-
+//	@Override
+//	public List<RawMaterialOrder> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
+//			throws Exception {
+//		String hql="";
+//		Session session=null;
+//		SessionFactory sessionFactory=null;
+//		 List<RawMaterialOrder> list = new ArrayList<RawMaterialOrder>();
+//		PreparedStatement pst = null;
+//		int isFetched = 0;
+//		
+//			String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
+//			String generateQuery = "";
+//			
+//				if (deliveryStatus.equals("ALL"))
+//					hql = "from RawMaterialOrderEntity where deliveryStatus in (select deliveryStatus from RawMaterialOrderEntity)";
+//				else
+//					hql = "from RawMaterialOrderEntity where deliveryStatus in ( '" + deliveryStatus + "')";
+//
+//		
+//             String supplierId = displayRawMaterialOrderObject.getSupplierid();
+//			
+//				if (supplierId.equals("ALL"))
+//					hql += " AND supplierId in (select supplierId from RawMaterialOrderEntity)";
+//				else
+//
+//					hql += "  AND supplierId in ( '" + supplierId + "' )";
+//			
+//
+//			String startDate = displayRawMaterialOrderObject.getStartdate();
+//			String endDate = displayRawMaterialOrderObject.getEndDate();
+//
+//			if (startDate != null && endDate != null) {
+//				
+//					hql += " AND  dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
+//				}
+//            System.out.println(hql);
+//            System.out.println("dao");
+//            
+//			try {
+//				System.out.println("hello");
+////			    sessionFactory = HibernateUtil.getSessionFactory();
+//				// session =sessionFactory.openSession();
+//			    session =sessionFactory.getCurrentSession();
+//				session.beginTransaction();
+//				 Query q = session.createQuery(hql);
+//				list =  q.list();
+//				System.out.println(list);
+//				 if (list.isEmpty()) {
+//						logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+//						throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
+//
+//					} 
+//				 else {
+//						logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+//
+//					}
+//			} catch (Exception e) {
+//				
+//				e.printStackTrace();
+//			}
+//	       
+//			
+//
+//	       finally {
+//		
+//            session.close();
+//			sessionFactory.close();
+//		}
+//		return list;
+//
+//	}
+//
 
 
 	@Override

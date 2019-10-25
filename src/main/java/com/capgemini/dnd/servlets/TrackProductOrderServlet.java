@@ -59,6 +59,8 @@ public class TrackProductOrderServlet extends HttpServlet {
 
 		Map<String, String> myMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 		String id = myMap.get("OrderId");
+		
+//		String id = request.getParameter("OrderId");
 
 		try {
 			if (productServiceObject.doesProductOrderIdExist(id)) {

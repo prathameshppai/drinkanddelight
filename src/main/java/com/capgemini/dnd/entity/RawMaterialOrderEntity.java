@@ -14,7 +14,15 @@ package com.capgemini.dnd.entity;
 	@Entity
 	@Table(name = "RawmaterialOrders")
 	public class RawMaterialOrderEntity {
-		 @Id
+		 public int getOrderId() {
+			return orderId;
+		}
+
+		public void setOrderId(int orderId) {
+			this.orderId = orderId;
+		}
+
+		@Id
 		    @GeneratedValue(strategy = GenerationType.IDENTITY)
 		    @Column(name = "orderid")
 		private int orderId;
