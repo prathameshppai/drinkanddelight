@@ -1409,7 +1409,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //	}
 
 	@Override
-	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException
+	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException
 			 {
 		String hql="";
 		Session session=null;
@@ -1486,7 +1486,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	       finally {
 		
 
-           session.close();
+          HibernateUtil.closeSession(session);
 		//sessionFactory.close();
 		}
 		return list;

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.service.RawMaterialService;
@@ -77,7 +78,7 @@ public class DisplayRawMaterialServlet extends HttpServlet {
 		
 			try {
 				jsonMessage = rawmaterialServiceObject.displayRawmaterialOrders(displayRawMaterialOrderObject);
-			} catch (DisplayException e) {
+			} catch (DisplayException | BackEndException e) {
 				errorMessage = e.getMessage();
 			}
 			

@@ -185,7 +185,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	
 	@Override
 
-	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException {
+	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException {
 		
 		List<RawMaterialOrderEntity> rmoList2 = new ArrayList<RawMaterialOrderEntity>();
 		rmoList2 = rawMaterialDAO.displayRawmaterialOrders(displayRawMaterialOrderObject);
