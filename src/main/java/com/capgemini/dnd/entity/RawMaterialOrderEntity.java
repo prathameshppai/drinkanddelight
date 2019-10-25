@@ -20,7 +20,7 @@ package com.capgemini.dnd.entity;
 		private int orderId;
 		 @Column(name = "name")
 		private String name;
-		 private static int orderIdCount = 1;
+		// private static int orderIdCount = 1;
 		 @Column(name = "supplierid")
 		private String supplierId;
 		 @Column(name = "quantityvalue")
@@ -93,13 +93,13 @@ package com.capgemini.dnd.entity;
 			this.totalPrice = totalPrice;
 		}
 
-		public static int getOrderIdCount() {
-			return orderIdCount;
-		}
+//		public static int getOrderIdCount() {
+//			return orderIdCount;
+//		}
 
-		public static void setOrderIdCount(int orderIdCount) {
-			RawMaterialOrderEntity.orderIdCount = orderIdCount;
-		}
+//		public static void setOrderIdCount(int orderIdCount) {
+//			RawMaterialOrderEntity.orderIdCount = orderIdCount;
+//		}
 
 		public String getName() {
 			return name;

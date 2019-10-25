@@ -14,6 +14,9 @@ import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 
+import com.capgemini.dnd.entity.RawMaterialStockEntity;
+
+
 public class HibernateUtil {
 	private static Logger logger = Logger.getRootLogger();
 
@@ -52,7 +55,6 @@ public class HibernateUtil {
 //    }
 
 	public static Session getASession() {
-
 		return sf.openSession();
 	}
 	

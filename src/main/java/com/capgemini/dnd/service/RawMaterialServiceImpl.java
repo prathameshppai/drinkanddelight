@@ -26,6 +26,7 @@ import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
+import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 public class RawMaterialServiceImpl implements RawMaterialService {
@@ -119,7 +120,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		try {
 			return rawMaterialDAO.processDateCheck(rawMaterialStock);
 		} catch (ProcessDateException e) {
-			throw new ProcessDateException("Process date cannot be before its arrival(date of delivery)");
+			throw new ProcessDateException(e.getMessage());
 		} catch (SQLException | ConnectionException e) {
 
 			return false;
@@ -185,8 +186,8 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	@Override
 
 	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception {
-		System.out.println("in service");
-		List<RawMaterialOrder> rmoList2 = new ArrayList<RawMaterialOrder>();
+		
+		List<RawMaterialOrderEntity> rmoList2 = new ArrayList<RawMaterialOrderEntity>();
 		rmoList2 = rawMaterialDAO.displayRawmaterialOrders(displayRawMaterialOrderObject);
 		String jsonMessage = JsonUtil.convertJavaToJson1(rmoList2);
 		return jsonMessage;

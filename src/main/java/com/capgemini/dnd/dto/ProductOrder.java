@@ -29,6 +29,7 @@ public class ProductOrder {
 		this.dateofDelivery = dateofDelivery;
 		this.deliveryStatus = "pending";
 		this.pricePerUnit = pricePerUnit;
+//		this.totalPrice = this.quantityValue * this.pricePerUnit;
 		this.warehouseId = warehouseId;
 	}
 

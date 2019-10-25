@@ -54,76 +54,108 @@ public class ProductDAOImpl implements ProductDAO {
 	 * Product order delivery status update
 	 * 
 	 */
-	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
-
-		Connection con = DBUtil.getInstance().getConnection();
-		PreparedStatement preparedStatement = null;
-		java.util.Date today_date = new Date();
-		int queryResult = 0;
-		if (newStatus.equalsIgnoreCase("RECEIVED")) {
-			try {
-				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS);
-
-				preparedStatement.setString(1, newStatus);
-				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
-				preparedStatement.setInt(3, Integer.parseInt(oid));
-				queryResult = preparedStatement.executeUpdate();
-				if (queryResult == 0) {
-					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-
-				} else {
-					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-				}
-
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-
-				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-			} finally {
-				try {
-
-					preparedStatement.close();
-					con.close();
-				} catch (SQLException sqlException) {
-					logger.error(sqlException.getMessage());
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-				}
-			}
-		} else {
-			try {
-				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS1);
-				preparedStatement.setString(1, newStatus);
-				preparedStatement.setInt(2, Integer.parseInt(oid));
-
-				queryResult = preparedStatement.executeUpdate();
-				if (queryResult == 0) {
-					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-
-				} else {
-					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-				}
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-			} finally {
-				try {
-
-					preparedStatement.close();
-					con.close();
-				} catch (SQLException sqlException) {
-					logger.error(sqlException.getMessage());
-					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-
-				}
-			}
-		}
-
-	}
+	public String updateStatusProductOrder(String orderId,String deliveryStatus)  {
+		Session session = null;
+        Transaction transaction = null;
+        try {
+        	session = HibernateUtil.getASession();
+            // start a transaction
+            transaction = session.beginTransaction();
+            ProductOrdersEntity product = (ProductOrdersEntity)session.get(ProductOrdersEntity.class,Integer.parseInt(orderId));
+            product.setDeliveryStatus(deliveryStatus ); 
+            session.save(product);
+            // commit transaction
+            transaction.commit();
+            return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+            //int result = query.executeUpdate();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            try
+            { 
+                // Throw an object of user defined exception 
+                throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY); 
+            } 
+            catch (UpdateException ex) 
+            { 
+            return ex.getMessage();
+        }
+    }
+        finally {
+        	session.close();
+        }
+}
+//	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
+//
+//		Connection con = DBUtil.getInstance().getConnection();
+//		PreparedStatement preparedStatement = null;
+//		java.util.Date today_date = new Date();
+//		int queryResult = 0;
+//		if (newStatus.equalsIgnoreCase("RECEIVED")) {
+//			try {
+//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS);
+//
+//				preparedStatement.setString(1, newStatus);
+//				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
+//				preparedStatement.setInt(3, Integer.parseInt(oid));
+//				queryResult = preparedStatement.executeUpdate();
+//				if (queryResult == 0) {
+//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
+//
+//				} else {
+//					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+//				}
+//
+//			} catch (SQLException sqlException) {
+//				logger.error(sqlException.getMessage());
+//
+//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//			} finally {
+//				try {
+//
+//					preparedStatement.close();
+//					con.close();
+//				} catch (SQLException sqlException) {
+//					logger.error(sqlException.getMessage());
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//
+//				}
+//			}
+//		} else {
+//			try {
+//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS1);
+//				preparedStatement.setString(1, newStatus);
+//				preparedStatement.setInt(2, Integer.parseInt(oid));
+//
+//				queryResult = preparedStatement.executeUpdate();
+//				if (queryResult == 0) {
+//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
+//
+//				} else {
+//					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+//				}
+//			} catch (SQLException sqlException) {
+//				logger.error(sqlException.getMessage());
+//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//			} finally {
+//				try {
+//
+//					preparedStatement.close();
+//					con.close();
+//				} catch (SQLException sqlException) {
+//					logger.error(sqlException.getMessage());
+//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//
+//				}
+//			}
+//		}
+//
+//	}
 
 	/*****************************************************************
 	 * - Method Name: displayProductOrderDetails() - Input Parameters : - Throws :
@@ -640,9 +672,9 @@ public class ProductDAOImpl implements ProductDAO {
 //		}
 
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(), newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(), newPO.getWarehouseId());
-		
+		Session session = HibernateUtil.getASession();
 		try {
-			Session session = HibernateUtil.getASession();
+			
 			session.beginTransaction();
 			session.save(productOrdersEntity);
 			session.getTransaction().commit();
@@ -650,6 +682,8 @@ public class ProductDAOImpl implements ProductDAO {
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			System.out.println("Exception 638");
+		} finally {
+			session.close();
 		}
 		//HibernateUtil.shutdown();
 		
@@ -977,25 +1011,32 @@ public class ProductDAOImpl implements ProductDAO {
         
         session.beginTransaction();
 		
-        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
-	      Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      Object[] trackDetails = (Object[]) q.uniqueResult();
+//        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
+//	      Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      Object[] trackDetails = (Object[]) q.uniqueResult();
+        
+        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
 	      
 	      session.getTransaction().commit();
 	      
-	      				Date exitDate = (Date) trackDetails[0];
+	      				Date exitDate = productStockEntity.getExitDate();
 	      
-	      				Date manDate = (Date) trackDetails[1];
+	      				Date manDate = productStockEntity.getManufacturingDate();
 	      
-	      				String warehouseId = (String) trackDetails[2];
+	      				String warehouseId = productStockEntity.getWarehouseId();
 	      
-	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
+//	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
 	      
-	      			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+	      			
+	      				if(exitDate == null || manDate == null) {
+	      					return "Data Incomplete...Please check database and update required information";
+	      				}
+	      				
+	      				String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
 	      					+ manDate.toString() + " to " + exitDate.toString() + "("
 	      					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-	      
+	      				session.close();
 	      			return message;
 	    
 	}
@@ -1061,20 +1102,23 @@ public class ProductDAOImpl implements ProductDAO {
 //			statement.close();
 //			connection.close();
 //		}
+		
+		Session session = null;
 	try {
 		boolean datecheck = false;
-		Session session = HibernateUtil.getASession(); 
+		session = HibernateUtil.getASession(); 
         session.beginTransaction();
-        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
-        Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      Object[] dateDetails = (Object[]) q.uniqueResult();
+//        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
+//        Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      Object[] dateDetails = (Object[]) q.uniqueResult();
 	      
+        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
 	      session.getTransaction().commit();
 	      
-	      Date manufacturingDate = (Date) dateDetails[0];
+	      Date manufacturingDate = productStockEntity.getManufacturingDate();
 	      
-			Date expiryDate = (Date) dateDetails[1];
+			Date expiryDate = productStockEntity.getExpiryDate();
 			
 			if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
 				datecheck = true;
@@ -1089,6 +1133,10 @@ public class ProductDAOImpl implements ProductDAO {
 				throw exception;
 	
 			}
+	
+	finally {
+		session.close();
+	}
 		
 
 	}
@@ -1140,7 +1188,7 @@ public class ProductDAOImpl implements ProductDAO {
 	      q.setParameter("exitDateVariable", productStock.getExitDate());
 	      int result = q.executeUpdate();
 	      session.getTransaction().commit();
-	      
+	      session.close();
 	      return Constants.DATA_INSERTED_MESSAGE;
 
 	}
@@ -1269,7 +1317,7 @@ public class ProductDAOImpl implements ProductDAO {
 			System.out.println(result);
 			System.out.println("5");
 			session.getTransaction().commit();
-		      
+		    session.close();
 		      return Constants.DATA_INSERTED_MESSAGE;
         }   
 		      catch (SQLException exception) {

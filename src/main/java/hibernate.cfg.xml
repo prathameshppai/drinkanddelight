@@ -16,6 +16,10 @@
         <mapping class="com.capgemini.dnd.entity.ProductOrdersEntity"></mapping>
         <mapping class="com.capgemini.dnd.entity.ProductStockEntity"></mapping>
         <mapping class="com.capgemini.dnd.entity.EmployeeCredentialEntity"></mapping>
+
+        <mapping class="com.capgemini.dnd.entity.RawMaterialStockEntity"></mapping>
+
         <mapping class="com.capgemini.dnd.entity.RawMaterialOrderEntity"></mapping>
+
     </session-factory>
 </hibernate-configuration>
