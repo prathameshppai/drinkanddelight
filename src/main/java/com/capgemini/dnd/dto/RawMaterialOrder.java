@@ -26,7 +26,7 @@ public class RawMaterialOrder {
 		this.quantityUnit = quantityUnit;
 		this.dateOfDelivery = dateOfDelivery;
 		this.pricePerUnit = pricePerUnit;
-		this.totalPrice = this.quantityValue * this.pricePerUnit;
+//		this.totalPrice = this.quantityValue * this.pricePerUnit;
 		this.deliveryStatus = "PENDING";
 		this.warehouseId = warehouseId;
 	}
