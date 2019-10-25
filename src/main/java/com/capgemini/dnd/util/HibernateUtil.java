@@ -1,17 +1,31 @@
 package com.capgemini.dnd.util;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 //import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+
+import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.entity.EmployeeCredentialEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 
 public class HibernateUtil {
+	private static Logger logger = Logger.getRootLogger();
+
+	static SessionFactory sf = null;
+	static {
+		Configuration config = new Configuration().configure().addPackage("com.capgemini.dnd.entity")
+				.addAnnotatedClass(ProductStockEntity.class).addAnnotatedClass(EmployeeCredentialEntity.class)
+				.addAnnotatedClass(ProductOrdersEntity.class).addAnnotatedClass(RawMaterialOrderEntity.class);
+		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+		sf = config.buildSessionFactory(registry);
+	}
+
 //	private static final SessionFactory sessionFactory = buildSessionFactory();
 //	 
 //    private static SessionFactory buildSessionFactory() {
@@ -36,16 +50,21 @@ public class HibernateUtil {
 //    	// Close caches and connection pools
 //    	getSessionFactory().close();
 //    }
-	
-	public static Session getASession() {	
-		Configuration config = new Configuration().configure()
-				.addPackage("com.capgemini.dnd.entity")
-				.addAnnotatedClass(ProductStockEntity.class)
-				.addAnnotatedClass(EmployeeCredentialEntity.class)
-				.addAnnotatedClass(ProductOrdersEntity.class)
-				.addAnnotatedClass(RawMaterialOrderEntity.class);
-		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-		SessionFactory sf = config.buildSessionFactory(registry);   
+
+	public static Session getASession() {
+
 		return sf.openSession();
 	}
+	
+	public static void closeSession(Session session) throws BackEndException {
+
+		try {
+			session.close();
+		} catch (Exception exception) {
+			logger.error(exception.getMessage());
+			throw new BackEndException(exception.getMessage());
+		}
+	}
+
+	
 }
