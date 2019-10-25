@@ -70,7 +70,7 @@ public interface RawMaterialService {
 
 	public String fetchSupplierDetail(Supplier supplier) throws BackEndException, DoesNotExistException;
 
-	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception;
+	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException;
 
 	public ArrayList<String> fetchRawMaterialNames() throws DisplayException, ConnectionException ;
 

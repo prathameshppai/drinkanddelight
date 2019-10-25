@@ -68,7 +68,7 @@ public interface RawMaterialDAO {
 
 	public Supplier fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException;
 
-	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws Exception;
+	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException;
 
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException;
 

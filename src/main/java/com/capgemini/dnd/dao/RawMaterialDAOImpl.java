@@ -1336,7 +1336,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //
 //			if (startDate != null && endDate != null) {
 //				
-//					hql += " AND  dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
+//	hql = " from RawMaterialOrderEntity where dateOfDelivery BETWEEN '" + startDate + "' AND '" + endDate + "' ";
 //				}
 //            System.out.println(hql);
 //            System.out.println("dao");
@@ -1376,8 +1376,8 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //	}
 
 	@Override
-	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
-			throws Exception {
+	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException
+			 {
 		String hql="";
 		Session session=null;
 	    Transaction tx = null;
@@ -1435,7 +1435,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 				 if (list.isEmpty()) {
 						logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-						throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
+						throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
 
 					} 
 				 else {
@@ -1445,13 +1445,14 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			} catch (Exception e) {
 				
 				e.printStackTrace();
+				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
 			}
 	       
 			
 
 	       finally {
 		
-//           session.flush();
+
            session.close();
 		//sessionFactory.close();
 		}
