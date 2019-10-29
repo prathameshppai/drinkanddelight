@@ -656,31 +656,21 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		}
 		
 		
-		Session session = HibernateUtil.getASession(); 
-        
-        session.beginTransaction();
-//		try {
-		RawMaterialOrderEntity rmOrderEntity = session.load(RawMaterialOrderEntity.class, Integer.parseInt(orderId));
-		System.out.println(rmOrderEntity);
-		 session.getTransaction().commit();
-		 
-		 int pId = rmOrderEntity.getOrderId();
-		 
-		 if (pId == oid) {
-			 rmOrderIdFound = true;
-			return rmOrderIdFound;
-			}
-		
-		
+		Session session = HibernateUtil.getASession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("from RawMaterialOrderEntity where orderId = :oId");
+		query.setParameter("oId", oid);
+		if (query.getResultList().size() == 1) {
+			rmOrderIdFound = true;
+			session.getTransaction().commit();
 			session.close();
-			
+			return rmOrderIdFound;
+		} else {
+			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+			session.close();
 			throw new RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
-//		}
-//		catch(ObjectNotFoundException exception) {
-//			
-//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
-//			throw new RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
-//		}
+		}
 		
 	}
 
@@ -782,29 +772,21 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			return rmOrderIdFound;
 		}
 		
-		Session session = HibernateUtil.getASession(); 
-        
-        session.beginTransaction();
-		try {
-		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(orderId));
-
-		 session.getTransaction().commit();
-		 
-		 int rmId = rmStockEntity.getOrderId();
-			if (rmId == oid) {
-				rmOrderIdFound = true;
-				return rmOrderIdFound;
-			}
-		
-		
+		Session session = HibernateUtil.getASession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("from RawMaterialStockEntity where orderId = :oId");
+		query.setParameter("oId", oid);
+		if (query.getResultList().size() == 1) {
+			rmOrderIdFound = true;
+			session.getTransaction().commit();
 			session.close();
-			
-	}
-	catch(ObjectNotFoundException exception) {
-			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
 			return rmOrderIdFound;
-	}
-		return rmOrderIdFound;	 
+		} else {
+			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			session.close();
+			return rmOrderIdFound;
+		}	 
 		}
 
 	
@@ -1201,6 +1183,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	      q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
 	      q.setParameter("processDateVariable", rawMaterialStock.getProcessDate());
 	      int result = q.executeUpdate();
+	      System.out.println(result);
 	      session.getTransaction().commit();
 	      session.close();
 	      return Constants.DATA_INSERTED_MESSAGE;

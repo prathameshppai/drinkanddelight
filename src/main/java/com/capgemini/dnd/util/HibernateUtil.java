@@ -24,7 +24,7 @@ public class HibernateUtil {
 	static {
 		Configuration config = new Configuration().configure().addPackage("com.capgemini.dnd.entity")
 				.addAnnotatedClass(ProductStockEntity.class).addAnnotatedClass(EmployeeCredentialEntity.class)
-				.addAnnotatedClass(ProductOrdersEntity.class).addAnnotatedClass(RawMaterialOrderEntity.class);
+				.addAnnotatedClass(ProductOrdersEntity.class).addAnnotatedClass(RawMaterialOrderEntity.class).addAnnotatedClass(RawMaterialStockEntity.class);
 		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
 		sf = config.buildSessionFactory(registry);
 	}

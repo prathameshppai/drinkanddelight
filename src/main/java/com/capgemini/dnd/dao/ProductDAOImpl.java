@@ -25,6 +25,7 @@ import com.capgemini.dnd.customexceptions.ProductNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
+import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dto.Address;
@@ -738,36 +739,23 @@ public class ProductDAOImpl implements ProductDAO {
 			logger.error(e.getMessage());
 			return pOrderIdFound;
 		}
-		Session session = HibernateUtil.getASession(); 
-//        System.out.println("in ordr id exist mthod 1:" + oid);
-        session.beginTransaction();
-//		try {
-		ProductOrdersEntity productOrderEntity = session.load(ProductOrdersEntity.class, Integer.parseInt(orderId));
-		System.out.println(null == productOrderEntity);
-		 session.getTransaction().commit();
-//		 System.out.println("in ordr id exist mthod 2"); 
-//		 int pId = productOrderEntity.getOrderId();
-//		 System.out.println(pId);
-		 
-		 if (productOrderEntity.getDateOfOrder() != null) {
-			 	pOrderIdFound = true;
-				return pOrderIdFound;
-			}
 		
-		
+		Session session = HibernateUtil.getASession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("from ProductOrdersEntity where orderId = :oId");
+		query.setParameter("oId", oid);
+		if (query.getResultList().size() == 1) {
+			pOrderIdFound = true;
+			session.getTransaction().commit();
 			session.close();
-			
+			return pOrderIdFound;
+		} else {
+			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+			session.close();
 			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//	}
-//	catch(ObjectNotFoundException exception) {
-//		System.out.println("in ordr id exist mthod 3");
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//	}
-		
-		
-		
-		
+		}
+
 	}
 
 	@Override
@@ -873,28 +861,21 @@ public class ProductDAOImpl implements ProductDAO {
 			return productOrderIdFound;
 		}
 		
-		Session session = HibernateUtil.getASession(); 
-        
-        session.beginTransaction();
-		try {
-		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(orderId));
-
-		 session.getTransaction().commit();
-		 
-		 int pId = productStockEntity.getOrderId();
-			if (pId == oid) {
-				productOrderIdFound = true;
-				return productOrderIdFound;
-			}
-		
-		
+		Session session = HibernateUtil.getASession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("from ProductStockEntity where orderId = :oId");
+		query.setParameter("oId", oid);
+		if (query.getResultList().size() == 1) {
+			productOrderIdFound = true;
+			session.getTransaction().commit();
 			session.close();
-		}
-		catch(ObjectNotFoundException exception) {
+			return productOrderIdFound;
+		} else {
 			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			session.close();
 			return productOrderIdFound;
 		}
-		return productOrderIdFound;
 		 
 		}
 
