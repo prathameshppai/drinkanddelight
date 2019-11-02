@@ -3,12 +3,16 @@ package com.capgemini.dnd.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,16 +24,15 @@ import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.service.RawMaterialService;
 
-@CrossOrigin(origins = "*")
+
 @RestController
-@RequestMapping("/RawMaterialStock")
 public class RawMaterialStockController {
 	
 	@Autowired
 	private RawMaterialService rawMaterialService;
 	
-	
-	@GetMapping("/TrackRawMaterial/{id}")
+	@CrossOrigin(origins = "*")
+	@GetMapping("/RawMaterialStock/TrackRawMaterial/{id}")
 	public String trackProductOrder(@PathVariable("id") String id) {
 		
 		try {
@@ -47,14 +50,14 @@ public class RawMaterialStockController {
 		
 	}
 	
-	
-	@PutMapping("/UpdateProcessDate/{id}")
-	public String updateExitDate(@PathVariable("id") String id, @RequestParam("processDate")@DateTimeFormat(pattern="yyyy-MM-dd") String date) {
+	@CrossOrigin(origins = "*")
+	@PutMapping("/RawMaterialStock/UpdateProcessDate/{id}")
+	public String updateExitDate(@PathVariable("id") String id, @RequestBody Map<String, Object> paramMap) {
 		
 		String errorMessage = "";
 		Date processDate = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+		String date = (String) paramMap.get("ProcessDate");
 		try {
 			rawMaterialService.doesRawMaterialOrderIdExist(id);
 			try {
@@ -87,26 +90,27 @@ public class RawMaterialStockController {
 		return errorMessage;
 	}
 	
-	@PutMapping("/UpdateRawMaterialStockDetails/{id}")
-	public String updateProductStockDetails(@PathVariable("id") String id, 
-			@RequestParam("manDate")@DateTimeFormat(pattern="yyyy-MM-dd") String mandate, 
-			@RequestParam("expDate")@DateTimeFormat(pattern="yyyy-MM-dd") String expdate,
-			@RequestParam("qaStatus") String qaStatus) {
-		
-		
+	@CrossOrigin(origins = "*")
+	@PutMapping("/RawMaterialStock/UpdateRawMaterialStockDetails/{id}")
+	public String updateProductStockDetails(@PathVariable("id") String id, @RequestBody Map<String, Object> paramMap) {
+			
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String message = null;
 
 		Date manufacturingDate = null;
 		Date expiryDate = null;
+		
+		String manDate = (String) paramMap.get("ManufacturingDate");
+		String expDate = (String) paramMap.get("ExpiryDate");
+		String qaStatus = (String) paramMap.get("QAStatus");
 
 		try {
 			if (rawMaterialService.doesRawMaterialOrderIdExist(id)) {
 				try {
-					manufacturingDate = sdf.parse(mandate);
+					manufacturingDate = sdf.parse(manDate);
 					if (rawMaterialService.validateManufacturingDate(manufacturingDate)) {
 						try {
-							expiryDate = sdf.parse(expdate);
+							expiryDate = sdf.parse(expDate);
 							if (rawMaterialService.validateExpiryDate(manufacturingDate, expiryDate)) {
 								
 								message = rawMaterialService.updateRawMaterialStock(
