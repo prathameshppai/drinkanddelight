@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -29,9 +33,14 @@ import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
+@Service
+@Transactional(readOnly = true)
 public class RawMaterialServiceImpl implements RawMaterialService {
 
-	RawMaterialDAO rawMaterialDAO = new RawMaterialDAOImpl();
+	//RawMaterialDAO rawMaterialDAO = new RawMaterialDAOImpl();
+	
+	@Autowired
+	private RawMaterialDAO rawMaterialDAO;
 	
 	public List<RawMaterialOrder> displayRawMaterialOrderDetails() throws Exception {
 		return(rawMaterialDAO.displayRawMaterialOrderDetails());
@@ -73,97 +82,6 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		return(rawMaterialDAO.displayRawmaterialOrdersbetweenDetails(dt1, dt2));
 	}
 
-	public boolean doesRawMaterialOrderIdExist(String orderId)
-			throws RMOrderIDDoesNotExistException, ConnectionException, SQLException {
-		try {
-		return (rawMaterialDAO.doesRawMaterialOrderIdExist(orderId));
-		}
-		catch(RMOrderIDDoesNotExistException exception) {
-			throw exception;
-		}
-	}
-
-	public String doesRMNameExist(String name) throws RMNameDoesNotExistException, ConnectionException, SQLException {
-		if (rawMaterialDAO.doesRMNameExist(name))
-			return ("RM Name found");
-		return ("RM not found");
-	}
-
-	public boolean doesSupplierIdExist(String suppId)
-			throws SupplierIDDoesNotExistException, ConnectionException, SQLException {
-		return (rawMaterialDAO.doesSupplierIdExist(suppId));
-	}
-
-	@Override
-	public boolean doesWIdExist(String WId) throws WIdDoesNotExistException, ConnectionException, SQLException {
-		return (rawMaterialDAO.doesWIdExist(WId));
-	}
-
-	@Override
-	public boolean doesRawMaterialIdExist(String rmId, String name)
-			throws RMIDDoesNotExistException, ConnectionException, SQLException {
-		return (rawMaterialDAO.doesRawMaterialIdExist(rmId, name));
-	}
-
-	@Override
-	public String updateRMStock(RawMaterialStock rawMaterialStock) {
-		try {
-			String message = rawMaterialDAO.updateRMStock(rawMaterialStock);
-			String jsonMessage = JsonUtil.convertJavaToJson(message);
-			return jsonMessage;
-		} catch (SQLException | ConnectionException exception) {
-			String message = exception.getMessage(); 
-			String jsonMessage = JsonUtil.convertJavaToJson(message);
-			return jsonMessage;
-			
-		}
-
-	}
-
-	@Override
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException {
-		try {
-			return rawMaterialDAO.processDateCheck(rawMaterialStock);
-		} catch (ProcessDateException e) {
-			throw new ProcessDateException(e.getMessage());
-		} catch (SQLException | ConnectionException e) {
-
-			return false;
-		}
-	}
-
-	@Override
-	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock) {
-		String message =  rawMaterialDAO.updateProcessDateinStock(rawMaterialStock);
-		String jsonMessage = JsonUtil.convertJavaToJson(message);
-		return jsonMessage;
-
-	}
-
-	@Override
-	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock) {
-		String message =  rawMaterialDAO.trackRawMaterialOrder(rawMaterialStock);
-		String jsonMessage = JsonUtil.convertJavaToJson(message);
-		return jsonMessage;
-	}
-
-	@Override
-	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException {
-		Date today = new Date();
-		if (manufacturing_date.before(today)) {
-			return true;
-		}
-		throw new ManufacturingDateException("Can't enter a future manufacturing date");
-
-	}
-
-	@Override
-	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException {
-		if (expiry_date.after(manufacturing_date))
-			return true;
-		throw new ExpiryDateException("You cant enter expiry date before manufacturing date");
-	}
-
 	public String fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException {
 		
 		 Supplier supplierObject = rawMaterialDAO.fetchSupplierDetail(supplierDetails);
@@ -198,4 +116,66 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		return jsonMessage;
 		
 	}
+	
+	
+	
+	@Override
+	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock) {
+		String message = rawMaterialDAO.trackRawMaterialOrder(rawMaterialStock);
+
+		String jsonMessage = JsonUtil.convertJavaToJson(message);
+		return jsonMessage;
+	}
+
+	@Override
+	public boolean doesRawMaterialOrderIdExist(String id) throws RMOrderIDDoesNotExistException {
+		return rawMaterialDAO.doesRawMaterialOrderIdExist(id);
+	}
+
+	@Override
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException {
+		return rawMaterialDAO.processDateCheck(rawMaterialStock);
+	}
+
+	@Override
+	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock) {
+		String message = rawMaterialDAO.updateProcessDateinStock(rawMaterialStock);
+
+		String jsonMessage = JsonUtil.convertJavaToJson(message);
+		return jsonMessage;
+	}
+	
+	@Override
+	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException {
+		Date today = new Date();
+		if (manufacturing_date.before(today)) {
+			return true;
+		}
+		throw new ManufacturingDateException("You cant enter a future manufacturing date");
+	}
+
+	@Override
+	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException {
+		if (expiry_date.after(manufacturing_date))
+			return true;
+		throw new ExpiryDateException("You cant enter expiry date before manufacturing date");
+
+	}
+
+	@Override
+	public String updateRawMaterialStock(RawMaterialStock rawMaterialStock) {
+		String message = rawMaterialDAO.updateRawMaterialStock(rawMaterialStock);
+		String jsonMessage = JsonUtil.convertJavaToJson(message);
+		return jsonMessage;
+	}
+	
+	@Override
+	public boolean doesRawMaterialOrderIdExistInStock(String orderId) {
+		return rawMaterialDAO.doesRawMaterialOrderIdExistInStock(orderId);
+	}
+
+	
+	
+	
+	
 }

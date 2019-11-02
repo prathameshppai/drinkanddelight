@@ -21,7 +21,7 @@ class RawMaterialServiceImplTest {
 		RawMaterialService rms = new RawMaterialServiceImpl();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		assertEquals("Data inserted", rms
-				.updateRMStock(new RawMaterialStock("7", sdf.parse("2019-08-10"), sdf.parse("2020-02-25"), "PASSED")));
+				.updateRawMaterialStock(new RawMaterialStock("7", sdf.parse("2019-08-10"), sdf.parse("2020-02-25"), "PASSED")));
 	}
 
 	@Test

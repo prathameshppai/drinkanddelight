@@ -57,6 +57,8 @@ public interface ProductService {
 	public String trackProductOrder(ProductStock productStock);
 
 	public boolean doesProductOrderIdExist(String id) throws ProductOrderIDDoesNotExistException;
+	
+	boolean doesProductOrderIdExistInStock(String orderId);
 
 	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException;
 

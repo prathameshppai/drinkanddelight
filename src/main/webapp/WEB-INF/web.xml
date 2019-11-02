@@ -30,4 +30,50 @@
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	
+	
+    <servlet>
+    <description>First page</description>
+    <display-name>LoginServlet</display-name>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description>this is for registration of an employee</description>
+    <display-name>RegistrationPageServlet</display-name>
+    <servlet-name>RegistrationPageServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.RegistrationPageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RegistrationPageServlet</servlet-name>
+    <url-pattern>/RegistrationPageServlet</url-pattern>
+  </servlet-mapping>
+
+    <servlet>
+    <description>Forgot password</description>
+    <display-name>ForgotPasswordServlet</display-name>
+    <servlet-name>ForgotPasswordServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.ForgotPasswordServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ForgotPasswordServlet</servlet-name>
+    <url-pattern>/ForgotPasswordServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SecurityQuestionServlet</display-name>
+    <servlet-name>SecurityQuestionServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.SecurityQuestionServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SecurityQuestionServlet</servlet-name>
+    <url-pattern>/SecurityQuestionServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+	
 </web-app>

@@ -43,31 +43,8 @@ public interface RawMaterialService {
 	
 	public List<RawMaterialOrder> displayRawmaterialOrdersbetweenDetails(Date dt1, Date dt2) throws Exception;
 
-	public boolean doesRawMaterialOrderIdExist(String id) throws RMOrderIDDoesNotExistException, ConnectionException, SQLException;
-
-	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock);
-
-	public String doesRMNameExist(String name) throws RMNameDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesSupplierIdExist(String name) throws SupplierIDDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesWIdExist(String warehouseId) throws WIdDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesRawMaterialIdExist(String rmId, String name) throws RMIDDoesNotExistException, ConnectionException, SQLException;
-
-	public String updateRMStock(RawMaterialStock rawMaterialStock);
-
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException;
-
-	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock);
-
-	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException;
-
-	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
-
 	public List<RawMaterialOrder> displayDispatchedRawMaterialOrderDetails() throws Exception;
 	
-
 	public String fetchSupplierDetail(Supplier supplier) throws BackEndException, DoesNotExistException;
 
 	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException;
@@ -77,7 +54,23 @@ public interface RawMaterialService {
 	public ArrayList<String> fetchSupplierIds() throws DisplayException, ConnectionException;
 
 	public ArrayList<String> fetchWarehouseIds() throws DisplayException, ConnectionException;
+	
+	
+	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock);
 
+	public boolean doesRawMaterialOrderIdExist(String id) throws RMOrderIDDoesNotExistException;
+	
+	boolean doesRawMaterialOrderIdExistInStock(String orderId);
+
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException;
+
+	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock);
+
+	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException;
+
+	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
+
+	public String updateRawMaterialStock(RawMaterialStock rawMaterialStock);
 	
 }
 

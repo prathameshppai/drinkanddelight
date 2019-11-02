@@ -40,29 +40,7 @@ public interface RawMaterialDAO {
 	
 	public List<RawMaterialOrder> displayRawmaterialOrdersbetweenDetails(Date dt1, Date dt2) throws Exception;
 
-	public boolean doesRawMaterialOrderIdExist(String orderId) throws RMOrderIDDoesNotExistException, ConnectionException, SQLException;
-
-	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock);
-	
 	public List<RawMaterialOrder> displayRawMaterialOrderDetails() throws Exception;
-
-	public boolean doesRMNameExist(String name)throws RMNameDoesNotExistException, ConnectionException, SQLException;
-	
-	public boolean doesSupplierIdExist(String suppId) throws SupplierIDDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesWIdExist(String WId) throws WIdDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesRawMaterialIdExist(String rmId, String name)
-			throws RMIDDoesNotExistException, ConnectionException, SQLException;
-
-	public String updateRMStock(RawMaterialStock rawMaterialStock) throws SQLException, ConnectionException;
-
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws SQLException, ConnectionException, ProcessDateException;
-
-	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock);
-
-	public boolean doesRawMaterialOrderIdExistInStock(String orderId)
-			throws RMOrderIDDoesNotExistException, ConnectionException, SQLException;
 
 	public List<RawMaterialOrder> displayDispatchedRawMaterialOrderDetails() throws Exception;
 
@@ -75,5 +53,18 @@ public interface RawMaterialDAO {
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException;
 
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException;
+	
+	
+	public boolean doesRawMaterialOrderIdExist(String orderId) throws RMOrderIDDoesNotExistException;
+
+	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock);
+
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException;
+
+	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock);
+
+	public String updateRawMaterialStock(RawMaterialStock rawMaterialStock);
+
+	public boolean doesRawMaterialOrderIdExistInStock(String orderId);
 
 }
