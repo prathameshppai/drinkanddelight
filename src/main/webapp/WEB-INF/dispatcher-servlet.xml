@@ -18,6 +18,5 @@
 		for all the -->
 	<!-- class which has an annotations like @Component, @Controller, @Service, 
 		@Repository -->
-
-
+		
 </beans>

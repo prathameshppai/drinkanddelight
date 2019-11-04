@@ -26,7 +26,7 @@ public class PlaceProductOrderController {
 	@Autowired
 	private ProductService productService;
 
-	@Autowired
+//	@Autowired
 	ProductOrder productOrder;
 
 	@GetMapping("/PlaceOrder")
