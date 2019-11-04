@@ -39,7 +39,7 @@
 	
 	
 	
-    <servlet>
+   <!--  <servlet>
     <description>First page</description>
     <display-name>LoginServlet</display-name>
     <servlet-name>LoginServlet</servlet-name>
@@ -81,5 +81,5 @@
     <url-pattern>/SecurityQuestionServlet</url-pattern>
   </servlet-mapping>
   
-	
+	 -->
 </web-app>
