@@ -53,10 +53,11 @@ public class ProductDAOImpl implements ProductDAO {
 	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
 
-	/*
+	/*******************************************
 	 * Product order delivery status update
+	 * Author: Ankit Kumar
 	 * 
-	 */
+	 *********************************************/
 	public String updateStatusProductOrder(String orderId,String deliveryStatus)  {
 		Session session = null;
         Transaction transaction = null;
