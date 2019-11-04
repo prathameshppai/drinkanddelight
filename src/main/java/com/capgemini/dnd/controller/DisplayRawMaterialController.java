@@ -33,7 +33,7 @@ public class DisplayRawMaterialController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	    	System.out.println("in model and view");
+	    
 	    	String jsonMessage = "";
 			String errorMessage = "";
 			PrintWriter out = response.getWriter();
