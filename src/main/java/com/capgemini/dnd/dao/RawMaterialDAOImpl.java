@@ -864,6 +864,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //	}
 //
 
+	@SuppressWarnings("unused")
 	@Override
 	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException
 			 {
@@ -1213,12 +1214,18 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 		Session session = sessionFactory.openSession(); 
         session.beginTransaction();
-        String hql = "update RawMaterialStockEntity set processDate = :processDateVariable where orderId = :oId";
-        Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
-	      q.setParameter("processDateVariable", rawMaterialStock.getProcessDate());
-	      int result = q.executeUpdate();
-	      System.out.println(result);
+        RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
+//        String hql = "update RawMaterialStockEntity set processDate = :processDateVariable where orderId = :oId";
+//        Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
+//	      q.setParameter("processDateVariable", rawMaterialStock.getProcessDate());
+        
+	      rmStockEntity.setProcessDate(rawMaterialStock.getProcessDate());
+	      session.save(rmStockEntity);
+	      
+//	      int result = q.executeUpdate();
+//	      System.out.println(result);
+	      
 	      session.getTransaction().commit();
 	      if (session.getTransaction() != null && session.getTransaction().isActive()) {
 				 session.getTransaction().rollback();
@@ -1242,6 +1249,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		if (orderIdcheckInStock == false) {
 			System.out.println("3");
 			String hql = "insert into RawMaterialStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateOfDelivery from RawMaterialOrderEntity where orderId = :oId";
+			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
 		      q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
 			
@@ -1249,15 +1257,26 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			System.out.println(result + ":");
 		}
 		System.out.println("4");
-		String hql = "update RawMaterialStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-		Query q1 = session.createQuery(hql);
-	      q1.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
-	      q1.setParameter("manDate", rawMaterialStock.getManufacturingDate());
-	      q1.setParameter("expDate", rawMaterialStock.getExpiryDate());
-	      q1.setParameter("qaCheck", rawMaterialStock.getQualityCheck());
-	      
-	      int result = q1.executeUpdate();
-			System.out.println(result);
+//		String hql = "update RawMaterialStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
+//		Query q1 = session.createQuery(hql);
+//	      q1.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
+//	      q1.setParameter("manDate", rawMaterialStock.getManufacturingDate());
+//	      q1.setParameter("expDate", rawMaterialStock.getExpiryDate());
+//	      q1.setParameter("qaCheck", rawMaterialStock.getQualityCheck());
+//	      
+//	      int result = q1.executeUpdate();
+//			System.out.println(result);
+		
+		
+		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
+		
+		rmStockEntity.setManufacturingDate(rawMaterialStock.getManufacturingDate());
+		rmStockEntity.setExpiryDate(rawMaterialStock.getExpiryDate());
+		rmStockEntity.setQualityCheck(rawMaterialStock.getQualityCheck());
+		
+		session.save(rmStockEntity);
+		
+		
 			System.out.println("5");
 			session.getTransaction().commit();
 			if (session.getTransaction() != null && session.getTransaction().isActive()) {
@@ -1293,7 +1312,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			session.close();
 			return rmOrderIdFound;
 		} else {
-//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
 			session.close();
 			return rmOrderIdFound;
 		}	 
