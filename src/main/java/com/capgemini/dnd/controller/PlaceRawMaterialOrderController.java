@@ -18,7 +18,6 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.service.RawMaterialService;
 import com.capgemini.dnd.util.JsonUtil;
 
-
 @RestController
 public class PlaceRawMaterialOrderController {
 

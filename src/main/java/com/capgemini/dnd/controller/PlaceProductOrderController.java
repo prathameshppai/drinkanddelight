@@ -18,7 +18,7 @@ import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.service.ProductService;
 import com.capgemini.dnd.util.JsonUtil;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/PlaceProductOrder")
 public class PlaceProductOrderController {
