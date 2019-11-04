@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        
+        
+        <!-- <property name="hibernate.connection.url">jdbc:mysql://remotemysql.com:3306/xVmO0IegJi</property>
+        <property name="hibernate.connection.password">PC29Y04wlu</property>
+        <property name="hibernate.connection.username">xVmO0IegJi</property> -->
+        
+        
+        <!--  Stock Database Only -->
+        <property name="hibernate.connection.url">jdbc:mysql://remotemysql.com:3306/vh7F14hChv</property>
+        <property name="hibernate.connection.password">nwpao0EA87</property>
+        <property name="hibernate.connection.username">vh7F14hChv</property>
+        <!--  Stock Database Only -->
+        
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+        <property name="show_sql">true</property>
+		<property name="hbm2ddl.auto">update</property>
+		<property name="connection.pool_size">100</property>
+
+        <mapping class="com.capgemini.dnd.entity.ProductOrdersEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.ProductStockEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.EmployeeCredentialEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.RawMaterialStockEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.RawMaterialOrderEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.AddressEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.DistributorEntity"></mapping>
+
+    </session-factory>
+</hibernate-configuration>

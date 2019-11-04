@@ -52,9 +52,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	public RawMaterialDAOImpl() {
-
-	}
+	public RawMaterialDAOImpl() {}
+	
+	
 	public String updateStatusRawMaterialOrder(String orderId,String deliveryStatus)  {
 		Session session = null;
         Transaction transaction = null;

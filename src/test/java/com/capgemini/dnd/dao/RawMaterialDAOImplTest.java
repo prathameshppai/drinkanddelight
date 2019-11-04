@@ -7,12 +7,8 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Test;
 
 import com.capgemini.dnd.customexceptions.ConnectionException;
-import com.capgemini.dnd.customexceptions.DistributorIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.RMIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.RMNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.SupplierIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
+
 
 class RawMaterialDAOImplTest {
 

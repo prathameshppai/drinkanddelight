@@ -10,11 +10,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.NamedQuery;
 
-/*
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-*/
-
 @Entity
 @NamedQuery(name="GetOneConfidentialDetail", query="FROM EmployeeCredentialEntity WHERE Username=:username") 
 @Table (
@@ -28,8 +23,6 @@ name = "EmployeeCredentials",
 )
 
 public class EmployeeCredentialEntity {
-	
-	
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +28,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RequestMapping("/")
 public class LoginController {
 	@Autowired
-	private EmployeeService empService;
+	private EmployeeService employeeService;
 	
 	@Autowired
 	private Employee employee;
@@ -38,7 +37,7 @@ public class LoginController {
 	public void login(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
-		empService = new EmployeeServiceImpl();
+		employeeService = new EmployeeServiceImpl();
 		employee = new Employee();
 		employee.setUsername(fieldValueMap.get("username"));
 		employee.setPassword(fieldValueMap.get("password"));
@@ -46,7 +45,7 @@ public class LoginController {
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
 		try {
-			if (empService.login(employee)) {
+			if (employeeService.login(employee)) {
 				((ObjectNode) dataResponse).put("message", ServletConstants.LOGIN_SUCCESSFUL_MESSAGE);
 				((ObjectNode) dataResponse).put("username", employee.getUsername());
 			}
@@ -54,6 +53,5 @@ public class LoginController {
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
 		} 
 		response.getWriter().print(dataResponse);
-		
 	}
 }
