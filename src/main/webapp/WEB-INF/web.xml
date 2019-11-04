@@ -59,7 +59,6 @@
     <servlet-name>RegistrationPageServlet</servlet-name>
     <url-pattern>/RegistrationPageServlet</url-pattern>
   </servlet-mapping>
-
     <servlet>
     <description>Forgot password</description>
     <display-name>ForgotPasswordServlet</display-name>

@@ -48,11 +48,14 @@ public class ProductDAOImpl implements ProductDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	/*
+	/*******************************************
 	 * Product order delivery status update
+	 * Author: Ankit Kumar
 	 * 
+
 	 */
-	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
+	
+	public String updateStatusProductOrder(String orderId,String deliveryStatus)  {
 		Session session = null;
 		Transaction transaction = null;
 		try {
