@@ -18,17 +18,15 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.service.RawMaterialService;
 import com.capgemini.dnd.util.JsonUtil;
 
-
 @RestController
+@CrossOrigin(origins = "*")
 public class PlaceRawMaterialOrderController {
 
 	@Autowired
 	private RawMaterialService rawMaterialService;
 
-//	@Autowired
 	RawMaterialOrder rawMaterialOrder;
 
-	@CrossOrigin(origins = "*")
 	@GetMapping("/PlaceRawMaterialOrder/PlaceOrder")
 	public String trackProductOrder(@RequestParam("name") String name, @RequestParam("supplierId") String supplierId,
 			@RequestParam("quantityValue") Double quantityValue, @RequestParam("quantityUnit") String quantityUnit,

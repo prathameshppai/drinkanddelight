@@ -1,5 +1,7 @@
 package com.capgemini.dnd.service;
 
+import org.springframework.stereotype.Service;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
 import com.capgemini.dnd.customexceptions.PasswordException;
@@ -12,6 +14,7 @@ import com.capgemini.dnd.dao.EmployeeDAO;
 import com.capgemini.dnd.dao.EmployeeDAOImpl;
 import com.capgemini.dnd.dto.Employee;
 
+@Service
 public class EmployeeServiceImpl implements EmployeeService {
 
 	EmployeeDAO employeeDAO = new EmployeeDAOImpl();
