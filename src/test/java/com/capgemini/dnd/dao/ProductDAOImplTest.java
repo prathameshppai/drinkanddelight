@@ -202,18 +202,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.sql.SQLException;
-
 import org.junit.jupiter.api.Test;
-
-import com.capgemini.dnd.customexceptions.ConnectionException;
-import com.capgemini.dnd.customexceptions.DistributorIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.ProductIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.ProductNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.UpdateException;
-import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
+
 
 class ProductDAOImplTest {
 

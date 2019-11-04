@@ -1281,6 +1281,7 @@ public class ProductDAOImpl implements ProductDAO {
 					address.getStreetName(), address.getLandmark(), address.getCity(), address.getState(),
 					address.getPincode());
 			session.save(addressEntity);
+			@SuppressWarnings("rawtypes")
 			Query query = session.createQuery("from DistributorEntity");
 			distributorEntity.setDistributorCompositeId(distributor.getDistributorId(),
 					2999 + query.getResultList().size());
