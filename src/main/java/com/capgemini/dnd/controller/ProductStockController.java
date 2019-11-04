@@ -3,12 +3,15 @@ package com.capgemini.dnd.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,16 +23,15 @@ import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.service.ProductService;
 
-@CrossOrigin(origins = "*")
+
 @RestController
-@RequestMapping("/ProductStock")
 public class ProductStockController {
 	
 	@Autowired
 	private ProductService productService;
 	
-	
-	@GetMapping("/TrackProduct/{id}")
+	@CrossOrigin(origins = "*")
+	@GetMapping("/ProductStock/TrackProduct/{id}")
 	public String trackProductOrder(@PathVariable("id") String id) {
 		
 		try {
@@ -47,13 +49,15 @@ public class ProductStockController {
 		
 	}
 	
-	
-	@PutMapping("/UpdateExitDate/{id}")
-	public String updateExitDate(@PathVariable("id") String id, @RequestParam("exitDate")@DateTimeFormat(pattern="yyyy-MM-dd") String date) {
+	@CrossOrigin(origins = "*")
+	@PutMapping("/ProductStock/UpdateExitDate/{id}")
+	public String updateExitDate(@PathVariable("id") String id,  @RequestBody Map<String, Object> paramMap) {
 		
 		String errorMessage = "";
 		Date exitDate = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		String date = (String) paramMap.get("ExitDate");
 
 		try {
 			productService.doesProductOrderIdExist(id);
@@ -87,11 +91,9 @@ public class ProductStockController {
 		return errorMessage;
 	}
 	
-	@PutMapping("/UpdateProductStockDetails/{id}")
-	public String updateProductStockDetails(@PathVariable("id") String id, 
-			@RequestParam("manDate")@DateTimeFormat(pattern="yyyy-MM-dd") String mandate, 
-			@RequestParam("expDate")@DateTimeFormat(pattern="yyyy-MM-dd") String expdate,
-			@RequestParam("qaStatus") String qaStatus) {
+	@CrossOrigin(origins = "*")
+	@PutMapping("/ProductStock/UpdateProductStockDetails/{id}")
+	public String updateProductStockDetails(@PathVariable("id") String id,  @RequestBody Map<String, Object> paramMap) {
 		
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -99,14 +101,18 @@ public class ProductStockController {
 
 		Date manufacturingDate = null;
 		Date expiryDate = null;
+		
+		String manDate = (String) paramMap.get("ManufacturingDate");
+		String expDate = (String) paramMap.get("ExpiryDate");
+		String qaStatus = (String) paramMap.get("QAStatus");
 
 		try {
 			if (productService.doesProductOrderIdExist(id)) {
 				try {
-					manufacturingDate = sdf.parse(mandate);
+					manufacturingDate = sdf.parse(manDate);
 					if (productService.validateManufacturingDate(manufacturingDate)) {
 						try {
-							expiryDate = sdf.parse(expdate);
+							expiryDate = sdf.parse(expDate);
 							if (productService.validateExpiryDate(manufacturingDate, expiryDate)) {
 								
 								message = productService.updateProductStock(

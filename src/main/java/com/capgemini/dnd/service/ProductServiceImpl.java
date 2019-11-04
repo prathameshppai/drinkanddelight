@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -27,11 +31,16 @@ import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.util.JsonUtil;
 
+@Service
+@Transactional(readOnly = true)
 public class ProductServiceImpl implements ProductService {
 
 	Scanner scanner = new Scanner(System.in);
 
-	ProductDAO productDAO = new ProductDAOImpl();
+	//ProductDAO productDAO = new ProductDAOImpl();
+	
+	@Autowired
+	private ProductDAO productDAO;
 
 	public String fetchCompleteDistributorDetail(Distributor distributor)
 			throws BackEndException, DoesNotExistException {
@@ -91,83 +100,7 @@ public class ProductServiceImpl implements ProductService {
 		return (productDAO.displayOrdersFromDistributor(distId));
 	}
 
-	public boolean doesProductNameExist(String name)
-			throws ProductNameDoesNotExistException, ConnectionException, SQLException {
-		return (productDAO.doesProductNameExist(name));
-	}
-
-	public boolean doesProductOrderIdExist(String orderId)
-			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException {
-		try {
-		return (productDAO.doesProductOrderIdExist(orderId));
-		}
-		catch(ProductOrderIDDoesNotExistException exception) {
-			throw exception;
-		}
-	}
-
-	public boolean doesProductIdExist(String orderId, String name)
-			throws ProductIDDoesNotExistException, ConnectionException, SQLException {
-		return (productDAO.doesProductIdExist(orderId, name));
-	}
-
-	public boolean doesDistributorIdExist(String distId)
-			throws DistributorIDDoesNotExistException, ConnectionException, SQLException {
-		return (productDAO.doesDistributorIdExist(distId));
-	}
-
-	@Override
-	public boolean doesWIdExist(String WId) throws WIdDoesNotExistException, ConnectionException, SQLException {
-		return (productDAO.doesWIdExist(WId));
-	}
-
-	@Override
-	public String trackProductOrder(ProductStock productStock) {
-		String message = productDAO.trackProductOrder(productStock);
-
-		String jsonMessage = JsonUtil.convertJavaToJson(message);
-		return jsonMessage;
-	}
-
-	@Override
-	public boolean exitDateCheck(ProductStock productStock)
-			throws ExitDateException, SQLException, ConnectionException {
-		return productDAO.exitDateCheck(productStock);
-	}
-
-	@Override
-	public String updateExitDateinStock(ProductStock productStock) {
-		String message = productDAO.updateExitDateinStock(productStock);
-
-		String jsonMessage = JsonUtil.convertJavaToJson(message);
-		return jsonMessage;
-
-	}
-
-	@Override
-	public String updateProductStock(ProductStock productStock) {
-		String message = productDAO.updateProductStock(productStock);
-		String jsonMessage = JsonUtil.convertJavaToJson(message);
-		return jsonMessage;
-	}
-
-	@Override
-	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException {
-		Date today = new Date();
-		if (manufacturing_date.before(today)) {
-			return true;
-		}
-		throw new ManufacturingDateException("You cant enter a future manufacturing date");
-	}
-
-	@Override
-	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException {
-		if (expiry_date.after(manufacturing_date))
-			return true;
-		throw new ExpiryDateException("You cant enter expiry date before manufacturing date");
-
-	}
-
+	
 	@Override
     public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
         List<ProductOrder> poList2 = new ArrayList<ProductOrder>();
@@ -196,4 +129,63 @@ public class ProductServiceImpl implements ProductService {
 //		return(JsonUtil.convertJavaToJson1(productDAO.getWarehouseIds()));
 		return(productDAO.getWarehouseIds());
 	}
+	
+	
+	@Override
+	public String trackProductOrder(ProductStock productStock) {
+		String message = productDAO.trackProductOrder(productStock);
+
+		String jsonMessage = JsonUtil.convertJavaToJson(message);
+		return jsonMessage;
+	}
+
+	@Override
+	public boolean doesProductOrderIdExist(String id) throws ProductOrderIDDoesNotExistException {
+		return productDAO.doesProductOrderIdExist(id);
+	}
+
+	@Override
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException {
+		return productDAO.exitDateCheck(productStock);
+	}
+
+	@Override
+	public String updateExitDateinStock(ProductStock productStock) {
+		String message = productDAO.updateExitDateinStock(productStock);
+
+		String jsonMessage = JsonUtil.convertJavaToJson(message);
+		return jsonMessage;
+	}
+	
+	@Override
+	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException {
+		Date today = new Date();
+		if (manufacturing_date.before(today)) {
+			return true;
+		}
+		throw new ManufacturingDateException("You cant enter a future manufacturing date");
+	}
+
+	@Override
+	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException {
+		if (expiry_date.after(manufacturing_date))
+			return true;
+		throw new ExpiryDateException("You cant enter expiry date before manufacturing date");
+
+	}
+
+	@Override
+	public String updateProductStock(ProductStock productStock) {
+		String message = productDAO.updateProductStock(productStock);
+		String jsonMessage = JsonUtil.convertJavaToJson(message);
+		return jsonMessage;
+	}
+
+	@Override
+	public boolean doesProductOrderIdExistInStock(String orderId) {
+		return productDAO.doesProductOrderIdExistInStock(orderId);
+	}
+	
+	
+	
 }
