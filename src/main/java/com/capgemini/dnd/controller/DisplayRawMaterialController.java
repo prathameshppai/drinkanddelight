@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +24,7 @@ import com.capgemini.dnd.service.RawMaterialServiceImpl;
 import com.capgemini.dnd.util.MappingUtil;
 
 @Controller
+@CrossOrigin(origins = "*")
 @RequestMapping("/RawmaterialOrder")
 public class DisplayRawMaterialController {
 	
