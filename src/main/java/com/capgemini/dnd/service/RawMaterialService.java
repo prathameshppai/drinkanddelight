@@ -5,28 +5,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
-import com.capgemini.dnd.customexceptions.RMIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.RMNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
-import com.capgemini.dnd.customexceptions.SupplierIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 
-@Service
+
 public interface RawMaterialService {
 //	public void viewRMspec(String name);
 
@@ -65,7 +60,7 @@ public interface RawMaterialService {
 	
 	boolean doesRawMaterialOrderIdExistInStock(String orderId);
 
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException;
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException, IncompleteDataException;
 
 	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock);
 

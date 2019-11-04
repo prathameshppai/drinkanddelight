@@ -65,5 +65,6 @@ public class Constants {
 	public static final String DATABASE_NOT_CONNECTED="Database could not be connected!!!";
     public static final String SUPPLIER_ADDRESS_EXCEPTION="Supplier ID does not exists!!!";
 	public static final String DISTRIBUTOR_ADDRESS_ID_DOES_NOT_EXISTS_EXCEPTION = "Distributor address ID does not exist";
+	public static final String INCOMPLETE_INFORMATION_IN_DATABASE = "Data Incomplete...Please check database and update required information from Orders Table";
 	
 }

@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.UpdateException;
@@ -1023,6 +1025,8 @@ public class ProductDAOImpl implements ProductDAO {
 		
 //		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
+		
+		try {
 		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
 		// session.getTransaction().commit();
 //		if (session.getTransaction() !=null && session.getTransaction().isActive()) {
@@ -1036,14 +1040,23 @@ public class ProductDAOImpl implements ProductDAO {
 			String warehouseId = productStockEntity.getWarehouseId();
 
 			if(exitDate == null || manDate == null) {
-				return "Data Incomplete...Please check database and update required information";
+				return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
 			}
 			
 			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
-				+ manDate.toString() + " to " + exitDate.toString() + "("
-				+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+					+ manDate.toString() + " to " + exitDate.toString() + "("
+					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+				session.close();
+			return message;
+			
+		}
+		
+		catch(ObjectNotFoundException exception) {
 			session.close();
-		return message;
+			return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
+		}
+			
+			
 	
 	
 	}
@@ -1063,11 +1076,11 @@ public class ProductDAOImpl implements ProductDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		@SuppressWarnings("rawtypes")
-		Query query = session.createQuery("from ProductStockEntity where orderId = :oId");
+		Query query = session.createQuery("from ProductOrdersEntity where orderId = :oId");
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			pOrderIdFound = true;
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			session.close();
 			return pOrderIdFound;
 		} else {
@@ -1079,7 +1092,7 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	@Override
-	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException {
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException {
 		
 		Session session = null;
 		try {
@@ -1090,7 +1103,7 @@ public class ProductDAOImpl implements ProductDAO {
 //	        Query q = session.createQuery(hql);
 //		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 //		      Object[] dateDetails = (Object[]) q.uniqueResult();
-		      
+		      try {
 	        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
 //		      session.getTransaction().commit();
 		      
@@ -1102,6 +1115,12 @@ public class ProductDAOImpl implements ProductDAO {
 					datecheck = true;
 					return datecheck;
 				}
+				
+		}
+		catch(ObjectNotFoundException exception) {
+			session.close();
+			throw new IncompleteDataException(Constants.INCOMPLETE_INFORMATION_IN_DATABASE);
+		}
 				
 				throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
 			}	
@@ -1124,16 +1143,24 @@ public class ProductDAOImpl implements ProductDAO {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
-        Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      q.setParameter("exitDateVariable", productStock.getExitDate());
-	      int result = q.executeUpdate();
+//        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
+//        Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      q.setParameter("exitDateVariable", productStock.getExitDate());
+//	      int result = q.executeUpdate();
+		
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+		
+		productStockEntity.setExitDate(productStock.getExitDate());
+		
+		
+		session.save(productStockEntity);
 	      session.getTransaction().commit();
 	  	
 	    if (session.getTransaction() != null && session.getTransaction().isActive()) {
 			 session.getTransaction().rollback();
 		}
+		
 	      
 	    session.close();
 	    
@@ -1153,6 +1180,7 @@ public class ProductDAOImpl implements ProductDAO {
 		if (orderIdcheckInStock == false) {
 			System.out.println("3");
 			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
 		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 			
@@ -1160,15 +1188,25 @@ public class ProductDAOImpl implements ProductDAO {
 			System.out.println(result + ":");
 		}
 		System.out.println("4");
-		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-		Query q1 = session.createQuery(hql);
-	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      q1.setParameter("manDate", productStock.getManufacturingDate());
-	      q1.setParameter("expDate", productStock.getExpiryDate());
-	      q1.setParameter("qaCheck", productStock.getQualityCheck());
-	      
-	      int result = q1.executeUpdate();
-			System.out.println(result);
+//		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
+//		Query q1 = session.createQuery(hql);
+//	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      q1.setParameter("manDate", productStock.getManufacturingDate());
+//	      q1.setParameter("expDate", productStock.getExpiryDate());
+//	      q1.setParameter("qaCheck", productStock.getQualityCheck());
+//	      
+//	      int result = q1.executeUpdate();
+//			System.out.println(result);
+		
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+		
+		productStockEntity.setManufacturingDate(productStock.getManufacturingDate());
+		productStockEntity.setExpiryDate(productStock.getExpiryDate());
+		productStockEntity.setQualityCheck(productStock.getQualityCheck());
+		
+		session.save(productStockEntity);
+		
+		
 			System.out.println("5");
 			session.getTransaction().commit();
 			if (session.getTransaction() != null && session.getTransaction().isActive()) {
