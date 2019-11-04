@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
-@Component
 public class RawMaterialOrder {
 	private String orderId;
 	private static int orderIdCount = 1;

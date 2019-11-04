@@ -2,6 +2,7 @@ package com.capgemini.dnd.dto;
 
 import java.util.Date;
 
+import org.springframework.stereotype.Component;
 
 
 public class ProductOrder {

@@ -26,9 +26,10 @@ public class PlaceRawMaterialOrderController {
 	@Autowired
 	private RawMaterialService rawMaterialService;
 
-	@Autowired
+//	@Autowired
 	RawMaterialOrder rawMaterialOrder;
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/PlaceOrder")
 	public String trackProductOrder(@RequestParam("name") String name, @RequestParam("supplierId") String supplierId,
 			@RequestParam("quantityValue") Double quantityValue, @RequestParam("quantityUnit") String quantityUnit,
