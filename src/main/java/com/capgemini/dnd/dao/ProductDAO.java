@@ -42,30 +42,6 @@ public interface ProductDAO {
 
 	public List<ProductOrder> displayOrdersFromDistributor(String distId) throws Exception;// check111
 
-	public boolean doesProductNameExist(String name)
-			throws ProductNameDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesProductOrderIdExist(String orderId)
-			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesDistributorIdExist(String distId)
-			throws DistributorIDDoesNotExistException, ConnectionException, SQLException;
-
-	public String trackProductOrder(ProductStock productStock);
-
-	public boolean doesWIdExist(String WId) throws WIdDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesProductIdExist(String orderId, String name)
-			throws ConnectionException, SQLException, ProductIDDoesNotExistException;
-
-	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, ConnectionException, SQLException;
-
-	public String updateExitDateinStock(ProductStock productStock);
-
-	public String updateProductStock(ProductStock productStock);
-
-	public boolean doesProductOrderIdExistInStock(String orderId) throws SQLException;
-
 	public Distributor fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException;
 	
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException;
@@ -77,5 +53,19 @@ public interface ProductDAO {
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException;
 
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException;
+	
+	public boolean doesProductOrderIdExist(String orderId) throws ProductOrderIDDoesNotExistException;
+
+	public String trackProductOrder(ProductStock productStock);
+
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException;
+
+	public String updateExitDateinStock(ProductStock productStock);
+
+	public String updateProductStock(ProductStock productStock);
+
+	boolean doesProductOrderIdExistInStock(String orderId);
+	
+	
 
 }

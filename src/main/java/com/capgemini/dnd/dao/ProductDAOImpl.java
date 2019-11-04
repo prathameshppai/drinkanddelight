@@ -4,30 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
-import com.capgemini.dnd.customexceptions.DistributorIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
-import com.capgemini.dnd.customexceptions.ProductIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.ProductNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
-import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.UpdateException;
-import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dto.Address;
 import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
@@ -36,22 +26,26 @@ import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
+import com.capgemini.dnd.dao.Constants;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.dao.QueryMapper;
 
 import org.hibernate.query.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-//import org.hibernate.service.ServiceRegistryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ProductDAOImpl implements ProductDAO {
 
 	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	
 
 	/*******************************************
 	 * Product order delivery status update
@@ -697,696 +691,6 @@ public class ProductDAOImpl implements ProductDAO {
 		return added;
 	}
 
-	public boolean doesProductOrderIdExist(String orderId)
-			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException {
-
-//		boolean pOrderIdFound = false;
-//		Connection connection;
-//		try {
-//
-//			connection = DBUtil.getInstance().getConnection();
-//		} catch (Exception e) {
-//
-//			logger.error(e.getMessage());
-//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//		}
-//
-//		PreparedStatement preparedStatement = null;
-//		ResultSet resultSet = null;
-//
-//		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_ALL_PRODUCT_ORDER);
-//		preparedStatement.setString(1, orderId);
-//		resultSet = preparedStatement.executeQuery();
-//
-//		while (resultSet.next()) {
-//			pOrderIdFound = true;
-//			break;
-//		}
-//
-//		if (!pOrderIdFound) {
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//		}
-//
-//		connection.close();
-//		return pOrderIdFound;
-		
-		
-		boolean pOrderIdFound = false;
-		int oid = -1;
-		try {
-			oid = Integer.parseInt(orderId);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return pOrderIdFound;
-		}
-		
-		Session session = HibernateUtil.getASession();
-		session.beginTransaction();
-		@SuppressWarnings("rawtypes")
-		Query query = session.createQuery("from ProductOrdersEntity where orderId = :oId");
-		query.setParameter("oId", oid);
-		if (query.getResultList().size() == 1) {
-			pOrderIdFound = true;
-			session.getTransaction().commit();
-			session.close();
-			return pOrderIdFound;
-		} else {
-			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-			session.close();
-			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-		}
-
-	}
-
-	@Override
-	public boolean doesProductIdExist(String prodId, String name)
-			throws ProductIDDoesNotExistException, ConnectionException, SQLException {
-
-		boolean pIdFound = false;
-		Connection connection;
-		try {
-
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_PRODUCTID_ORDER);
-		preparedStatement.setString(1, name.toUpperCase());
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			String pId = resultSet.getString(1);
-			if (pId.equalsIgnoreCase(prodId)) {
-				pIdFound = true;
-				break;
-			}
-		}
-
-		connection.close();
-		if (pIdFound) {
-			return pIdFound;
-		}
-		if (!pIdFound) {
-			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-			throw new ProductIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-		}
-
-		return pIdFound;
-	}
-
-	@Override
-	public boolean doesProductOrderIdExistInStock(String orderId) throws SQLException
-			 {
-
-//		boolean productOrderIdFound = false;
-//		int oid = -1;
-//		try {
-//			oid = Integer.parseInt(orderId);
-//		} catch (Exception e) {
-//			logger.error(e.getMessage());
-//			return productOrderIdFound;
-//		}
-//		Connection connection;
-//		try {
-//			System.out.println("c1");
-//			connection = DBUtil.getInstance().getConnection();
-//			System.out.println("c2");
-//		} catch (Exception e) {
-//			logger.error(e.getMessage());
-//			return false;
-//			
-//		}
-//		System.out.println("c3");
-//		PreparedStatement preparedStatement = null;
-//		ResultSet resultSet = null;
-//
-//		preparedStatement = connection.prepareStatement(QueryMapper.SELECT_PRODUCT_STOCK);
-//		preparedStatement.setInt(1, oid);
-//		resultSet = preparedStatement.executeQuery();
-//		System.out.println("c4");
-//		while (resultSet.next()) {
-//			
-//			int pId = resultSet.getInt(1);
-//			if (pId == oid) {
-//				productOrderIdFound = true;
-//				break;
-//			}
-//		}
-//		System.out.println("c5");
-//		connection.close();
-//		if (productOrderIdFound) {
-//			System.out.println("c6");
-//			return productOrderIdFound;
-//		}
-//		if (!productOrderIdFound) {
-//			System.out.println("c7");
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
-//			return productOrderIdFound;
-//		}
-//
-//		return productOrderIdFound;
-		
-		
-		boolean productOrderIdFound = false;
-		int oid = -1;
-		try {
-			oid = Integer.parseInt(orderId);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return productOrderIdFound;
-		}
-		
-		Session session = HibernateUtil.getASession();
-		session.beginTransaction();
-		@SuppressWarnings("rawtypes")
-		Query query = session.createQuery("from ProductStockEntity where orderId = :oId");
-		query.setParameter("oId", oid);
-		if (query.getResultList().size() == 1) {
-			productOrderIdFound = true;
-			session.getTransaction().commit();
-			session.close();
-			return productOrderIdFound;
-		} else {
-			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
-			session.close();
-			return productOrderIdFound;
-		}
-		 
-		}
-
-		
-		
-		
-	
-
-	public boolean doesDistributorIdExist(String distId)
-			throws DistributorIDDoesNotExistException, ConnectionException, SQLException {
-
-		boolean distIdFound = false;
-		Connection connection;
-		try {
-
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = connection.prepareStatement(QueryMapper.CHECK_IF_DISTRIBUTOR_ID_EXIST);
-		preparedStatement.setString(1, distId);
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			distIdFound = true;
-			break;
-		}
-
-		if (!distIdFound) {
-			logger.error(Constants.DISTRIBUTOR_ID_DOES_NOT_EXISTS_EXCEPTION);
-			throw new DistributorIDDoesNotExistException(Constants.DISTRIBUTOR_ID_DOES_NOT_EXISTS_EXCEPTION);
-		}
-
-		connection.close();
-		return distIdFound;
-	}
-
-	public boolean doesProductNameExist(String name)
-			throws ProductNameDoesNotExistException, ConnectionException, SQLException {
-
-		boolean productNameFound = false;
-		Connection connection;
-		try {
-
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
-
-		preparedStatement = connection.prepareStatement(QueryMapper.CHECK_IF_PRODUCT_NAME_EXIST);
-		preparedStatement.setString(1, name);
-		resultSet = preparedStatement.executeQuery();
-
-		while (resultSet.next()) {
-			productNameFound = true;
-			break;
-		}
-
-		if (!productNameFound) {
-			logger.error(Constants.PRODUCTNAME_DOES_NOT_EXISTS_EXCEPTION);
-			throw new ProductNameDoesNotExistException(Constants.PRODUCTNAME_DOES_NOT_EXISTS_EXCEPTION);
-		}
-
-		connection.close();
-		return productNameFound;
-
-	}
-
-	@Override
-	public boolean doesWIdExist(String WId) throws WIdDoesNotExistException, ConnectionException, SQLException {
-		boolean found = false;
-		Connection connection;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
-			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-		Statement statement = null;
-		ResultSet resultSet = null;
-		statement = connection.createStatement();
-		String sql = "SELECT * FROM Warehouse WHERE WarehouseID='" + WId.toLowerCase() + "';";
-		resultSet = statement.executeQuery(sql);
-
-		while (resultSet.next()) {
-			found = true;
-			break;
-		}
-		if (!found)
-			throw new WIdDoesNotExistException(Constants.WAREHOUSE_ID_DOES_NOT_EXISTS_EXCEPTION);
-
-		return found;
-	}
-
-	/*******************************************************************************************************
-	 * - Function Name : track product order - Input Parameters : String orderid -
-	 * Return Type : String - Throws : No Exception - Author : Capgemini - Creation
-	 * Date : 25/09/2019 - Description : Product order is tracked in the warehouse
-	 * along with its shelf life
-	 ********************************************************************************************************/
-
-	@Override
-	public String trackProductOrder(ProductStock productStock) {
-//		Connection connection = null;
-//		PreparedStatement statement = null;
-//		ResultSet resultSet = null;
-//		try {
-//			connection = DBUtil.getInstance().getConnection();
-//
-//			statement = connection.prepareStatement(QueryMapper.TRACKPRODUCTORDER);
-//			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-//			resultSet = statement.executeQuery();
-//
-//			String warehouseId = null;
-//			java.sql.Date exitDate = null;
-//			java.sql.Date manDate = null;
-//
-//			while (resultSet.next()) {
-//
-//				exitDate = resultSet.getDate(1);
-//
-//				manDate = resultSet.getDate(2);
-//
-//				warehouseId = resultSet.getString(3);
-//
-//			}
-//
-//			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
-//					+ manDate.toString() + " to " + exitDate.toString() + "("
-//					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-//
-//			return message;
-//
-//		} catch (SQLException e) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-//			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
-//		}
-//
-//		catch (Exception e) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-//		} finally {
-//			try {
-//				resultSet.close();
-//				statement.close();
-//				connection.close();
-//			} catch (SQLException exception) {
-//				logger.error(exception.getMessage());
-//			}
-//		}
-		
-		
-		
-		
-//		Transaction transaction = null;
-//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-//            
-//            transaction = session.beginTransaction();
-//            
-//            String hql = "select exitDate, manufacturingDate, warehouseID from ProductStock where orderID = :orderId";
-//            Query q = session.createQuery(hql);
-//            q.setParameter(0, Integer.parseInt(productStock.getOrderId()));
-//            Object[] trackDetails = (Object[]) q.uniqueResult();
-//            
-//            
-//            System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);
-//            
-//            
-//            transaction.commit();
-//            
-//            
-//            return "Hello";
-//            
-//        } catch (Exception e) {
-//            if (transaction != null) {
-//                transaction.rollback();
-//            }
-//            e.printStackTrace();
-//            return "HelloException";
-//        }
-		
-
-		
-		Session session = HibernateUtil.getASession(); 
-        
-        session.beginTransaction();
-		
-//        String hql = "select exitDate, manufacturingDate, warehouseId from ProductStockEntity where orderId = :oId";
-//	      Query q = session.createQuery(hql);
-//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//	      Object[] trackDetails = (Object[]) q.uniqueResult();
-        
-        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
-	      
-	      session.getTransaction().commit();
-	      
-	      				Date exitDate = productStockEntity.getExitDate();
-	      
-	      				Date manDate = productStockEntity.getManufacturingDate();
-	      
-	      				String warehouseId = productStockEntity.getWarehouseId();
-	      
-//	      				System.out.println(trackDetails[0] + ":" + trackDetails[1] + ":" + trackDetails[2]);		
-	      
-	      			
-	      				if(exitDate == null || manDate == null) {
-	      					return "Data Incomplete...Please check database and update required information";
-	      				}
-	      				
-	      				String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
-	      					+ manDate.toString() + " to " + exitDate.toString() + "("
-	      					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-	      				session.close();
-	      			return message;
-	    
-	}
-
-	/*******************************************************************************************************
-	 * - Function Name : Exit Date Check - Input Parameters : String orderId, Date
-	 * exit_date - Return Type : boolean - Throws : ExitDateException, SQLException,
-	 * ConnectionException - Author : CAPGEMINI - Creation Date : 25/09/2019 -
-	 * Description : checking that exit_date should be after manufacturing_date and
-	 * before expiry_date.
-	 ********************************************************************************************************/
-
-	@Override
-	public boolean exitDateCheck(ProductStock productStock)
-			throws ExitDateException, SQLException, ConnectionException {
-//		Connection connection = null;
-//		boolean datecheck = false;
-//		PreparedStatement statement = null;
-//		ResultSet resultSet = null;
-//		try {
-//			connection = DBUtil.getInstance().getConnection();
-//			statement = connection.prepareStatement(QueryMapper.CHECKEXITDATE);
-//			statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-//			resultSet = statement.executeQuery();
-//
-//			java.sql.Date manufacturingDate = null;
-//			java.sql.Date expiryDate = null;
-//
-//			while (resultSet.next()) {
-//
-//				manufacturingDate = resultSet.getDate(1);
-//
-//				expiryDate = resultSet.getDate(2);
-//
-//				if (productStock.getExitDate().after(manufacturingDate)
-//						&& productStock.getExitDate().before(expiryDate)) {
-//					datecheck = true;
-//					return datecheck;
-//				}
-//			}
-//			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
-//
-//		} catch (SQLException exception) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-//			throw new SQLException(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-//
-//		}
-//
-//		catch (ExitDateException exception) {
-//			logger.error(exception.getMessage());
-//			throw exception;
-//
-//		}
-//
-//		catch (Exception exception) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-//			throw new ConnectionException(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-//
-//		}
-//
-//		finally {
-//			resultSet.close();
-//			statement.close();
-//			connection.close();
-//		}
-		
-		Session session = null;
-	try {
-		boolean datecheck = false;
-		session = HibernateUtil.getASession(); 
-        session.beginTransaction();
-//        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
-//        Query q = session.createQuery(hql);
-//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//	      Object[] dateDetails = (Object[]) q.uniqueResult();
-	      
-        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
-	      session.getTransaction().commit();
-	      
-	      Date manufacturingDate = productStockEntity.getManufacturingDate();
-	      
-			Date expiryDate = productStockEntity.getExpiryDate();
-			
-			if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
-				datecheck = true;
-				return datecheck;
-			}
-			
-			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
-		}	
-			
-		catch (ExitDateException exception) {
-				logger.error(exception.getMessage());
-				throw exception;
-	
-			}
-	
-	finally {
-		session.close();
-	}
-		
-
-	}
-
-	/*******************************************************************************************************
-	 * - Function Name : update ExitDate in Stock - Input Parameters : String
-	 * orderId, Date Exit_date - Return Type : Void - Throws : SQL Exception,
-	 * Exception - Author : CAPGEMINI - Creation Date : 25/09/2019 - Description :
-	 * updating exit date for an orderId in the Product Stock table.
-	 ********************************************************************************************************/
-
-	@Override
-	public String updateExitDateinStock(ProductStock productStock) {
-//		Connection connection = null;
-//		PreparedStatement statement = null;
-//		try {
-//			connection = DBUtil.getInstance().getConnection();
-//
-//			statement = connection.prepareStatement(QueryMapper.UPDATEEXITDATE);
-//			statement.setDate(1, DBUtil.stringtoDate(productStock.getExitDate()));
-//			statement.setInt(2, Integer.parseInt(productStock.getOrderId()));
-//			statement.executeUpdate();
-//			return Constants.DATA_INSERTED_MESSAGE;
-//		}
-//
-//		catch (SQLException exception) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-//			return Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED;
-//
-//		} catch (Exception exception) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-//		} finally {
-//			try {
-//				statement.close();
-//				connection.close();
-//			} catch (SQLException exception) {
-//				logger.error(exception.getMessage());
-//			}
-//
-//		}
-		
-		
-		Session session = HibernateUtil.getASession(); 
-        session.beginTransaction();
-        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
-        Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      q.setParameter("exitDateVariable", productStock.getExitDate());
-	      int result = q.executeUpdate();
-	      session.getTransaction().commit();
-	      session.close();
-	      return Constants.DATA_INSERTED_MESSAGE;
-
-	}
-
-	/*******************************************************************************************************
-	 * - Function Name : update product stock - Input Parameters : String orderid,
-	 * Date manufacturing date, Date exit date, String quality Status - Return Type
-	 * : Void - Throws : SQL Exception, Exception - Author : Capgemini - Creation
-	 * Date : 25/09/2019 - Description : updating manufacturing date, exit date and
-	 * quality status into product stock table.
-	 ********************************************************************************************************/
-
-	@Override
-	public String updateProductStock(ProductStock productStock) {
-//		Connection connection = null;
-//		PreparedStatement statement = null;
-//		ResultSet resultSet = null;
-//		PreparedStatement statement2 = null;
-//		PreparedStatement statement1 = null;
-//		try {
-//			
-//			connection = DBUtil.getInstance().getConnection();
-//			
-//			boolean orderIdcheckInStock = false;
-//			orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
-//			if (orderIdcheckInStock == false) {
-//				
-//				statement = connection.prepareStatement(QueryMapper.RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK);
-//				statement.setInt(1, Integer.parseInt(productStock.getOrderId()));
-//				resultSet = statement.executeQuery();
-//				String name = null;
-//				double priceperunit = 0;
-//				double quantityValue = 0;
-//				String quantityUnit = null;
-//				double totalprice = 0;
-//				String warehouseId = null;
-//				Date dateofdelivery = null;
-//
-//				while (resultSet.next()) {
-//					
-//					name = resultSet.getString(1);
-//					priceperunit = resultSet.getDouble(2);
-//					quantityValue = resultSet.getDouble(3);
-//					quantityUnit = resultSet.getString(4);
-//					totalprice = resultSet.getDouble(5);
-//					warehouseId = resultSet.getString(6);
-//					dateofdelivery = resultSet.getDate(7);
-//				}
-//				
-//				statement2 = connection.prepareStatement(QueryMapper.INSERTPRODUCTSTOCK);
-//				statement2.setInt(1, Integer.parseInt(productStock.getOrderId()));
-//				statement2.setString(2, name);
-//				statement2.setDouble(3, priceperunit);
-//				statement2.setDouble(4, quantityValue);
-//				statement2.setString(5, quantityUnit);
-//				statement2.setDouble(6, totalprice);
-//				statement2.setString(7, warehouseId);
-//				statement2.setDate(8, DBUtil.stringtoDate(dateofdelivery));
-//
-//				statement2.executeUpdate();
-//				
-//				resultSet.close();
-//				statement.close();
-//				statement2.close();
-//			}
-//			
-//			statement1 = connection.prepareStatement(QueryMapper.UPDATEPRODUCTSTOCK);
-//			statement1.setDate(1, DBUtil.stringtoDate(productStock.getManufacturingDate()));
-//			statement1.setDate(2, DBUtil.stringtoDate(productStock.getExpiryDate()));
-//			statement1.setString(3, productStock.getQualityCheck());
-//			statement1.setInt(4, Integer.parseInt(productStock.getOrderId()));
-//			statement1.executeUpdate();
-//
-//			return Constants.DATA_INSERTED_MESSAGE;
-//
-//		}
-//
-//		catch (SQLException exception) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_QUERY_NOT_EXECUTED);
-//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-//
-//		}
-//
-//		catch (Exception exception) {
-//			logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-//			return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-//		}
-//
-//		finally {
-//			try {
-//
-//				//statement1.close();
-//
-//				connection.close();
-//			} catch (SQLException exception) {
-//				logger.error(exception.getMessage());
-//			}
-//		}
-		
-		
-		Session session = HibernateUtil.getASession(); 
-        session.beginTransaction();
-        try {
-        boolean orderIdcheckInStock = false;
-        System.out.println("1");
-		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
-		System.out.println("2");
-		if (orderIdcheckInStock == false) {
-			System.out.println("3");
-			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
-			Query q = session.createQuery(hql);
-		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-			
-			int result = q.executeUpdate();
-			System.out.println(result + ":");
-		}
-		System.out.println("4");
-		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-		Query q1 = session.createQuery(hql);
-	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      q1.setParameter("manDate", productStock.getManufacturingDate());
-	      q1.setParameter("expDate", productStock.getExpiryDate());
-	      q1.setParameter("qaCheck", productStock.getQualityCheck());
-	      
-	      int result = q1.executeUpdate();
-			System.out.println(result);
-			System.out.println("5");
-			session.getTransaction().commit();
-		    session.close();
-		      return Constants.DATA_INSERTED_MESSAGE;
-        }   
-		      catch (SQLException exception) {
-					logger.error(Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED);
-					return Constants.LOGGER_ERROR_MESSAGE_DATABASE_NOT_CONNECTED;
-				}
-	}
-
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
 	public Distributor fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException {
@@ -1711,14 +1015,203 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 		return warehouseIdsList;
 	}
+	
+	
+	
+	@Override
+	public String trackProductOrder(ProductStock productStock) {
+		
+//		Session session = sessionFactory.getCurrentSession();
+		Session session = sessionFactory.openSession();
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+		// session.getTransaction().commit();
+//		if (session.getTransaction() !=null && session.getTransaction().isActive()) {
+//			 session.getTransaction().rollback();
+//			}
+	      
+			Date exitDate = productStockEntity.getExitDate();
+
+			Date manDate = productStockEntity.getManufacturingDate();
+
+			String warehouseId = productStockEntity.getWarehouseId();
+
+			if(exitDate == null || manDate == null) {
+				return "Data Incomplete...Please check database and update required information";
+			}
+			
+			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+				+ manDate.toString() + " to " + exitDate.toString() + "("
+				+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
+			session.close();
+		return message;
+	
+	
+	}
+
+	@Override
+	public boolean doesProductOrderIdExist(String orderId) throws ProductOrderIDDoesNotExistException {
+		boolean pOrderIdFound = false;
+		int oid = -1;
+		try {
+			oid = Integer.parseInt(orderId);
+		} catch (Exception e) {
+//			logger.error(e.getMessage());
+			return pOrderIdFound;
+		}
+		
+//		Session session = sessionFactory.getCurrentSession();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("from ProductStockEntity where orderId = :oId");
+		query.setParameter("oId", oid);
+		if (query.getResultList().size() == 1) {
+			pOrderIdFound = true;
+			session.getTransaction().commit();
+			session.close();
+			return pOrderIdFound;
+		} else {
+//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+//			session.close();
+			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+		}
+
+	}
+
+	@Override
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException {
+		
+		Session session = null;
+		try {
+			boolean datecheck = false;
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+//	        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
+//	        Query q = session.createQuery(hql);
+//		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//		      Object[] dateDetails = (Object[]) q.uniqueResult();
+		      
+	        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+//		      session.getTransaction().commit();
+		      
+		      Date manufacturingDate = productStockEntity.getManufacturingDate();
+		      
+				Date expiryDate = productStockEntity.getExpiryDate();
+				
+				if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
+					datecheck = true;
+					return datecheck;
+				}
+				
+				throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
+			}	
+				
+			catch (ExitDateException exception) {
+//					logger.error(exception.getMessage());
+					throw exception;
+		
+				}
+		
+		finally {
+			session.close();
+		}
+			
+
+	}
+
+	@Override
+	public String updateExitDateinStock(ProductStock productStock) {
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
+        Query q = session.createQuery(hql);
+	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      q.setParameter("exitDateVariable", productStock.getExitDate());
+	      int result = q.executeUpdate();
+	      session.getTransaction().commit();
+	  	
+	    if (session.getTransaction() != null && session.getTransaction().isActive()) {
+			 session.getTransaction().rollback();
+		}
+	      
+	    session.close();
+	    
+	    return Constants.DATA_INSERTED_MESSAGE;
+	}
+
+	@Override
+	public String updateProductStock(ProductStock productStock) {
+		
+		Session session = sessionFactory.openSession(); 
+        session.beginTransaction();
+        
+        boolean orderIdcheckInStock = false;
+        System.out.println("1");
+		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
+		System.out.println("2");
+		if (orderIdcheckInStock == false) {
+			System.out.println("3");
+			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			Query q = session.createQuery(hql);
+		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+			
+			int result = q.executeUpdate();
+			System.out.println(result + ":");
+		}
+		System.out.println("4");
+		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
+		Query q1 = session.createQuery(hql);
+	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+	      q1.setParameter("manDate", productStock.getManufacturingDate());
+	      q1.setParameter("expDate", productStock.getExpiryDate());
+	      q1.setParameter("qaCheck", productStock.getQualityCheck());
+	      
+	      int result = q1.executeUpdate();
+			System.out.println(result);
+			System.out.println("5");
+			session.getTransaction().commit();
+			if (session.getTransaction() != null && session.getTransaction().isActive()) {
+				 session.getTransaction().rollback();
+			}
+		    session.close();
+		      return Constants.DATA_INSERTED_MESSAGE;
+       
+
+	}
+
+	@Override
+	public boolean doesProductOrderIdExistInStock(String orderId) {
+		
+		boolean productOrderIdFound = false;
+		int oid = -1;
+		try {
+			oid = Integer.parseInt(orderId);
+		} catch (Exception e) {
+//			logger.error(e.getMessage());
+			return productOrderIdFound;
+		}
+		
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		Query query = session.createQuery("from ProductStockEntity where orderId = :oId");
+		query.setParameter("oId", oid);
+		if (query.getResultList().size() == 1) {
+			productOrderIdFound = true;
+//			session.getTransaction().commit();
+			session.close();
+			return productOrderIdFound;
+		} else {
+//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			session.close();
+			return productOrderIdFound;
+		}
+	}
+	
+	
+	
 
 }
 
 
-//class App {
-//public static void main(String[] args) {
-//	ProductDAOImpl p = new ProductDAOImpl();
-//	String str = p.trackProductOrder(new ProductStock("5"));
-//	System.out.println(str);
-//}
-//}

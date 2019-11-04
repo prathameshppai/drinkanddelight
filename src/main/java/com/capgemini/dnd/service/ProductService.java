@@ -46,32 +46,6 @@ public interface ProductService {
 
 	public List<ProductOrder> displayOrdersFromDistributor(String distid) throws Exception;
 
-	public boolean doesProductNameExist(String name)
-			throws ProductNameDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesProductOrderIdExist(String pid)
-			throws ProductOrderIDDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesDistributorIdExist(String distributorId)
-			throws DistributorIDDoesNotExistException, ConnectionException, SQLException;
-
-	public String trackProductOrder(ProductStock productStock);
-
-	public boolean doesWIdExist(String WId) throws WIdDoesNotExistException, ConnectionException, SQLException;
-
-	public boolean doesProductIdExist(String pid, String name)
-			throws ConnectionException, SQLException, ProductIDDoesNotExistException;
-
-	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, SQLException, ConnectionException;
-
-	public String updateExitDateinStock(ProductStock productStock);
-
-	public String updateProductStock(ProductStock productStock);
-
-	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException;
-
-	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
-
 	public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception;
 
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException;
@@ -79,5 +53,21 @@ public interface ProductService {
 	public ArrayList<String> fetchDistributorIds() throws DisplayException, ConnectionException;
 
 	public ArrayList<String> fetchWarehouseIds() throws DisplayException, ConnectionException;
+	
+	public String trackProductOrder(ProductStock productStock);
+
+	public boolean doesProductOrderIdExist(String id) throws ProductOrderIDDoesNotExistException;
+	
+	boolean doesProductOrderIdExistInStock(String orderId);
+
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException;
+
+	public String updateExitDateinStock(ProductStock productStock);
+
+	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException;
+
+	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
+
+	public String updateProductStock(ProductStock productStock);
 
 }

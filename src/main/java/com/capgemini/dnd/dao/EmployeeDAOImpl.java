@@ -131,7 +131,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 		} finally {
-			HibernateUtil.closeSession(session);
+//			HibernateUtil.closeSession(session);
+//			session.close();
 		}
 		return result;
 	}
