@@ -1,4 +1,6 @@
+
 package com.capgemini.dnd.controller;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -12,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
+import com.capgemini.dnd.customexceptions.InvalidPasswordException;
+import com.capgemini.dnd.customexceptions.PasswordException;
+import com.capgemini.dnd.customexceptions.RowNotFoundException;
+import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
+import com.capgemini.dnd.customexceptions.WrongSecurityAnswerException;
 import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.service.EmployeeService;
 import com.capgemini.dnd.service.EmployeeServiceImpl;
@@ -25,33 +32,49 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Controller
 @CrossOrigin(origins = "*")
-@RequestMapping("/")
-public class LoginController {
+@RequestMapping("/change-password")
+public class ChangePasswordController {
 	@Autowired
 	private EmployeeService employeeService;
-	
+
 	@Autowired
-	private Employee employee;
+	private Employee tempEmployee;
+
+	@Autowired
+	private Employee idealEmployee;
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public void login(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 		employeeService = new EmployeeServiceImpl();
-		employee = new Employee();
-		employee.setUsername(fieldValueMap.get("username"));
-		employee.setPassword(fieldValueMap.get("password"));
-		
+		tempEmployee = new Employee();
+		tempEmployee.setUsername(fieldValueMap.get("username"));
+		idealEmployee = null;
+		try {
+			idealEmployee = employeeService.fetchOneConfidentialDetail(tempEmployee);
+		} catch (BackEndException e) {
+		}
+
+		Employee actualEmployee = new Employee();
+		actualEmployee.setUsername(fieldValueMap.get("username"));
+		actualEmployee.setSecurityAnswer(fieldValueMap.get("answer"));
+		actualEmployee.setPassword(fieldValueMap.get("newPassword"));
+		actualEmployee.setConfirmPassword(fieldValueMap.get("confirmPassword"));
+
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
+
 		try {
-			if (employeeService.login(employee)) {
-				((ObjectNode) dataResponse).put("message", ServletConstants.LOGIN_SUCCESSFUL_MESSAGE);
-				((ObjectNode) dataResponse).put("username", employee.getUsername());
+			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
+				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);
+				((ObjectNode) dataResponse).put("username", actualEmployee.getUsername());
 			}
-		} catch (Exception exception) {
+		} catch (UnregisteredEmployeeException | WrongSecurityAnswerException | PasswordException | BackEndException
+				| InvalidPasswordException | RowNotFoundException exception) {
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
-		} 
-		response.getWriter().print(dataResponse);
+		} finally {
+			response.getWriter().print(dataResponse);
+		}
 	}
 }
