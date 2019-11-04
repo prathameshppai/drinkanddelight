@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.capgemini.dnd.customexceptions.ConnectionException;
@@ -28,8 +29,11 @@ public class PlaceProductOrderController {
 
 	ProductOrder productOrder;
 
+
 	
-	@GetMapping("/PlaceProductOrder/PlaceOrder")
+	// @GetMapping("/PlaceProductOrder/PlaceOrder")
+//	@GetMapping("/PlaceOrder")
+	@RequestMapping(method = RequestMethod.POST)
 	public String trackProductOrder(@RequestParam("name") String name, @RequestParam("supplierId") String supplierId,
 			@RequestParam("quantityValue") Double quantityValue, @RequestParam("quantityUnit") String quantityUnit,
 			@RequestParam("dateOfDelivery") @DateTimeFormat(pattern = "yyyy-MM-dd") String dateOfDelivery,

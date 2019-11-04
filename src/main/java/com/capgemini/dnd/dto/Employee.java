@@ -2,8 +2,11 @@ package com.capgemini.dnd.dto;
 
 import java.sql.Date;
 
+import org.springframework.stereotype.Component;
+
 import com.capgemini.dnd.util.CryptoFunction;
 
+@Component
 public class Employee {
 	private String empId;
 	private String empName;
