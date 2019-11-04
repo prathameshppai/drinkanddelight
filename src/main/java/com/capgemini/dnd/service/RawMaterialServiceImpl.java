@@ -12,6 +12,7 @@ import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
@@ -124,7 +125,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	}
 
 	@Override
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException {
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException, IncompleteDataException {
 		return rawMaterialDAO.processDateCheck(rawMaterialStock);
 	}
 

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import org.junit.jupiter.api.Test;
 
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.dto.RawMaterialStock;
@@ -25,7 +26,7 @@ class RawMaterialServiceImplTest {
 	}
 
 	@Test
-	void testProcessDateCheck() throws ParseException, ProcessDateException {
+	void testProcessDateCheck() throws ParseException, ProcessDateException, IncompleteDataException {
 		RawMaterialService rms = new RawMaterialServiceImpl();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		assertTrue(rms.processDateCheck(new RawMaterialStock("7", sdf.parse("2019-10-25"))));

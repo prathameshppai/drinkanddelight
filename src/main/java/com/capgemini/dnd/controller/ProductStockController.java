@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capgemini.dnd.util.JsonUtil;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
@@ -79,7 +80,7 @@ public class ProductStockController {
 				String errorJsonMessage = JsonUtil.convertJavaToJson(errorMessage);
 				return errorJsonMessage;
 			}
-		} catch (ExitDateException exception) {
+		} catch (ExitDateException | IncompleteDataException exception) {
 			errorMessage += exception.getMessage();
 			String errorJsonMessage = JsonUtil.convertJavaToJson(errorMessage);
 			return errorJsonMessage;		

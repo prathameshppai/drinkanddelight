@@ -8,6 +8,7 @@ import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
@@ -54,7 +55,7 @@ public interface RawMaterialDAO {
 
 	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock);
 
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException;
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException, IncompleteDataException;
 
 	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock);
 

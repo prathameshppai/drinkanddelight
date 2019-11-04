@@ -3,16 +3,12 @@ package com.capgemini.dnd.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import org.junit.jupiter.api.Test;
-
-import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
 import com.capgemini.dnd.dto.ProductStock;
 
@@ -27,7 +23,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void testExitDateCheck() throws ParseException, ExitDateException, SQLException, ConnectionException {
+	void testExitDateCheck() throws ParseException, ExitDateException, IncompleteDataException {
 		ProductService ps = new ProductServiceImpl();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		assertTrue(ps.exitDateCheck(new ProductStock("7", sdf.parse("2019-10-25"))));

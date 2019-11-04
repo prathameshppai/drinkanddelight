@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -25,6 +26,7 @@ import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
@@ -1110,7 +1112,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
         session.beginTransaction();
 		
 		System.out.println(rawMaterialStock.getOrderId());
-		
+		try {
         RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
 //	     System.out.println(rmStockEntity);
       
@@ -1131,6 +1133,13 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	      					+ DBUtil.diffBetweenDays(processDate, deliveryDate) + " days)";
 	      			session.close();
 	      			return message;
+	      			
+	}
+	
+	catch(ObjectNotFoundException exception) {
+		session.close();
+		return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
+	}
 	    
 	}
 
@@ -1165,7 +1174,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	}
 
 	@Override
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException {
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException, IncompleteDataException {
 		
 		Session session = null;
 		
@@ -1174,6 +1183,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			session = sessionFactory.openSession(); 
 	        session.beginTransaction();
 
+	        try {
 	        RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
 		    
 //	        session.getTransaction().commit();
@@ -1190,7 +1200,12 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		      
 		      				else
 		      					throw new ProcessDateException(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
-		      
+	        
+		}
+		catch(ObjectNotFoundException exception) {
+			session.close();
+			throw new IncompleteDataException(Constants.INCOMPLETE_INFORMATION_IN_DATABASE);
+		}
 		      			
 		      
 		      		} 

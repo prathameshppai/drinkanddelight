@@ -9,6 +9,7 @@ import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
 import com.capgemini.dnd.dto.Address;
@@ -53,7 +54,7 @@ public interface ProductDAO {
 
 	public String trackProductOrder(ProductStock productStock);
 
-	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException;
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException;
 
 	public String updateExitDateinStock(ProductStock productStock);
 

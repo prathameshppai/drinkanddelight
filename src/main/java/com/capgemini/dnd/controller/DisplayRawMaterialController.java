@@ -28,8 +28,7 @@ public class DisplayRawMaterialController {
 	
 	
 	@Autowired
-	@Qualifier(value="rmsid")
-	RawMaterialService rawmaterialServiceObject;
+	private RawMaterialService rawmaterialServiceObject;
 	
 	@RequestMapping(method = RequestMethod.POST)
 	    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException {

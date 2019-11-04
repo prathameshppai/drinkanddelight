@@ -10,6 +10,7 @@ import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ExpiryDateException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ManufacturingDateException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
@@ -55,7 +56,7 @@ public interface ProductService {
 	
 	boolean doesProductOrderIdExistInStock(String orderId);
 
-	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException;
+	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException;
 
 	public String updateExitDateinStock(ProductStock productStock);
 
