@@ -36,7 +36,10 @@
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-    <servlet>
+	
+	
+	
+   <!--  <servlet>
     <description>First page</description>
     <display-name>LoginServlet</display-name>
     <servlet-name>LoginServlet</servlet-name>
@@ -76,4 +79,28 @@
     <servlet-name>SecurityQuestionServlet</servlet-name>
     <url-pattern>/SecurityQuestionServlet</url-pattern>
   </servlet-mapping>
+
+    <servlet>
+    <description></description>
+    <display-name>GetProductDetailsServlet</display-name>
+    <servlet-name>GetProductDetailsServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.GetProductDetailsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetProductDetailsServlet</servlet-name>
+    <url-pattern>/GetProductDetailsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>GetRawmaterialDetailsServlet</display-name>
+    <servlet-name>GetRawmaterialDetailsServlet</servlet-name>
+    <servlet-class>com.capgemini.dnd.servlets.GetRawmaterialDetailsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetRawmaterialDetailsServlet</servlet-name>
+    <url-pattern>/GetRawmaterialDetailsServlet</url-pattern>
+  </servlet-mapping>
+
+	 -->
+
 </web-app>

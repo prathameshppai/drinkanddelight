@@ -1,13 +1,17 @@
-package com.capgemini.dnd.servlets;
+
+package com.capgemini.dnd.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
@@ -18,66 +22,49 @@ import com.capgemini.dnd.customexceptions.WrongSecurityAnswerException;
 import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.service.EmployeeService;
 import com.capgemini.dnd.service.EmployeeServiceImpl;
+import com.capgemini.dnd.servlets.ServletConstants;
 import com.capgemini.dnd.util.MappingUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ChangePasswordServlet extends HttpServlet {
+@Controller
+@CrossOrigin(origins = "*")
+@RequestMapping("/change-password")
+public class ChangePasswordController {
+	@Autowired
+	private EmployeeService employeeService;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7888060854228943686L;
+	@Autowired
+	private Employee tempEmployee;
 
-	public ChangePasswordServlet() {
-		super();
-	}
-
-	@Override
-    protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
-    	
-    	String requestOrigin = request.getHeader("Origin");
-    	if(requestOrigin == null) {
-    		requestOrigin = "*";
-    	}
-    	System.out.println("Request Origin = " + requestOrigin);
-    	response.setHeader("Access-Control-Allow-Origin", requestOrigin);
-		
-		response.setHeader("Access-Control-Allow-Headers" ,"Content-Type, Authorization, Content-Length, X-Requested-With");
-		response.setHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
-		response.setHeader("Access-Control-Allow-Credentials", "true");
-    }
+	@Autowired
+	private Employee idealEmployee;
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		PrintWriter out = response.getWriter();
-		response.setContentType("application/json");
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setHeader("Access-Control-Allow-Headers",
-				"Content-Type, Authorization, Content-Length, X-Requested-With");
-		response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
-
+	@RequestMapping(method = RequestMethod.POST)
+	public void login(HttpServletRequest request, HttpServletResponse response)
+			throws BackEndException, JsonParseException, JsonMappingException, IOException {
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
-		EmployeeService employeeService = new EmployeeServiceImpl();
-		Employee tempEmployee=new Employee();
+		employeeService = new EmployeeServiceImpl();
+		tempEmployee = new Employee();
 		tempEmployee.setUsername(fieldValueMap.get("username"));
-		Employee idealEmployee = null;
+		idealEmployee = null;
 		try {
 			idealEmployee = employeeService.fetchOneConfidentialDetail(tempEmployee);
 		} catch (BackEndException e) {
 		}
-		
+
 		Employee actualEmployee = new Employee();
 		actualEmployee.setUsername(fieldValueMap.get("username"));
 		actualEmployee.setSecurityAnswer(fieldValueMap.get("answer"));
 		actualEmployee.setPassword(fieldValueMap.get("newPassword"));
 		actualEmployee.setConfirmPassword(fieldValueMap.get("confirmPassword"));
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
-		
+
 		try {
 			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
 				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);
@@ -87,8 +74,7 @@ public class ChangePasswordServlet extends HttpServlet {
 				| InvalidPasswordException | RowNotFoundException exception) {
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
 		} finally {
-			out.print(dataResponse);
+			response.getWriter().print(dataResponse);
 		}
 	}
-
 }

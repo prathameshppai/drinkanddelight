@@ -28,9 +28,8 @@ import com.capgemini.dnd.util.MappingUtil;
 @RequestMapping("/RawmaterialOrder")
 public class DisplayRawMaterialController {
 	
-	
 	@Autowired
-	private RawMaterialService rawmaterialServiceObject;
+	RawMaterialService rawmaterialServiceObject;
 	
 	@RequestMapping(method = RequestMethod.POST)
 	    public void display(HttpServletRequest request, HttpServletResponse response) throws IOException {
