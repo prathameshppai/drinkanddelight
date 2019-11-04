@@ -49,7 +49,6 @@ public class ProductServiceImpl implements ProductService {
 		String jsonMessage = JsonUtil.convertJavaToJson1(distributorObject);
 		return jsonMessage;
 	}
-
 	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
 		return JsonUtil.convertJavaToJson(productDAO.updateStatusProductOrder(oid, newStatus));
 	}

@@ -36,9 +36,6 @@
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-	
-	
-	
     <servlet>
     <description>First page</description>
     <display-name>LoginServlet</display-name>
@@ -59,7 +56,6 @@
     <servlet-name>RegistrationPageServlet</servlet-name>
     <url-pattern>/RegistrationPageServlet</url-pattern>
   </servlet-mapping>
-
     <servlet>
     <description>Forgot password</description>
     <display-name>ForgotPasswordServlet</display-name>
@@ -80,6 +76,4 @@
     <servlet-name>SecurityQuestionServlet</servlet-name>
     <url-pattern>/SecurityQuestionServlet</url-pattern>
   </servlet-mapping>
-  
-	
 </web-app>
