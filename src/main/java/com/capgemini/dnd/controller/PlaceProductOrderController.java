@@ -18,9 +18,8 @@ import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.service.ProductService;
 import com.capgemini.dnd.util.JsonUtil;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/PlaceProductOrder")
+@CrossOrigin(origins = "*")
 public class PlaceProductOrderController {
 
 	@Autowired
@@ -29,7 +28,8 @@ public class PlaceProductOrderController {
 
 	ProductOrder productOrder;
 
-	@GetMapping("/PlaceOrder")
+	
+	@GetMapping("/PlaceProductOrder/PlaceOrder")
 	public String trackProductOrder(@RequestParam("name") String name, @RequestParam("supplierId") String supplierId,
 			@RequestParam("quantityValue") Double quantityValue, @RequestParam("quantityUnit") String quantityUnit,
 			@RequestParam("dateOfDelivery") @DateTimeFormat(pattern = "yyyy-MM-dd") String dateOfDelivery,
