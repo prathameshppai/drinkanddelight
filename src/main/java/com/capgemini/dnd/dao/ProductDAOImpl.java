@@ -1123,11 +1123,18 @@ public class ProductDAOImpl implements ProductDAO {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
-        Query q = session.createQuery(hql);
-	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      q.setParameter("exitDateVariable", productStock.getExitDate());
-	      int result = q.executeUpdate();
+//        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
+//        Query q = session.createQuery(hql);
+//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      q.setParameter("exitDateVariable", productStock.getExitDate());
+//	      int result = q.executeUpdate();
+		
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+		
+		productStockEntity.setExitDate(productStock.getExitDate());
+		
+		
+		session.save(productStockEntity);
 	      session.getTransaction().commit();
 	  	
 	    if (session.getTransaction() != null && session.getTransaction().isActive()) {
@@ -1152,6 +1159,7 @@ public class ProductDAOImpl implements ProductDAO {
 		if (orderIdcheckInStock == false) {
 			System.out.println("3");
 			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
 		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 			
@@ -1159,15 +1167,25 @@ public class ProductDAOImpl implements ProductDAO {
 			System.out.println(result + ":");
 		}
 		System.out.println("4");
-		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-		Query q1 = session.createQuery(hql);
-	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-	      q1.setParameter("manDate", productStock.getManufacturingDate());
-	      q1.setParameter("expDate", productStock.getExpiryDate());
-	      q1.setParameter("qaCheck", productStock.getQualityCheck());
-	      
-	      int result = q1.executeUpdate();
-			System.out.println(result);
+//		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
+//		Query q1 = session.createQuery(hql);
+//	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+//	      q1.setParameter("manDate", productStock.getManufacturingDate());
+//	      q1.setParameter("expDate", productStock.getExpiryDate());
+//	      q1.setParameter("qaCheck", productStock.getQualityCheck());
+//	      
+//	      int result = q1.executeUpdate();
+//			System.out.println(result);
+		
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+		
+		productStockEntity.setManufacturingDate(productStock.getManufacturingDate());
+		productStockEntity.setExpiryDate(productStock.getExpiryDate());
+		productStockEntity.setQualityCheck(productStock.getQualityCheck());
+		
+		session.save(productStockEntity);
+		
+		
 			System.out.println("5");
 			session.getTransaction().commit();
 			if (session.getTransaction() != null && session.getTransaction().isActive()) {

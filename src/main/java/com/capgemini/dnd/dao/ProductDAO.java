@@ -4,18 +4,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
-import com.capgemini.dnd.customexceptions.DistributorIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.DoesNotExistException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
-import com.capgemini.dnd.customexceptions.ProductIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.ProductNameDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
-import com.capgemini.dnd.customexceptions.WIdDoesNotExistException;
 import com.capgemini.dnd.dto.Address;
 import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
