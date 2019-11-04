@@ -12,7 +12,7 @@ import com.capgemini.dnd.dto.Employee;
 
 public interface EmployeeService {
 	
-	public boolean register(Employee employee) throws RowNotAddedException, BackEndException;
+	
 	
 	public boolean login(Employee employee) throws UnregisteredEmployeeException, WrongPasswordException, BackEndException;
 	

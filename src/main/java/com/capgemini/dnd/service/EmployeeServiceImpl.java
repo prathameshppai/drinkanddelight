@@ -19,10 +19,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	EmployeeDAO employeeDAO = new EmployeeDAOImpl();
 
-	@Override
-	public boolean register(Employee employee) throws RowNotAddedException, BackEndException {
-		return employeeDAO.addEmployee(employee);
-	}
+	
 
 	@Override
 	public boolean login(Employee employee)

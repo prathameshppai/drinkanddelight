@@ -10,8 +10,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
@@ -29,84 +31,17 @@ import com.capgemini.dnd.util.HibernateUtil;
 
 public class EmployeeDAOImpl implements EmployeeDAO {
 	private Logger logger = Logger.getRootLogger();
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	public EmployeeDAOImpl() {
-		System.out.println("PWD = " + new File(".").getAbsolutePath());
-		// PropertyConfigurator.configure("resources//log4j.properties");
-		// Log4JManager.initProps();
+//		System.out.println("PWD = " + new File(".").getAbsolutePath());
+//		// PropertyConfigurator.configure("resources//log4j.properties");
+//		// Log4JManager.initProps();
 	}
 
-	public boolean addEmployee(Employee employee) throws BackEndException, RowNotAddedException {
-		Connection connection;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-			throw new BackEndException(Constants.EMPLOYEE_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-		}
-		boolean employeeRegistered = false;
-		ResultSet resultSet = null;
-		PreparedStatement preparedStatement1 = null;
-		PreparedStatement preparedStatement2 = null;
-		Statement statement = null;
-		int employeeCount = 0;
-		try {
-			// System.out.println(employee);
-			String salt = CryptoFunction.getNextSalt();
-			String hash = CryptoFunction.hash(employee.getPassword(), salt);
-			employee.setSalt(salt);
-			employee.setHash(hash);
-
-			preparedStatement1 = connection.prepareStatement(QueryMapper.INSERT_ONE_EMPLOYEE);
-			preparedStatement1.setString(2, employee.getEmpName());
-			preparedStatement1.setDate(3, employee.getDob());
-			preparedStatement1.setString(4, employee.getEmailId());
-			preparedStatement1.setString(5, "" + Character.toUpperCase(employee.getGender().charAt(0)));
-			preparedStatement1.setString(6, employee.getDesignation());
-			preparedStatement1.setString(7, employee.getPhoneNo());
-
-			preparedStatement2 = connection.prepareStatement(QueryMapper.INSERT_ONE_EMPLOYEE_LOGIN_CREDENTIAL);
-			preparedStatement2.setString(2, employee.getUsername());
-			preparedStatement2.setString(3, employee.getSecurityQuestion());
-			preparedStatement2.setString(4, employee.getSecurityAnswer());
-			preparedStatement2.setBoolean(5, employee.isLoggedIn());
-			preparedStatement2.setString(6, employee.getHash());
-			preparedStatement2.setString(7, employee.getSalt());
-
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(QueryMapper.SELECT_ALL_EMPLOYEES);
-			while (resultSet.next()) {
-				employeeCount++;
-			}
-			employeeCount++;
-			preparedStatement1.setString(1, "E" + Integer.toString(employeeCount));
-			preparedStatement2.setString(1, "E" + Integer.toString(employeeCount));
-
-			int status2 = preparedStatement2.executeUpdate();
-			int status1 = preparedStatement1.executeUpdate();
-			if (status1 == 1 && status2 == 1)
-				employeeRegistered = true;
-			else {
-				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_REGISTRATION_FAILED);
-				throw new RowNotAddedException(Constants.EMPLOYEE_LOGGER_ERROR_REGISTRATION_FAILED);
-			}
-			return employeeRegistered;
-		} catch (SQLException exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_ROW_ADDTION_FAILED + exception.getMessage());
-			throw new RowNotAddedException(Constants.EMPLOYEE_LOGGER_ERROR_ROW_ADDTION_FAILED + exception.getMessage());
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
-		}
-	}
-
-	public boolean register(Employee employee) throws BackEndException, RowNotAddedException {
-		return addEmployee(employee);
-	}
+	
 
 	// -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -115,14 +50,17 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
 			query.setParameter("username", employee.getUsername());
 			if (query.getResultList().size() == 1) {
 				result = true;
-				transaction.commit();
+//				transaction.commit();
+//				if (session.getTransaction() != null && session.getTransaction().isActive()) {
+//					 session.getTransaction().rollback();
+//				}
 			} else {
 				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
@@ -132,7 +70,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 		} finally {
 //			HibernateUtil.closeSession(session);
-//			session.close();
+			session.close();
 		}
 		return result;
 	}
@@ -143,7 +81,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
@@ -158,14 +96,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 			}
 
-			transaction.commit();
+//			transaction.commit();
 		} catch (Exception exception) {
 			if (transaction != null)
 				transaction.rollback();
 			logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 		} finally {
-			HibernateUtil.closeSession(session);
+			session.close();
 		}
 		return result;
 	}
@@ -197,7 +135,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
@@ -210,14 +148,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			idealEmployee.setSecurityAnswer(empCredentialEntity.getSecurityAnswer());
 			idealEmployee.setHash(empCredentialEntity.getHash());
 			idealEmployee.setSalt(empCredentialEntity.getSalt());
-			transaction.commit();
+//			transaction.commit();
 		} catch (Exception exception) {
 			if (transaction != null)
 				transaction.rollback();
 			logger.error(exception.getMessage());
 			throw new BackEndException(exception.getMessage());
 		} finally {
-			HibernateUtil.closeSession(session);
+			session.close();
 		}
 		return idealEmployee;
 	}
@@ -227,7 +165,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			EmployeeDAO empDAO = new EmployeeDAOImpl();
 			Employee tempEmployee=employee;
@@ -237,6 +175,9 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			empCredentialEntity.setHash(CryptoFunction.hash(employee.getPassword(), empCredentialEntity.getSalt()));
 			session.update(empCredentialEntity);
 			transaction.commit();
+			if (session.getTransaction() != null && session.getTransaction().isActive()) {
+				 session.getTransaction().rollback();
+			}
 			if (CryptoFunction.isExpectedPassword(employee.getPassword(), empCredentialEntity.getHash(), empCredentialEntity.getSalt())) {
 				passwordChanged = true;
 			} else {
@@ -248,7 +189,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(exception.getMessage());
 			throw new BackEndException(exception.getMessage());
 		} finally {
-			HibernateUtil.closeSession(session);
+			session.close();
 		}
 		return passwordChanged;
 	}
