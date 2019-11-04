@@ -7,10 +7,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -25,66 +32,58 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.AddressEntity;
+import com.capgemini.dnd.entity.DistributorEntity;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
-import com.capgemini.dnd.dao.Constants;
-import com.capgemini.dnd.entity.ProductOrdersEntity;
-import com.capgemini.dnd.dao.QueryMapper;
-
-import org.hibernate.query.Query;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class ProductDAOImpl implements ProductDAO {
 
 	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	
 
-	/*
+	/*******************************************
 	 * Product order delivery status update
+	 * Author: Ankit Kumar
 	 * 
+
 	 */
+	
 	public String updateStatusProductOrder(String orderId,String deliveryStatus)  {
 		Session session = null;
-        Transaction transaction = null;
-        try {
-        	session = HibernateUtil.getASession();
-            // start a transaction
-            transaction = session.beginTransaction();
-            ProductOrdersEntity product = (ProductOrdersEntity)session.get(ProductOrdersEntity.class,Integer.parseInt(orderId));
-            product.setDeliveryStatus(deliveryStatus ); 
-            session.save(product);
-            // commit transaction
-            transaction.commit();
-            return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-            //int result = query.executeUpdate();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            try
-            { 
-                // Throw an object of user defined exception 
-                throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY); 
-            } 
-            catch (UpdateException ex) 
-            { 
-            return ex.getMessage();
-        }
-    }
-        finally {
-        	session.close();
-        }
-}
+		Transaction transaction = null;
+		try {
+			session = HibernateUtil.getASession();
+			// start a transaction
+			transaction = session.beginTransaction();
+			ProductOrdersEntity product = (ProductOrdersEntity) session.get(ProductOrdersEntity.class,
+					Integer.parseInt(orderId));
+			product.setDeliveryStatus(deliveryStatus);
+			session.save(product);
+			// commit transaction
+			transaction.commit();
+			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
+			// int result = query.executeUpdate();
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+			try {
+				// Throw an object of user defined exception
+				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
+			} catch (UpdateException ex) {
+				return ex.getMessage();
+			}
+		} finally {
+			session.close();
+		}
+	}
 //	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
 //
 //		Connection con = DBUtil.getInstance().getConnection();
@@ -670,10 +669,12 @@ public class ProductDAOImpl implements ProductDAO {
 //			throw exception;
 //		}
 
-		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(), newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(), newPO.getWarehouseId());
+		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
+				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
+				newPO.getWarehouseId());
 		Session session = HibernateUtil.getASession();
 		try {
-			
+
 			session.beginTransaction();
 			session.save(productOrdersEntity);
 			session.getTransaction().commit();
@@ -684,8 +685,8 @@ public class ProductDAOImpl implements ProductDAO {
 		} finally {
 			session.close();
 		}
-		//HibernateUtil.shutdown();
-		
+		// HibernateUtil.shutdown();
+
 		if (!added) {
 			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
 		}
@@ -735,8 +736,6 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 		return distributor;
 	}
-	
-	
 
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException {
 		Connection connection;
@@ -1016,48 +1015,44 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 		return warehouseIdsList;
 	}
-	
-	
-	
+
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
-		
+
 //		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
-		
+
 		try {
-		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
-		// session.getTransaction().commit();
+			ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
+					Integer.parseInt(productStock.getOrderId()));
+			// session.getTransaction().commit();
 //		if (session.getTransaction() !=null && session.getTransaction().isActive()) {
 //			 session.getTransaction().rollback();
 //			}
-	      
+
 			Date exitDate = productStockEntity.getExitDate();
 
 			Date manDate = productStockEntity.getManufacturingDate();
 
 			String warehouseId = productStockEntity.getWarehouseId();
 
-			if(exitDate == null || manDate == null) {
+			if (exitDate == null || manDate == null) {
 				return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
 			}
-			
+
 			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
 					+ manDate.toString() + " to " + exitDate.toString() + "("
 					+ DBUtil.diffBetweenDays(exitDate, manDate) + " days)";
-				session.close();
+			session.close();
 			return message;
-			
+
 		}
-		
-		catch(ObjectNotFoundException exception) {
+
+		catch (ObjectNotFoundException exception) {
 			session.close();
 			return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
 		}
-			
-			
-	
-	
+
 	}
 
 	@Override
@@ -1070,7 +1065,7 @@ public class ProductDAOImpl implements ProductDAO {
 //			logger.error(e.getMessage());
 			return pOrderIdFound;
 		}
-		
+
 //		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -1092,7 +1087,7 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Override
 	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException {
-		
+
 		Session session = null;
 		try {
 			boolean datecheck = false;
@@ -1102,38 +1097,38 @@ public class ProductDAOImpl implements ProductDAO {
 //	        Query q = session.createQuery(hql);
 //		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 //		      Object[] dateDetails = (Object[]) q.uniqueResult();
-		      try {
-	        ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
+			try {
+				ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
+						Integer.parseInt(productStock.getOrderId()));
 //		      session.getTransaction().commit();
-		      
-		      Date manufacturingDate = productStockEntity.getManufacturingDate();
-		      
+
+				Date manufacturingDate = productStockEntity.getManufacturingDate();
+
 				Date expiryDate = productStockEntity.getExpiryDate();
-				
-				if (productStock.getExitDate().after(manufacturingDate)	&& productStock.getExitDate().before(expiryDate)) {
+
+				if (productStock.getExitDate().after(manufacturingDate)
+						&& productStock.getExitDate().before(expiryDate)) {
 					datecheck = true;
 					return datecheck;
 				}
-				
+
+			} catch (ObjectNotFoundException exception) {
+				session.close();
+				throw new IncompleteDataException(Constants.INCOMPLETE_INFORMATION_IN_DATABASE);
+			}
+
+			throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
 		}
-		catch(ObjectNotFoundException exception) {
-			session.close();
-			throw new IncompleteDataException(Constants.INCOMPLETE_INFORMATION_IN_DATABASE);
-		}
-				
-				throw new ExitDateException(Constants.EXIT_DATE_EXCEPTION);
-			}	
-				
-			catch (ExitDateException exception) {
+
+		catch (ExitDateException exception) {
 //					logger.error(exception.getMessage());
-					throw exception;
-		
-				}
-		
+			throw exception;
+
+		}
+
 		finally {
 			session.close();
 		}
-			
 
 	}
 
@@ -1147,42 +1142,42 @@ public class ProductDAOImpl implements ProductDAO {
 //	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 //	      q.setParameter("exitDateVariable", productStock.getExitDate());
 //	      int result = q.executeUpdate();
-		
-		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
-		
+
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
+				Integer.parseInt(productStock.getOrderId()));
+
 		productStockEntity.setExitDate(productStock.getExitDate());
-		
-		
+
 		session.save(productStockEntity);
-	      session.getTransaction().commit();
-	  	
-	    if (session.getTransaction() != null && session.getTransaction().isActive()) {
-			 session.getTransaction().rollback();
+		session.getTransaction().commit();
+
+		if (session.getTransaction() != null && session.getTransaction().isActive()) {
+			session.getTransaction().rollback();
 		}
-		
-	      
-	    session.close();
-	    
-	    return Constants.DATA_INSERTED_MESSAGE;
+
+		session.close();
+
+		return Constants.DATA_INSERTED_MESSAGE;
 	}
 
 	@Override
 	public String updateProductStock(ProductStock productStock) {
-		
-		Session session = sessionFactory.openSession(); 
-        session.beginTransaction();
-        
-        boolean orderIdcheckInStock = false;
-        System.out.println("1");
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		boolean orderIdcheckInStock = false;
+		System.out.println("1");
 		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
 		System.out.println("2");
 		if (orderIdcheckInStock == false) {
 			System.out.println("3");
-			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
+			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)"
+					+ " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
 			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
-		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-			
+			q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
+
 			int result = q.executeUpdate();
 			System.out.println(result + ":");
 		}
@@ -1196,30 +1191,29 @@ public class ProductDAOImpl implements ProductDAO {
 //	      
 //	      int result = q1.executeUpdate();
 //			System.out.println(result);
-		
-		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class, Integer.parseInt(productStock.getOrderId()));
-		
+
+		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
+				Integer.parseInt(productStock.getOrderId()));
+
 		productStockEntity.setManufacturingDate(productStock.getManufacturingDate());
 		productStockEntity.setExpiryDate(productStock.getExpiryDate());
 		productStockEntity.setQualityCheck(productStock.getQualityCheck());
-		
+
 		session.save(productStockEntity);
-		
-		
-			System.out.println("5");
-			session.getTransaction().commit();
-			if (session.getTransaction() != null && session.getTransaction().isActive()) {
-				 session.getTransaction().rollback();
-			}
-		    session.close();
-		      return Constants.DATA_INSERTED_MESSAGE;
-       
+
+		System.out.println("5");
+		session.getTransaction().commit();
+		if (session.getTransaction() != null && session.getTransaction().isActive()) {
+			session.getTransaction().rollback();
+		}
+		session.close();
+		return Constants.DATA_INSERTED_MESSAGE;
 
 	}
 
 	@Override
 	public boolean doesProductOrderIdExistInStock(String orderId) {
-		
+
 		boolean productOrderIdFound = false;
 		int oid = -1;
 		try {
@@ -1228,7 +1222,7 @@ public class ProductDAOImpl implements ProductDAO {
 //			logger.error(e.getMessage());
 			return productOrderIdFound;
 		}
-		
+
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		@SuppressWarnings("rawtypes")
@@ -1245,8 +1239,64 @@ public class ProductDAOImpl implements ProductDAO {
 			return productOrderIdFound;
 		}
 	}
-	
 
+	@SuppressWarnings("rawtypes")
+	public int getAddressId(Address address) throws BackEndException {
+		int addressId = 0;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = HibernateUtil.getASession();
+			transaction = session.beginTransaction();
+			Query query = session.createNamedQuery("GetOneAddress");
+			query.setParameter("plotNo", address.getPlotNo());
+			query.setParameter("buildingName", address.getBuildingName());
+			query.setParameter("streetName", address.getStreetName());
+			query.setParameter("pincode", address.getPincode());
+			System.out.println("jio");
+			addressId = query.getResultList().size();
+			transaction.commit();
+		} catch (Exception exception) {
+			if (transaction != null)
+				transaction.rollback();
+			System.out.println(exception.getMessage());
+		} 
+		return addressId;
+	}
+
+	public boolean addDistributorAddress(Distributor distributor, Address address) throws BackEndException {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		int addressId = getAddressId(address);
+		DistributorEntity distributorEntity = new DistributorEntity(distributor.getName(), distributor.getEmailId(),
+				distributor.getPhoneNo());
+		if (addressId > 0) { // address exists
+			distributorEntity.setDistributorCompositeId(distributor.getDistributorId(), addressId);
+			session.save(distributorEntity);
+			session.close();
+			return false;
+		} else {
+			AddressEntity addressEntity = new AddressEntity(address.getPlotNo(), address.getBuildingName(),
+					address.getStreetName(), address.getLandmark(), address.getCity(), address.getState(),
+					address.getPincode());
+			session.save(addressEntity);
+			Query query = session.createQuery("from DistributorEntity");
+			distributorEntity.setDistributorCompositeId(distributor.getDistributorId(),
+					2999 + query.getResultList().size());
+			session.save(distributorEntity);
+			session.close();
+			return true;
+		}
+	}
+
+	public static void main(String[] args) throws BackEndException {
+		Address address = new Address();
+		address.setPlotNo(44);
+		address.setBuildingName("DistributorB1");
+		address.setStreetName("Lake Street");
+		address.setPincode("757080");
+		ProductDAOImpl pd = new ProductDAOImpl();
+		System.out.println(pd.getAddressId(address));
+	}
 }
-
-

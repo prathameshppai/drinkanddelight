@@ -9,6 +9,8 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
+import com.capgemini.dnd.entity.AddressEntity;
+import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.EmployeeCredentialEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
@@ -23,8 +25,13 @@ public class HibernateUtil {
 	static SessionFactory sf = null;
 	static {
 		Configuration config = new Configuration().configure().addPackage("com.capgemini.dnd.entity")
-				.addAnnotatedClass(ProductStockEntity.class).addAnnotatedClass(EmployeeCredentialEntity.class)
-				.addAnnotatedClass(ProductOrdersEntity.class).addAnnotatedClass(RawMaterialOrderEntity.class).addAnnotatedClass(RawMaterialStockEntity.class);
+				.addAnnotatedClass(ProductStockEntity.class)
+				.addAnnotatedClass(EmployeeCredentialEntity.class)
+				.addAnnotatedClass(ProductOrdersEntity.class)
+				.addAnnotatedClass(RawMaterialOrderEntity.class)
+				.addAnnotatedClass(RawMaterialStockEntity.class)
+				.addAnnotatedClass(AddressEntity.class)
+				.addAnnotatedClass(DistributorEntity.class);
 		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
 		sf = config.buildSessionFactory(registry);
 	}
@@ -59,7 +66,6 @@ public class HibernateUtil {
 	}
 	
 	public static void closeSession(Session session) throws BackEndException {
-
 		try {
 			session.close();
 		} catch (Exception exception) {
