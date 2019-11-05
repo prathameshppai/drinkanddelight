@@ -21,26 +21,11 @@ import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 public interface RawMaterialDAO {
 
 
-
-	public List<RawMaterialOrder> displayPendingRawMaterialOrderDetails() throws Exception;
-
-	public List<RawMaterialOrder> displayCancelledRawMaterialOrderDetails() throws Exception;
-
-	public List<RawMaterialOrder> displayReceivedRawMaterialOrderDetails() throws Exception;
 	
 	public boolean addRawMaterialOrder(RawMaterialOrder newRawMaterialOrder)  throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException;
 
 	public String updateStatusRawMaterialOrder(String oid, String newStatus) throws Exception;
-	
-	public List<RawMaterialOrder> displayOrdersFromSupplier(String supid) throws Exception ;
-	
-	public List<RawMaterialOrder> displayRawmaterialOrdersbetweenDetails(Date dt1, Date dt2) throws Exception;
-
-	public List<RawMaterialOrder> displayRawMaterialOrderDetails() throws Exception;
-
-	public List<RawMaterialOrder> displayDispatchedRawMaterialOrderDetails() throws Exception;
-
-	public Supplier fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException;
+   public Supplier fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException;
 
 	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException;
 

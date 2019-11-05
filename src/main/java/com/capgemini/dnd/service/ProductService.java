@@ -66,5 +66,4 @@ public interface ProductService {
 
 	public String updateProductStock(ProductStock productStock);
 	
-	public String fetchAddressId(Distributor distributor) throws BackEndException,DoesNotExistException, DisplayException;
 }

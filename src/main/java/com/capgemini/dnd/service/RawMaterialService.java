@@ -25,23 +25,10 @@ import com.capgemini.dnd.dto.Supplier;
 public interface RawMaterialService {
 //	public void viewRMspec(String name);
 
-	public List<RawMaterialOrder> displayRawMaterialOrderDetails() throws Exception;
-
-	public List<RawMaterialOrder> displayPendingRawMaterialOrderDetails() throws  Exception;
-
-	public List<RawMaterialOrder> displayCancelledRawMaterialOrderDetails() throws Exception;
-
-	public List<RawMaterialOrder> displayReceivedRawMaterialOrderDetails() throws Exception;
-
+	
 	public String placeRawMaterialOrder(RawMaterialOrder newRawMaterialOrder) throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException;
 
 	public String updateStatusRawMaterialOrder(String oid, String newStatus) throws Exception;
-
-	public List<RawMaterialOrder> displayOrdersFromSupplier(String supid) throws Exception ;
-	
-	public List<RawMaterialOrder> displayRawmaterialOrdersbetweenDetails(Date dt1, Date dt2) throws Exception;
-
-	public List<RawMaterialOrder> displayDispatchedRawMaterialOrderDetails() throws Exception;
 	
 	public String fetchSupplierDetail(Supplier supplier) throws BackEndException, DoesNotExistException;
 

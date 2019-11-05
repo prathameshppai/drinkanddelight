@@ -12,11 +12,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Distributor")
 public class DistributorEntity {
-
-
-	public DistributorEntity() {
-	
-	}
 	
 	@Id
     @Column(name = "distributorId")
@@ -30,46 +25,60 @@ public class DistributorEntity {
 	@Column(name = "PhoneNumber")
 	private String phoneNo;
 	
-  public String getName() {
-		return name;
+	public DistributorEntity() {
+		
+	}
+
+	public DistributorEntity(String distributorId, String name, String address, String emailId, String phoneNo) {
+		super();
+		this.distributorId = distributorId;
+		this.name = name;
+		this.address = address;
+		this.emailId = emailId;
+		this.phoneNo = phoneNo;
 	}
 
 
+
+	public String getDistributorId() {
+		return distributorId;
+	}
+
+	public void setDistributorId(String distributorId) {
+		this.distributorId = distributorId;
+	}
+
+	public String getName() {
+		return name;
+	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-
-
 	public String getAddress() {
 		return address;
 	}
-
-
 
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-
-
 	public String getEmailId() {
 		return emailId;
 	}
-
-
 
 	public void setEmailId(String emailId) {
 		this.emailId = emailId;
 	}
 
-
-
-
-	@Override
-	public String toString() {
-		return "DistributorEntity [distributorId=" + distributorId + ", name=" + name + ", addressId=" + addressId
-				+ ", emailId=" + emailId + ", phoneNo=" + phoneNo +  "]";
+	public String getPhoneNo() {
+		return phoneNo;
 	}
+
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
+	}
+	
+	
 }
