@@ -65,5 +65,5 @@ public interface ProductService {
 	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
 
 	public String updateProductStock(ProductStock productStock);
-
+	
 }

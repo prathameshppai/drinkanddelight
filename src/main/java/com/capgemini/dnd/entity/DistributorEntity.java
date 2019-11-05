@@ -1,36 +1,44 @@
 package com.capgemini.dnd.entity;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name = "Distributor")
 public class DistributorEntity {
-
+	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "distributorId")
+    @Column(name = "distributorId")
 	private String distributorId;
-
 	@Column(name = "distributorName")
-	private String distributorName;
-
+	private String name;
+	@Column(name = "address")
+	private String address;
 	@Column(name = "email")
-	private String email;
-
-	@Column(name = "phoneNo")
+	private String emailId;
+	@Column(name = "PhoneNumber")
 	private String phoneNo;
+	
+	public DistributorEntity() {
+		
+	}
 
-	public DistributorEntity(String distributorName, String email, String phoneNo) {
-		this.distributorName = distributorName;
-		this.email = email;
+	public DistributorEntity(String distributorId, String name, String address, String emailId, String phoneNo) {
+		super();
+		this.distributorId = distributorId;
+		this.name = name;
+		this.address = address;
+		this.emailId = emailId;
 		this.phoneNo = phoneNo;
 	}
+
+
 
 	public String getDistributorId() {
 		return distributorId;
@@ -40,20 +48,28 @@ public class DistributorEntity {
 		this.distributorId = distributorId;
 	}
 
-	public String getDistributorName() {
-		return distributorName;
+	public String getName() {
+		return name;
 	}
 
-	public void setDistributorName(String distributorName) {
-		this.distributorName = distributorName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
 	}
 
 	public String getPhoneNo() {
@@ -63,5 +79,6 @@ public class DistributorEntity {
 	public void setPhoneNo(String phoneNo) {
 		this.phoneNo = phoneNo;
 	}
-
+	
+	
 }
