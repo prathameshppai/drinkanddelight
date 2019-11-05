@@ -23,6 +23,7 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 @Service
@@ -37,10 +38,10 @@ public class ProductServiceImpl implements ProductService {
 	private ProductDAO productDAO;
 
 	public String fetchCompleteDistributorDetail(Distributor distributor)
-			throws BackEndException, DoesNotExistException {
-		distributor.setAddress(productDAO.fetchAddress(distributor));
-		Distributor distributorObject = productDAO.fetchDistributorDetail(distributor); 
-		String jsonMessage = JsonUtil.convertJavaToJson1(distributorObject);
+			throws BackEndException, DoesNotExistException, DisplayException {
+//		distributor.setAddress(productDAO.fetchAddress(distributor));
+		List<DistributorEntity> distributorList = productDAO.fetchDistributorDetail(distributor); 
+		String jsonMessage = JsonUtil.convertJavaToJson1(distributorList);
 		return jsonMessage;
 	}
 	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {

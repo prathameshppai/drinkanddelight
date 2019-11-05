@@ -4,11 +4,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
@@ -32,8 +38,10 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
+import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
@@ -617,46 +625,51 @@ public class ProductDAOImpl implements ProductDAO {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
-	public Distributor fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException {
-		Connection connection;
-		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception exception) {
-			logger.error(Constants.DISTRIBUTOR_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-			throw new BackEndException(
-					Constants.DISTRIBUTOR_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-		}
-		ResultSet resultSet = null;
-		PreparedStatement preparedStatement = null;
+	public List<DistributorEntity> fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException, DisplayException {
+		Session session = null;
+		Criteria cr = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<DistributorEntity> distributorlist = new ArrayList<DistributorEntity>();
+		PreparedStatement pst = null;
+		int isFetched = 0;
 
 		try {
-			preparedStatement = connection.prepareStatement(QueryMapper.SELECT_ONE_DISTRIBUTOR_ID);
-			preparedStatement.setString(1, distributor.getDistributorId());
-			resultSet = preparedStatement.executeQuery();
-			int DistributorCounter = 0;
-			while (resultSet.next()) {
-				DistributorCounter++;
-				distributor.setName(resultSet.getString(2));
-				distributor.setEmailId(resultSet.getString(4));
-				distributor.setPhoneNo(resultSet.getString(5));
-			}
-			if (DistributorCounter == 0)
-				throw new DoesNotExistException(Constants.DISTRIBUTOR_ID_DOES_NOT_EXISTS_EXCEPTION);
-		} catch (SQLException exception) {
-			logger.error(Constants.DISTRIBUTOR_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
-			throw new BackEndException(Constants.DISTRIBUTOR_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
+			System.out.println("hello");
 
-		} finally {
-			try {
-				resultSet.close();
-				preparedStatement.close();
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+
+			String distributorId = distributor.getDistributorId();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<DistributorEntity> criteria = builder.createQuery(DistributorEntity.class);
+			Root<DistributorEntity> root = criteria.from(DistributorEntity.class);
+
+		
+				criteria.select(root).where(builder.equal(root.get("distributorId"),distributorId ));
+
+			Query<DistributorEntity> query = session.createQuery(criteria);
+                  distributorlist = query.list();
+			         System.out.println(distributorlist);
+			if (distributorlist.isEmpty()) {
+				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
+
+			} else {
+				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+
 			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
 		}
-		return distributor;
+
+		finally {
+
+			session.close();
+		}
+		return distributorlist;
+
 	}
 
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException {

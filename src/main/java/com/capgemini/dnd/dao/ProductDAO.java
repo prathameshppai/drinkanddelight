@@ -17,6 +17,7 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.DistributorEntity;
 
 public interface ProductDAO {
 
@@ -38,7 +39,7 @@ public interface ProductDAO {
 
 	public List<ProductOrder> displayOrdersFromDistributor(String distId) throws Exception;// check111
 
-	public Distributor fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException;
+	public List<DistributorEntity> fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException, DisplayException;
 	
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException;
 
