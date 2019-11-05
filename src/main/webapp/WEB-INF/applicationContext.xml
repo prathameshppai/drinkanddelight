@@ -43,6 +43,7 @@
 				<value>com.capgemini.dnd.entity.RawMaterialStockEntity</value>
 				<value>com.capgemini.dnd.entity.RawMaterialOrderEntity</value>
 				<value>com.capgemini.dnd.entity.ProductOrdersEntity</value>
+				<value>com.capgemini.dnd.entity.DistributorEntity</value>
 				<value>com.capgemini.dnd.entity.EmployeeCredentialEntity</value>
 				<value>com.capgemini.dnd.entity.RawMaterialSpecsEntity</value>
 				<value>com.capgemini.dnd.entity.ProductSpecsEntity</value>

@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateProductStock;
+package com.capgemini.dnd.updateProductStockBDD;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;

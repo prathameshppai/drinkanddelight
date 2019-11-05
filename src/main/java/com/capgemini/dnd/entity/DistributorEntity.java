@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name = "Distributor")
 public class DistributorEntity {
@@ -36,6 +37,8 @@ public class DistributorEntity {
 		this.emailId = emailId;
 		this.phoneNo = phoneNo;
 	}
+
+
 
 	public String getDistributorId() {
 		return distributorId;
@@ -76,5 +79,4 @@ public class DistributorEntity {
 	public void setPhoneNo(String phoneNo) {
 		this.phoneNo = phoneNo;
 	}
-
 }

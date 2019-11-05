@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
@@ -17,7 +16,6 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -32,7 +30,6 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
@@ -50,33 +47,28 @@ public class ProductDAOImpl implements ProductDAO {
 	private SessionFactory sessionFactory;
 
 	/*******************************************
-	 * Product order delivery status update
-	 * Author: Ankit Kumar
-	 * 
+	 * Product order delivery status update Author: Ankit Kumar
 
+	 * 
 	 */
-	
-	public String updateStatusProductOrder(String orderId,String deliveryStatus)  {
+
+	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
-			// start a transaction
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			ProductOrdersEntity product = (ProductOrdersEntity) session.get(ProductOrdersEntity.class,
 					Integer.parseInt(orderId));
 			product.setDeliveryStatus(deliveryStatus);
 			session.save(product);
-			// commit transaction
 			transaction.commit();
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-			// int result = query.executeUpdate();
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback();
 			}
 			try {
-				// Throw an object of user defined exception
 				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
 			} catch (UpdateException ex) {
 				return ex.getMessage();
@@ -85,76 +77,6 @@ public class ProductDAOImpl implements ProductDAO {
 			session.close();
 		}
 	}
-//	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
-//
-//		Connection con = DBUtil.getInstance().getConnection();
-//		PreparedStatement preparedStatement = null;
-//		java.util.Date today_date = new Date();
-//		int queryResult = 0;
-//		if (newStatus.equalsIgnoreCase("RECEIVED")) {
-//			try {
-//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS);
-//
-//				preparedStatement.setString(1, newStatus);
-//				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
-//				preparedStatement.setInt(3, Integer.parseInt(oid));
-//				queryResult = preparedStatement.executeUpdate();
-//				if (queryResult == 0) {
-//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-//
-//				} else {
-//					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-//				}
-//
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//
-//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//			} finally {
-//				try {
-//
-//					preparedStatement.close();
-//					con.close();
-//				} catch (SQLException sqlException) {
-//					logger.error(sqlException.getMessage());
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//
-//				}
-//			}
-//		} else {
-//			try {
-//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS1);
-//				preparedStatement.setString(1, newStatus);
-//				preparedStatement.setInt(2, Integer.parseInt(oid));
-//
-//				queryResult = preparedStatement.executeUpdate();
-//				if (queryResult == 0) {
-//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-//
-//				} else {
-//					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-//				}
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//			} finally {
-//				try {
-//
-//					preparedStatement.close();
-//					con.close();
-//				} catch (SQLException sqlException) {
-//					logger.error(sqlException.getMessage());
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//
-//				}
-//			}
-//		}
-//
-//	}
 
 	/*****************************************************************
 	 * - Method Name: displayProductOrderDetails() - Input Parameters : - Throws :
@@ -962,20 +884,24 @@ public class ProductDAOImpl implements ProductDAO {
 		
 		return warehouseIdsList;
 	}
-	
+
+	/*******************************************************************************************************
+	 - Function Name	:	trackProductOrder
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Track a particular order and calculate its shelf life 
+	 ********************************************************************************************************/
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
 
-//		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
 
 		try {
 			ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 					Integer.parseInt(productStock.getOrderId()));
-			// session.getTransaction().commit();
-//		if (session.getTransaction() !=null && session.getTransaction().isActive()) {
-//			 session.getTransaction().rollback();
-//			}
 
 			Date exitDate = productStockEntity.getExitDate();
 
@@ -1002,6 +928,15 @@ public class ProductDAOImpl implements ProductDAO {
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	exitDateCheck
+	 - Input Parameters	:	String orderId
+	 - Return Type		:	boolean
+	 - Throws			:  	ProductOrderIDDoesNotExistException
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if the Order ID exists in the Orders Table
+	 ********************************************************************************************************/
 	@Override
 	public boolean doesProductOrderIdExist(String orderId) throws ProductOrderIDDoesNotExistException {
 		boolean pOrderIdFound = false;
@@ -1009,11 +944,10 @@ public class ProductDAOImpl implements ProductDAO {
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-//			logger.error(e.getMessage());
+			logger.error(e.getMessage());
 			return pOrderIdFound;
 		}
 
-//		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		@SuppressWarnings("rawtypes")
@@ -1021,17 +955,25 @@ public class ProductDAOImpl implements ProductDAO {
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			pOrderIdFound = true;
-//			session.getTransaction().commit();
 			session.close();
 			return pOrderIdFound;
 		} else {
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//			session.close();
+			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+			session.close();
 			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
 		}
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	exitDateCheck
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	boolean
+	 - Throws			:  	ExitDateException, IncompleteDataException
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if the exit date entered is valid or not
+	 ********************************************************************************************************/
 	@Override
 	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException {
 
@@ -1040,14 +982,10 @@ public class ProductDAOImpl implements ProductDAO {
 			boolean datecheck = false;
 			session = sessionFactory.openSession();
 			session.beginTransaction();
-//	        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
-//	        Query q = session.createQuery(hql);
-//		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//		      Object[] dateDetails = (Object[]) q.uniqueResult();
+
 			try {
 				ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 						Integer.parseInt(productStock.getOrderId()));
-//		      session.getTransaction().commit();
 
 				Date manufacturingDate = productStockEntity.getManufacturingDate();
 
@@ -1068,7 +1006,7 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 
 		catch (ExitDateException exception) {
-//					logger.error(exception.getMessage());
+			logger.error(exception.getMessage());
 			throw exception;
 
 		}
@@ -1079,16 +1017,20 @@ public class ProductDAOImpl implements ProductDAO {
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	updateExitDateInStock
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Updates Details of Exit Date in Database 
+	 ********************************************************************************************************/
 	@Override
 	public String updateExitDateinStock(ProductStock productStock) {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-//        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
-//        Query q = session.createQuery(hql);
-//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//	      q.setParameter("exitDateVariable", productStock.getExitDate());
-//	      int result = q.executeUpdate();
 
 		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 				Integer.parseInt(productStock.getOrderId()));
@@ -1107,6 +1049,15 @@ public class ProductDAOImpl implements ProductDAO {
 		return Constants.DATA_INSERTED_MESSAGE;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	updateProductStock
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Updates Details of Stock in Database 
+	 ********************************************************************************************************/
 	@Override
 	public String updateProductStock(ProductStock productStock) {
 
@@ -1114,30 +1065,21 @@ public class ProductDAOImpl implements ProductDAO {
 		session.beginTransaction();
 
 		boolean orderIdcheckInStock = false;
-		System.out.println("1");
+
 		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
-		System.out.println("2");
+
 		if (orderIdcheckInStock == false) {
-			System.out.println("3");
+
 			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)"
 					+ " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
 			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
 			q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 
+			@SuppressWarnings("unused")
 			int result = q.executeUpdate();
-			System.out.println(result + ":");
+
 		}
-		System.out.println("4");
-//		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-//		Query q1 = session.createQuery(hql);
-//	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//	      q1.setParameter("manDate", productStock.getManufacturingDate());
-//	      q1.setParameter("expDate", productStock.getExpiryDate());
-//	      q1.setParameter("qaCheck", productStock.getQualityCheck());
-//	      
-//	      int result = q1.executeUpdate();
-//			System.out.println(result);
 
 		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 				Integer.parseInt(productStock.getOrderId()));
@@ -1148,7 +1090,6 @@ public class ProductDAOImpl implements ProductDAO {
 
 		session.save(productStockEntity);
 
-		System.out.println("5");
 		session.getTransaction().commit();
 		if (session.getTransaction() != null && session.getTransaction().isActive()) {
 			session.getTransaction().rollback();
@@ -1158,6 +1099,15 @@ public class ProductDAOImpl implements ProductDAO {
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	doesProductOrderExistInStock
+	 - Input Parameters	:	orderId
+	 - Return Type		:	boolean
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if Product Order ID exists in Stock
+	 ********************************************************************************************************/
 	@Override
 	public boolean doesProductOrderIdExistInStock(String orderId) {
 
@@ -1166,7 +1116,7 @@ public class ProductDAOImpl implements ProductDAO {
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-//			logger.error(e.getMessage());
+			logger.error(e.getMessage());
 			return productOrderIdFound;
 		}
 
@@ -1177,11 +1127,10 @@ public class ProductDAOImpl implements ProductDAO {
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			productOrderIdFound = true;
-//			session.getTransaction().commit();
 			session.close();
 			return productOrderIdFound;
 		} else {
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
 			session.close();
 			return productOrderIdFound;
 		}

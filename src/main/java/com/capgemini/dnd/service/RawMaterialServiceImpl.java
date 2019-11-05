@@ -33,28 +33,6 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	
 	@Autowired
 	private RawMaterialDAO rawMaterialDAO;
-	
-	public List<RawMaterialOrder> displayRawMaterialOrderDetails() throws Exception {
-		return(rawMaterialDAO.displayRawMaterialOrderDetails());
-	}
-
-	public List<RawMaterialOrder> displayPendingRawMaterialOrderDetails() throws Exception {
-		return(rawMaterialDAO.displayPendingRawMaterialOrderDetails());
-	}
-
-	public List<RawMaterialOrder> displayCancelledRawMaterialOrderDetails() throws Exception {
-		return(rawMaterialDAO.displayCancelledRawMaterialOrderDetails());
-	}
-
-	public List<RawMaterialOrder> displayReceivedRawMaterialOrderDetails() throws Exception {
-		return(rawMaterialDAO.displayReceivedRawMaterialOrderDetails());
-	}
-
-	@Override
-	public List<RawMaterialOrder> displayDispatchedRawMaterialOrderDetails() throws Exception {
-		return(rawMaterialDAO.displayDispatchedRawMaterialOrderDetails());
-	}
-	
 	public String placeRawMaterialOrder(RawMaterialOrder newRawMaterialOrder) throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException{
 		
 		if (rawMaterialDAO.addRawMaterialOrder(newRawMaterialOrder))
@@ -64,14 +42,6 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 
 	public String updateStatusRawMaterialOrder(String orderId, String newStatus) throws Exception {
 		return (JsonUtil.convertJavaToJson(rawMaterialDAO.updateStatusRawMaterialOrder(orderId, newStatus)));
-	}
-
-	public List<RawMaterialOrder> displayOrdersFromSupplier(String supid) throws Exception {
-		return(rawMaterialDAO.displayOrdersFromSupplier(supid));
-	}
-
-	public List<RawMaterialOrder> displayRawmaterialOrdersbetweenDetails(Date dt1, Date dt2) throws Exception {
-		return(rawMaterialDAO.displayRawmaterialOrdersbetweenDetails(dt1, dt2));
 	}
 
 	public String fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException {
