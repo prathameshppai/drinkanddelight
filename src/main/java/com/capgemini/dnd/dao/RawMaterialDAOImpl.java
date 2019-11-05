@@ -23,7 +23,6 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -33,7 +32,6 @@ import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RowNotAddedException;
-import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.SupplierAddressDoesNotExistsException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.dto.Address;
@@ -42,7 +40,10 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
+import com.capgemini.dnd.entity.RawMaterialSpecsEntity;
 import com.capgemini.dnd.entity.RawMaterialStockEntity;
+import com.capgemini.dnd.entity.SupplierEntity;
+import com.capgemini.dnd.entity.WarehouseEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
@@ -98,23 +99,22 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
 		boolean added = false;
-		RawMaterialOrderEntity rawMaterialOrderEntity = new RawMaterialOrderEntity(newRMO.getName(),
-				newRMO.getSupplierId(), newRMO.getQuantityValue(), newRMO.getQuantityUnit(), newRMO.getDateOfDelivery(),
-				newRMO.getPricePerUnit(), newRMO.getWarehouseId());
-		Session session = null;
+		RawMaterialOrderEntity rawMaterialOrderEntity = new RawMaterialOrderEntity(newRMO.getName(), newRMO.getSupplierId(), newRMO.getQuantityValue(), newRMO.getQuantityUnit(), newRMO.getDateOfDelivery(), newRMO.getPricePerUnit(), newRMO.getWarehouseId());
+		Session session=null;
+		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
-			session.beginTransaction();
-			session.save(rawMaterialOrderEntity);
-			session.getTransaction().commit();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+		    session.save(rawMaterialOrderEntity);
+			transaction.commit();
 			added = true;
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			System.out.println("Exception 638");
 		}
-//		finally {
-//			session.close();
-//		}
+		finally {
+			session.close();
+		}
 		if (!added) {
 			throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
 		}
@@ -143,7 +143,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				SupplierCounter++;
 
 				supplierDetails.setName(resultSet.getString(2));
-				supplierDetails.setPhoneNo(resultSet.getString(5));
+				supplierDetails.setPhoneNo(resultSet.getInt(5));
 				supplierDetails.setEmailId(resultSet.getString(4));
 				supplierDetails.setAddress(resultSet.getString(3));
 
@@ -309,98 +309,61 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
 
 		ArrayList<String> rawMaterialNamesList = new ArrayList<String>();
-		Connection connection;
+		List<RawMaterialSpecsEntity> rawMaterialSpecsEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from RawMaterialSpecsEntity";
+			Query query = session.createQuery(hql);
+			rawMaterialSpecsEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			// pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String rawMaterialName = rs.getString(1);
-				rawMaterialNamesList.add(rawMaterialName);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(RawMaterialSpecsEntity rawMaterialSpecsEntity : rawMaterialSpecsEntityList) {
+			rawMaterialNamesList.add(rawMaterialSpecsEntity.getName());
+		}
+		
 		return rawMaterialNamesList;
 	}
 
 	@Override
-	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
+	public ArrayList<String> getSupplierIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> supplierIdsList = new ArrayList<String>();
-		Connection connection;
+		List<SupplierEntity> supplierEntityList;
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from SupplierEntity";
+			Query query = session.createQuery(hql);
+			supplierEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_SUPPLIER_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String supplierId = rs.getString(1);
-				supplierIdsList.add(supplierId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(SupplierEntity supplierEntity : supplierEntityList) {
+			supplierIdsList.add(supplierEntity.getSupplierId());
+		}
+		
 		return supplierIdsList;
 	}
 
@@ -408,90 +371,89 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> warehouseIdsList = new ArrayList<String>();
-		Connection connection;
+		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from WarehouseEntity";
+			Query query = session.createQuery(hql);
+			warehouseEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_WAREHOUSE_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String warehouseId = rs.getString(1);
-				warehouseIdsList.add(warehouseId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(WarehouseEntity warehouseEntity : warehouseEntityList) {
+			warehouseIdsList.add(warehouseEntity.getWarehouseId());
+		}
+		
 		return warehouseIdsList;
 	}
 
+	
+	/*******************************************************************************************************
+	 - Function Name	:	trackRawMaterialOrder
+	 - Input Parameters	:	RawMaterialStock rawMaterialStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Gaurav Gaikwad, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Track a particular order and calculate its shelf life 
+	 ********************************************************************************************************/
 	@Override
 	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock) {
 
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
 
-		System.out.println(rawMaterialStock.getOrderId());
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+		
+		
 		try {
-			RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class,
-					Integer.parseInt(rawMaterialStock.getOrderId()));
-//	     System.out.println(rmStockEntity);
+        RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
 
-//	      session.getTransaction().commit();
-
-			Date processDate = rmStockEntity.getProcessDate();
-
-			Date deliveryDate = rmStockEntity.getDateofDelivery();
-
-			String warehouseId = rmStockEntity.getWarehouseId();
-
-			if (processDate == null || deliveryDate == null) {
-				return "Data Incomplete...Please check database and update required information";
-			}
-
-			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
-					+ deliveryDate.toString() + " to " + processDate.toString() + "("
-					+ DBUtil.diffBetweenDays(processDate, deliveryDate) + " days)";
-			session.close();
-			return message;
-
-		}
-
-		catch (ObjectNotFoundException exception) {
-			session.close();
-			return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
-		}
-
+	      
+	      				Date processDate = rmStockEntity.getProcessDate();
+	      
+	      				Date deliveryDate = rmStockEntity.getDateofDelivery();
+	      
+	      				String warehouseId = rmStockEntity.getWarehouseId();
+	      
+	      			if(processDate == null || deliveryDate == null) {
+	      				return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
+	      			}
+	      
+	      			String message = "The order ID had been in the warehouse with warehouseID = " + warehouseId + " from "
+	      					+ deliveryDate.toString() + " to " + processDate.toString() + "("
+	      					+ DBUtil.diffBetweenDays(processDate, deliveryDate) + " days)";
+	      			session.close();
+	      			return message;
+	      			
 	}
+	
+	catch(ObjectNotFoundException exception) {
+		session.close();
+		return Constants.INCOMPLETE_INFORMATION_IN_DATABASE;
+	}
+	    
+}
 
+	/*******************************************************************************************************
+	 - Function Name	:	doesRawMaterialOrderIdExist
+	 - Input Parameters	:	String orderId
+	 - Return Type		:	boolean
+	 - Throws			:  	RMOrderIDDoesNotExistException
+	 - Author			:	Gaurav Gaikwad, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if the Order ID exists in the Orders Table
+	 ********************************************************************************************************/
 	@Override
 	public boolean doesRawMaterialOrderIdExist(String orderId) throws RMOrderIDDoesNotExistException {
 		boolean rmOrderIdFound = false;
@@ -499,7 +461,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-//			logger.error(e.getMessage());
+			logger.error(e.getMessage());
 			return rmOrderIdFound;
 		}
 
@@ -510,17 +472,25 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			rmOrderIdFound = true;
-//			session.getTransaction().commit();
 			session.close();
 			return rmOrderIdFound;
 		} else {
-//			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
+			logger.error(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
 			session.close();
 			throw new RMOrderIDDoesNotExistException(Constants.RAWMATERIAL_ID_DOES_NOT_EXISTS_EXCEPTION);
 		}
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	processDateCheck
+	 - Input Parameters	:	RawMaterialStock rawMaterialStock
+	 - Return Type		:	boolean
+	 - Throws			:  	ProcessDateException, IncompleteDataException
+	 - Author			:	Gaurav Gaikwad, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if the process date entered is valid or not
+	 ********************************************************************************************************/
 	@Override
 	public boolean processDateCheck(RawMaterialStock rawMaterialStock)
 			throws ProcessDateException, IncompleteDataException {
@@ -532,103 +502,114 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			try {
-				RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class,
-						Integer.parseInt(rawMaterialStock.getOrderId()));
+	
 
-//	        session.getTransaction().commit();
 
-				Date manufacturingDate = rmStockEntity.getManufacturingDate();
-
-				Date expiryDate = rmStockEntity.getExpiryDate();
-
-				if (rawMaterialStock.getProcessDate().after(manufacturingDate)
-						&& rawMaterialStock.getProcessDate().before(expiryDate)) {
-					datecheck = true;
-					return datecheck;
-				}
-
-				else
-					throw new ProcessDateException(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
-
-			} catch (ObjectNotFoundException exception) {
-				session.close();
-				throw new IncompleteDataException(Constants.INCOMPLETE_INFORMATION_IN_DATABASE);
-			}
-
+	        try {
+	        RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
+	        
+		      Date manufacturingDate = rmStockEntity.getManufacturingDate();
+		      
+		      Date expiryDate = rmStockEntity.getExpiryDate();
+		      
+		      				if (rawMaterialStock.getProcessDate().after(manufacturingDate)
+		      						&& rawMaterialStock.getProcessDate().before(expiryDate)) {
+		      					datecheck = true;
+		      					return datecheck;
+		      				}
+		      
+		      				else {
+		      					logger.error(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
+		      					throw new ProcessDateException(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
+		      				}
 		}
-
-		catch (ProcessDateException exception) {
-//		      			logger.error(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
-			throw exception;
-
-		} finally {
+		catch(ObjectNotFoundException exception) {
+			logger.error(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
+			session.close();
+			throw new IncompleteDataException(Constants.INCOMPLETE_INFORMATION_IN_DATABASE);
+		}
+		      			
+		      
+		      		} 
+		      
+		      		catch (ProcessDateException exception) {
+		      			logger.error(Constants.PROCESS_DATE_EXCEPTION_MESSAGE);
+		      			throw exception;
+		      
+		      		}
+		finally {
 			session.close();
 		}
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	updateProcessDateInStock
+	 - Input Parameters	:	RawMaterialStock rawMaterialStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Gaurav Gaikwad, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Updates Details of Process Date in Database 
+	 ********************************************************************************************************/
 	@Override
 	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock) {
 
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class,
-				Integer.parseInt(rawMaterialStock.getOrderId()));
-//        String hql = "update RawMaterialStockEntity set processDate = :processDateVariable where orderId = :oId";
-//        Query q = session.createQuery(hql);
-//	      q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
-//	      q.setParameter("processDateVariable", rawMaterialStock.getProcessDate());
 
-		rmStockEntity.setProcessDate(rawMaterialStock.getProcessDate());
-		session.save(rmStockEntity);
+		Session session = sessionFactory.openSession(); 
+        session.beginTransaction();
+        RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
+       
+	      rmStockEntity.setProcessDate(rawMaterialStock.getProcessDate());
+	      session.save(rmStockEntity);
+	      
 
-//	      int result = q.executeUpdate();
-//	      System.out.println(result);
+	      
+	      session.getTransaction().commit();
+	      if (session.getTransaction() != null && session.getTransaction().isActive()) {
+				 session.getTransaction().rollback();
+			}
+	      session.close();
+	      return Constants.DATA_INSERTED_MESSAGE;
 
-		session.getTransaction().commit();
-		if (session.getTransaction() != null && session.getTransaction().isActive()) {
-			session.getTransaction().rollback();
-		}
-		session.close();
-		return Constants.DATA_INSERTED_MESSAGE;
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	updateRawMaterialStock
+	 - Input Parameters	:	RawMaterialStock rawMaterialStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Gaurav Gaikwad, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Updates Details of Stock in Database 
+	 ********************************************************************************************************/
 	@Override
 	public String updateRawMaterialStock(RawMaterialStock rawMaterialStock) {
 
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
+		
+		Session session = sessionFactory.openSession(); 
+        session.beginTransaction();
+        
+        boolean orderIdcheckInStock = false;
 
-		boolean orderIdcheckInStock = false;
-		System.out.println("1");
 		orderIdcheckInStock = doesRawMaterialOrderIdExistInStock(rawMaterialStock.getOrderId());
-		System.out.println("2");
+		
 		if (orderIdcheckInStock == false) {
-			System.out.println("3");
-			String hql = "insert into RawMaterialStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)"
-					+ " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateOfDelivery from RawMaterialOrderEntity where orderId = :oId";
+
+			String hql = "insert into RawMaterialStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)" +  " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateOfDelivery from RawMaterialOrderEntity where orderId = :oId";
 			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
-			q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
+		      q.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
+			
+			@SuppressWarnings("unused")
 
 			int result = q.executeUpdate();
-			System.out.println(result + ":");
+			
 		}
-		System.out.println("4");
-//		String hql = "update RawMaterialStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-//		Query q1 = session.createQuery(hql);
-//	      q1.setParameter("oId", Integer.parseInt(rawMaterialStock.getOrderId()));
-//	      q1.setParameter("manDate", rawMaterialStock.getManufacturingDate());
-//	      q1.setParameter("expDate", rawMaterialStock.getExpiryDate());
-//	      q1.setParameter("qaCheck", rawMaterialStock.getQualityCheck());
-//	      
-//	      int result = q1.executeUpdate();
-//			System.out.println(result);
 
-		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class,
-				Integer.parseInt(rawMaterialStock.getOrderId()));
+		
+		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
 
 		rmStockEntity.setManufacturingDate(rawMaterialStock.getManufacturingDate());
 		rmStockEntity.setExpiryDate(rawMaterialStock.getExpiryDate());
@@ -636,16 +617,26 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 		session.save(rmStockEntity);
 
-		System.out.println("5");
 		session.getTransaction().commit();
 		if (session.getTransaction() != null && session.getTransaction().isActive()) {
-			session.getTransaction().rollback();
-		}
-		session.close();
-		return Constants.DATA_INSERTED_MESSAGE;
+				 session.getTransaction().rollback();
+			}
+			session.close();
+		    return Constants.DATA_INSERTED_MESSAGE;
+       
+
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	doesRawMaterialOrderExistInStock
+	 - Input Parameters	:	orderId
+	 - Return Type		:	boolean
+	 - Throws			:  	No exception
+	 - Author			:	Gaurav Gaikwad, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if Raw Material Order ID exists in Stock
+	 ********************************************************************************************************/
 	@Override
 	public boolean doesRawMaterialOrderIdExistInStock(String orderId) {
 
@@ -654,7 +645,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-//			logger.error(e.getMessage());
 			return rmOrderIdFound;
 		}
 
@@ -665,7 +655,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			rmOrderIdFound = true;
-//			session.getTransaction().commit();
 			session.close();
 			return rmOrderIdFound;
 		} else {
@@ -676,10 +665,5 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	}
 
-	public static void main(String[] args) throws BackEndException, RowNotFoundException {
-
-		RawMaterialDAO ed = new RawMaterialDAOImpl();
-		System.out.println(ed.doesRawMaterialOrderIdExistInStock("1"));
-	}
 
 }

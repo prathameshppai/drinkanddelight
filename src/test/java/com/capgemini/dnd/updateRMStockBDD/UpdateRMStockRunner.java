@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateProductStock;
+package com.capgemini.dnd.updateRMStockBDD;
 
 import org.junit.runner.RunWith;
 
@@ -8,9 +8,9 @@ import io.cucumber.junit.CucumberOptions;
 @RunWith(Cucumber.class) 
 @CucumberOptions(
 		plugin = {"pretty", "html:target/cucumber"})
-public class UpdateProductStockRunner {
+public class UpdateRMStockRunner {
 
-	public UpdateProductStockRunner() {
+	public UpdateRMStockRunner() {
 		// TODO Auto-generated constructor stub
 	}
 

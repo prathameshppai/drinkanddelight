@@ -36,7 +36,7 @@ public class TrackProductStepDefinition {
 
 	@Given("User enters login credentials given")
 	public void user_enters_login_credentials_given() {
-		driver.findElement(By.name("username")).sendKeys("ram_40");
+		driver.findElement(By.name("username")).sendKeys("saurabh123");
 		driver.findElement(By.name("password")).sendKeys("hello");
 		WebElement loginBtn = driver.findElement(By.xpath("//*[@id=\"homepage\"]/div/div/div/div[2]/form/button"));
 		JavascriptExecutor jsButton = (JavascriptExecutor) driver;
@@ -109,7 +109,7 @@ public class TrackProductStepDefinition {
 		String outputValue = outputElement.getText();
 
 		Assert.assertEquals(
-				"The order ID had been in the warehouse with warehouseID = w03 from 2019-08-09 to 2019-10-03(55 days)",
+				"The order ID had been in the warehouse with warehouseID = w03 from 2019-09-01 05:30:00.0 to 2019-10-03 05:30:00.0(32 days)",
 				outputValue);
 	}
 
@@ -127,9 +127,9 @@ public class TrackProductStepDefinition {
 		Assert.assertEquals(string, outputValue);
 	}
 
-//	@After
-//	public void tearDown() {
-//		driver.quit();
-//	}
+	@After
+	public void tearDown() {
+		driver.quit();
+	}
 
 }

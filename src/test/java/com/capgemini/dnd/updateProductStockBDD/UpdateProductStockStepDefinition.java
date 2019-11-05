@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateProductStock;
+package com.capgemini.dnd.updateProductStockBDD;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -37,7 +37,7 @@ public class UpdateProductStockStepDefinition {
 
 	@Given("User enters his login credentials given to him")
 	public void user_enters_his_login_credentials_given_to_him() {
-		driver.findElement(By.name("username")).sendKeys("ram_40");
+		driver.findElement(By.name("username")).sendKeys("saurabh123");
 		driver.findElement(By.name("password")).sendKeys("hello");
 		WebElement loginBtn = driver.findElement(By.xpath("//*[@id=\"homepage\"]/div/div/div/div[2]/form/button"));
 		JavascriptExecutor jsButton = (JavascriptExecutor) driver;

@@ -8,11 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -23,7 +21,6 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -40,8 +37,11 @@ import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.entity.DistributorEntity;
+import com.capgemini.dnd.entity.WarehouseEntity;
+
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
@@ -56,6 +56,7 @@ public class ProductDAOImpl implements ProductDAO {
 
 	/*******************************************
 	 * Product order delivery status update Author: Ankit Kumar
+
 	 * 
 	 */
 
@@ -602,12 +603,13 @@ public class ProductDAOImpl implements ProductDAO {
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
 				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
 				newPO.getWarehouseId());
-		Session session = HibernateUtil.getASession();
+		Session session = null;
+		Transaction transaction = null;
 		try {
-
-			session.beginTransaction();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
 			session.save(productOrdersEntity);
-			session.getTransaction().commit();
+			transaction.commit();
 			added = true;
 		} catch (HibernateException e) {
 			e.printStackTrace();
@@ -807,49 +809,30 @@ public class ProductDAOImpl implements ProductDAO {
 	public ArrayList<String> getProductNames() throws DisplayException, ConnectionException {
 
 		ArrayList<String> productNamesList = new ArrayList<String>();
-		Connection connection;
+		List<ProductSpecsEntity> productSpecsEntityList;
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from ProductSpecsEntity";
+			Query query = session.createQuery(hql);
+			productSpecsEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_PRODUCT_NAMES);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String productName = rs.getString(1);
-				productNamesList.add(productName);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(ProductSpecsEntity productSpecsEntity : productSpecsEntityList) {
+			productNamesList.add(productSpecsEntity.getName());
+		}
+		
 		return productNamesList;
 	}
 
@@ -857,48 +840,30 @@ public class ProductDAOImpl implements ProductDAO {
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> distributorIdsList = new ArrayList<String>();
-		Connection connection;
+		List<DistributorEntity> distributorEntityList;
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from DistributorEntity";
+			Query query = session.createQuery(hql);
+			distributorEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_DISTRIBUTOR_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String distributorId = rs.getString(1);
-				distributorIdsList.add(distributorId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(DistributorEntity distributorEntity : distributorEntityList) {
+			distributorIdsList.add(distributorEntity.getDistributorId());
+		}
+		
 		return distributorIdsList;
 	}
 
@@ -906,64 +871,50 @@ public class ProductDAOImpl implements ProductDAO {
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> warehouseIdsList = new ArrayList<String>();
-		Connection connection;
+		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from WarehouseEntity";
+			Query query = session.createQuery(hql);
+			warehouseEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_WAREHOUSE_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String warehouseId = rs.getString(1);
-				warehouseIdsList.add(warehouseId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(WarehouseEntity warehouseEntity : warehouseEntityList) {
+			warehouseIdsList.add(warehouseEntity.getWarehouseId());
+		}
+		
 		return warehouseIdsList;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	trackProductOrder
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Track a particular order and calculate its shelf life 
+	 ********************************************************************************************************/
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
 
-//		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
 
 		try {
 			ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 					Integer.parseInt(productStock.getOrderId()));
-			// session.getTransaction().commit();
-//		if (session.getTransaction() !=null && session.getTransaction().isActive()) {
-//			 session.getTransaction().rollback();
-//			}
 
 			Date exitDate = productStockEntity.getExitDate();
 
@@ -990,6 +941,15 @@ public class ProductDAOImpl implements ProductDAO {
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	exitDateCheck
+	 - Input Parameters	:	String orderId
+	 - Return Type		:	boolean
+	 - Throws			:  	ProductOrderIDDoesNotExistException
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if the Order ID exists in the Orders Table
+	 ********************************************************************************************************/
 	@Override
 	public boolean doesProductOrderIdExist(String orderId) throws ProductOrderIDDoesNotExistException {
 		boolean pOrderIdFound = false;
@@ -997,11 +957,10 @@ public class ProductDAOImpl implements ProductDAO {
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-//			logger.error(e.getMessage());
+			logger.error(e.getMessage());
 			return pOrderIdFound;
 		}
 
-//		Session session = sessionFactory.getCurrentSession();
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		@SuppressWarnings("rawtypes")
@@ -1009,17 +968,25 @@ public class ProductDAOImpl implements ProductDAO {
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			pOrderIdFound = true;
-//			session.getTransaction().commit();
 			session.close();
 			return pOrderIdFound;
 		} else {
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
-//			session.close();
+			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
+			session.close();
 			throw new ProductOrderIDDoesNotExistException(Constants.PRODUCT_ID_DOES_NOT_EXISTS_EXCEPTION);
 		}
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	exitDateCheck
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	boolean
+	 - Throws			:  	ExitDateException, IncompleteDataException
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if the exit date entered is valid or not
+	 ********************************************************************************************************/
 	@Override
 	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException {
 
@@ -1028,14 +995,10 @@ public class ProductDAOImpl implements ProductDAO {
 			boolean datecheck = false;
 			session = sessionFactory.openSession();
 			session.beginTransaction();
-//	        String hql = "select manufacturingDate, expiryDate from ProductStockEntity where orderId = :oId";
-//	        Query q = session.createQuery(hql);
-//		      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//		      Object[] dateDetails = (Object[]) q.uniqueResult();
+
 			try {
 				ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 						Integer.parseInt(productStock.getOrderId()));
-//		      session.getTransaction().commit();
 
 				Date manufacturingDate = productStockEntity.getManufacturingDate();
 
@@ -1056,7 +1019,7 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 
 		catch (ExitDateException exception) {
-//					logger.error(exception.getMessage());
+			logger.error(exception.getMessage());
 			throw exception;
 
 		}
@@ -1067,16 +1030,20 @@ public class ProductDAOImpl implements ProductDAO {
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	updateExitDateInStock
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Updates Details of Exit Date in Database 
+	 ********************************************************************************************************/
 	@Override
 	public String updateExitDateinStock(ProductStock productStock) {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-//        String hql = "update ProductStockEntity set exitDate = :exitDateVariable where orderId = :oId";
-//        Query q = session.createQuery(hql);
-//	      q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//	      q.setParameter("exitDateVariable", productStock.getExitDate());
-//	      int result = q.executeUpdate();
 
 		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 				Integer.parseInt(productStock.getOrderId()));
@@ -1095,6 +1062,15 @@ public class ProductDAOImpl implements ProductDAO {
 		return Constants.DATA_INSERTED_MESSAGE;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	updateProductStock
+	 - Input Parameters	:	ProductStock productStock
+	 - Return Type		:	String
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Updates Details of Stock in Database 
+	 ********************************************************************************************************/
 	@Override
 	public String updateProductStock(ProductStock productStock) {
 
@@ -1102,30 +1078,21 @@ public class ProductDAOImpl implements ProductDAO {
 		session.beginTransaction();
 
 		boolean orderIdcheckInStock = false;
-		System.out.println("1");
+
 		orderIdcheckInStock = doesProductOrderIdExistInStock(productStock.getOrderId());
-		System.out.println("2");
+
 		if (orderIdcheckInStock == false) {
-			System.out.println("3");
+
 			String hql = "insert into ProductStockEntity(orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery)"
 					+ " select orderId, name, pricePerUnit, quantityValue, quantityUnit, totalPrice, warehouseId, dateofDelivery from ProductOrdersEntity where orderId = :oId";
 			@SuppressWarnings("rawtypes")
 			Query q = session.createQuery(hql);
 			q.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
 
+			@SuppressWarnings("unused")
 			int result = q.executeUpdate();
-			System.out.println(result + ":");
+
 		}
-		System.out.println("4");
-//		String hql = "update ProductStockEntity set manufacturingDate = :manDate, expiryDate = :expDate, qualityCheck = :qaCheck where orderID = :oId";
-//		Query q1 = session.createQuery(hql);
-//	      q1.setParameter("oId", Integer.parseInt(productStock.getOrderId()));
-//	      q1.setParameter("manDate", productStock.getManufacturingDate());
-//	      q1.setParameter("expDate", productStock.getExpiryDate());
-//	      q1.setParameter("qaCheck", productStock.getQualityCheck());
-//	      
-//	      int result = q1.executeUpdate();
-//			System.out.println(result);
 
 		ProductStockEntity productStockEntity = session.load(ProductStockEntity.class,
 				Integer.parseInt(productStock.getOrderId()));
@@ -1136,7 +1103,6 @@ public class ProductDAOImpl implements ProductDAO {
 
 		session.save(productStockEntity);
 
-		System.out.println("5");
 		session.getTransaction().commit();
 		if (session.getTransaction() != null && session.getTransaction().isActive()) {
 			session.getTransaction().rollback();
@@ -1146,6 +1112,15 @@ public class ProductDAOImpl implements ProductDAO {
 
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	doesProductOrderExistInStock
+	 - Input Parameters	:	orderId
+	 - Return Type		:	boolean
+	 - Throws			:  	No exception
+	 - Author			:	Diksha Gupta, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Checks if Product Order ID exists in Stock
+	 ********************************************************************************************************/
 	@Override
 	public boolean doesProductOrderIdExistInStock(String orderId) {
 
@@ -1154,7 +1129,7 @@ public class ProductDAOImpl implements ProductDAO {
 		try {
 			oid = Integer.parseInt(orderId);
 		} catch (Exception e) {
-//			logger.error(e.getMessage());
+			logger.error(e.getMessage());
 			return productOrderIdFound;
 		}
 
@@ -1165,11 +1140,10 @@ public class ProductDAOImpl implements ProductDAO {
 		query.setParameter("oId", oid);
 		if (query.getResultList().size() == 1) {
 			productOrderIdFound = true;
-//			session.getTransaction().commit();
 			session.close();
 			return productOrderIdFound;
 		} else {
-//			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
+			logger.error(Constants.PRODUCT_ID_DOES_NOT_EXIST_IN_STOCK_EXCEPTION);
 			session.close();
 			return productOrderIdFound;
 		}

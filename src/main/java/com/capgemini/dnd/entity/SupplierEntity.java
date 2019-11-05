@@ -1,15 +1,31 @@
-package com.capgemini.dnd.dto;
+package com.capgemini.dnd.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class Supplier {
- 
+@Entity
+@Table(name = "Supplier")
+public class SupplierEntity {
+
+	@Id
+	@Column(name = "SupplierId")
 	private String supplierId;
+	
+	@Column(name = "SupplierName")
 	private String name;
+	
+	@Column(name = "Address")
 	private String address;
+	
+	@Column(name = "Email")
 	private String emailId;
+	
+	@Column(name = "PhoneNumber")
 	private int phoneNo;
 
-	public Supplier(String supplierId, String name, String address, String emailId, int phoneNo) {
+	public SupplierEntity(String supplierId, String name, String address, String emailId, int phoneNo) {
 		this.supplierId = supplierId;
 		this.name = name;
 		this.address = address;
@@ -17,7 +33,7 @@ public class Supplier {
 		this.phoneNo = phoneNo;
 	}
 
-	public Supplier() {
+	public SupplierEntity() {
 	}
 
 	public String getSupplierId() {
@@ -59,12 +75,5 @@ public class Supplier {
 	public void setPhoneNo(int phoneNo) {
 		this.phoneNo = phoneNo;
 	}
-
-	@Override
-	public String toString() {
-		return "Supplier [supplierId=" + supplierId + ", name=" + name + ", address=" + address + ", emailId=" + emailId
-				+ ", phoneNo=" + phoneNo + "]";
-	}
-
 
 }

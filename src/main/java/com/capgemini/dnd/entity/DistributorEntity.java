@@ -12,9 +12,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Distributor")
 public class DistributorEntity {
-//	`DistributorName``DistributorId``Address``Email``PhoneNumber`
+
 	@Id
-    @Column(name = "DistributorId")
+	@Column(name = "DistributorId")
 	private String distributorId;
 	@Column(name = "DistributorName")
 	private String name;
@@ -24,9 +24,9 @@ public class DistributorEntity {
 	private String emailId;
 	@Column(name = "PhoneNumber")
 	private String phoneNo;
-	
+
 	public DistributorEntity() {
-		
+
 	}
 
 	public DistributorEntity(String distributorId, String name, String address, String emailId, String phoneNo) {
@@ -79,6 +79,4 @@ public class DistributorEntity {
 	public void setPhoneNo(String phoneNo) {
 		this.phoneNo = phoneNo;
 	}
-	
-	
 }

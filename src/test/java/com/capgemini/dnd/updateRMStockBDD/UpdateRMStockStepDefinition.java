@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateRMStock;
+package com.capgemini.dnd.updateRMStockBDD;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -38,7 +38,7 @@ public class UpdateRMStockStepDefinition {
 
 	@Given("User enters his login credentials")
 	public void user_enters_his_login_credentials() {
-		driver.findElement(By.name("username")).sendKeys("ram_40");
+		driver.findElement(By.name("username")).sendKeys("saurabh123");
 		driver.findElement(By.name("password")).sendKeys("hello");
 		WebElement loginBtn = driver.findElement(By.xpath("//*[@id=\"homepage\"]/div/div/div/div[2]/form/button"));
 		JavascriptExecutor jsButton = (JavascriptExecutor)driver;

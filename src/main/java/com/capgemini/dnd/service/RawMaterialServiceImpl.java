@@ -60,7 +60,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 
 	@Override
 	public ArrayList<String> fetchSupplierIds() throws DisplayException, ConnectionException {
-		return(rawMaterialDAO.getDistributorIds());
+		return(rawMaterialDAO.getSupplierIds());
 	}
 	
 	@Override

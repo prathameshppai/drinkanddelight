@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateExitDate;
+package com.capgemini.dnd.updateExitDateBDD;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -36,7 +36,7 @@ public class UpdateExitDateStepDefinition {
 
 	@Given("User enters login credentials as given")
 	public void user_enters_login_credentials_as_given() {
-		driver.findElement(By.name("username")).sendKeys("ram_40");
+		driver.findElement(By.name("username")).sendKeys("saurabh123");
 		driver.findElement(By.name("password")).sendKeys("hello");
 		WebElement loginBtn = driver.findElement(By.xpath("//*[@id=\"homepage\"]/div/div/div/div[2]/form/button"));
 		JavascriptExecutor jsButton = (JavascriptExecutor)driver;
