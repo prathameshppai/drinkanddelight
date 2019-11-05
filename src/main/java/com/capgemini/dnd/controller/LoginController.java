@@ -36,8 +36,9 @@ public class LoginController {
 	@RequestMapping(method = RequestMethod.POST)
 	public void login(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
+		System.out.println("In login controller");
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
-		employeeService = new EmployeeServiceImpl();
+		// employeeService = new EmployeeServiceImpl();
 		employee = new Employee();
 		employee.setUsername(fieldValueMap.get("username"));
 		employee.setPassword(fieldValueMap.get("password"));
@@ -50,6 +51,7 @@ public class LoginController {
 				((ObjectNode) dataResponse).put("username", employee.getUsername());
 			}
 		} catch (Exception exception) {
+			System.out.println(exception.getMessage());
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
 		} 
 		response.getWriter().print(dataResponse);

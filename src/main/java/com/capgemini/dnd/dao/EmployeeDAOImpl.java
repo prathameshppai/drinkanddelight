@@ -14,6 +14,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
@@ -28,7 +29,7 @@ import com.capgemini.dnd.entity.EmployeeCredentialEntity;
 import com.capgemini.dnd.util.CryptoFunction;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
-
+@Repository
 public class EmployeeDAOImpl implements EmployeeDAO {
 	private Logger logger = Logger.getRootLogger();
 	
@@ -46,11 +47,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	// -----------------------------------------------------------------------------------------------------------------------------------
 
 	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException {
+		System.out.println("In login exists controller");
 		boolean result = false;
-		Session session = null;
+		//Session session = null;
 		Transaction transaction = null;
 		try {
-			session = sessionFactory.openSession();
+			System.out.println("before sesion");
+			Session session = sessionFactory.openSession();
+			System.out.println("after session");
 			transaction = session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
@@ -61,16 +65,21 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 //				if (session.getTransaction() != null && session.getTransaction().isActive()) {
 //					 session.getTransaction().rollback();
 //				}
-			} else {
+			}
+			
+			else {
 				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 			}
+			
+			session.close();
 		} catch (Exception exception) {
 			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
+			exception.printStackTrace();
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 		} finally {
 //			HibernateUtil.closeSession(session);
-			session.close();
+//			session.close();
 		}
 		return result;
 	}
@@ -111,6 +120,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public boolean login(Employee employee)
 			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
 		boolean result = false;
+		System.out.println("In login dao controller");
 		try {
 			if (employeeExists(employee)) {
 				try {

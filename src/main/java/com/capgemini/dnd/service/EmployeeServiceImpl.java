@@ -1,5 +1,6 @@
 package com.capgemini.dnd.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
@@ -17,13 +18,15 @@ import com.capgemini.dnd.dto.Employee;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-	EmployeeDAO employeeDAO = new EmployeeDAOImpl();
+	@Autowired
+	EmployeeDAO employeeDAO;
 
 	
 
 	@Override
 	public boolean login(Employee employee)
 			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
+		System.out.println("In login service controller");
 		return employeeDAO.login(employee);
 	}
 
