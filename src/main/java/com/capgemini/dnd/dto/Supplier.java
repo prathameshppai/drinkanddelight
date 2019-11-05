@@ -1,14 +1,15 @@
 package com.capgemini.dnd.dto;
 
+
 public class Supplier {
  
 	private String supplierId;
 	private String name;
 	private String address;
 	private String emailId;
-	private String phoneNo;
+	private int phoneNo;
 
-	public Supplier(String supplierId, String name, String address, String emailId, String phoneNo) {
+	public Supplier(String supplierId, String name, String address, String emailId, int phoneNo) {
 		this.supplierId = supplierId;
 		this.name = name;
 		this.address = address;
@@ -17,7 +18,6 @@ public class Supplier {
 	}
 
 	public Supplier() {
-
 	}
 
 	public String getSupplierId() {
@@ -52,11 +52,11 @@ public class Supplier {
 		this.emailId = emailId;
 	}
 
-	public String getPhoneNo() {
+	public int getPhoneNo() {
 		return phoneNo;
 	}
 
-	public void setPhoneNo(String phoneNo) {
+	public void setPhoneNo(int phoneNo) {
 		this.phoneNo = phoneNo;
 	}
 

@@ -1,48 +1,47 @@
 package com.capgemini.dnd.entity;
 
 import javax.persistence.Column;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Distributor")
-public class DistributorEntity {
-//    `DistributorName``DistributorId``Address``Email``PhoneNumber`
+@Table(name = "Supplier")
+public class SupplierEntity {
+
 	@Id
-	@Column(name = "DistributorId")
-	private String distributorId;
-	@Column(name = "DistributorName")
+	@Column(name = "SupplierId")
+	private String supplierId;
+	
+	@Column(name = "SupplierName")
 	private String name;
+	
 	@Column(name = "Address")
 	private String address;
+	
 	@Column(name = "Email")
 	private String emailId;
+	
 	@Column(name = "PhoneNumber")
-	private String phoneNo;
+	private int phoneNo;
 
-	public DistributorEntity() {
-
-	}
-
-	public DistributorEntity(String distributorId, String name, String address, String emailId, String phoneNo) {
-		super();
-		this.distributorId = distributorId;
+	public SupplierEntity(String supplierId, String name, String address, String emailId, int phoneNo) {
+		this.supplierId = supplierId;
 		this.name = name;
 		this.address = address;
 		this.emailId = emailId;
 		this.phoneNo = phoneNo;
 	}
 
-	public String getDistributorId() {
-		return distributorId;
+	public SupplierEntity() {
 	}
 
-	public void setDistributorId(String distributorId) {
-		this.distributorId = distributorId;
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
 	}
 
 	public String getName() {
@@ -69,11 +68,11 @@ public class DistributorEntity {
 		this.emailId = emailId;
 	}
 
-	public String getPhoneNo() {
+	public int getPhoneNo() {
 		return phoneNo;
 	}
 
-	public void setPhoneNo(String phoneNo) {
+	public void setPhoneNo(int phoneNo) {
 		this.phoneNo = phoneNo;
 	}
 

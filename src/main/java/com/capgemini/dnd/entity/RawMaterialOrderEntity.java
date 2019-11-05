@@ -23,8 +23,8 @@ package com.capgemini.dnd.entity;
 		}
 
 		@Id
-		    @GeneratedValue(strategy = GenerationType.IDENTITY)
-		    @Column(name = "orderid")
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		@Column(name = "orderid")
 		private int orderId;
 		 @Column(name = "name")
 		private String name;
@@ -100,14 +100,6 @@ package com.capgemini.dnd.entity;
 		public void setTotalPrice(double totalPrice) {
 			this.totalPrice = totalPrice;
 		}
-
-//		public static int getOrderIdCount() {
-//			return orderIdCount;
-//		}
-
-//		public static void setOrderIdCount(int orderIdCount) {
-//			RawMaterialOrderEntity.orderIdCount = orderIdCount;
-//		}
 
 		public String getName() {
 			return name;
