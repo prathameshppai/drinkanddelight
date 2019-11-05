@@ -34,8 +34,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 //		// Log4JManager.initProps();
 	}
 
+	
+	
 	// -----------------------------------------------------------------------------------------------------------------------------------
 
+	/*
+	 * This method is used to check whether an employee with a given user name exists in the table of Employees.
+	 * Return type - boolean 
+	 */
 	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException {
 		boolean result = false;
 		Session session = null;
@@ -48,12 +54,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			if (query.getResultList().size() == 1) {
 				result = true;
 			} else {
-				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
-				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
+				logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
+				throw new RowNotFoundException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 			}
 		} catch (Exception exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
-			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
+			logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
+			throw new RowNotFoundException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 		} finally {
 			session.close();
 		}
@@ -102,8 +108,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				}
 			}
 		} catch (RowNotFoundException exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
-			throw new UnregisteredEmployeeException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
+			logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
+			throw new UnregisteredEmployeeException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 		}
 		return result;
 	}
@@ -151,7 +157,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 					tempEmployee.getEmpId());
 			empCredentialEntity.setSalt(CryptoFunction.getNextSalt());
 			empCredentialEntity.setHash(CryptoFunction.hash(employee.getPassword(), empCredentialEntity.getSalt()));
-			System.out.println(empCredentialEntity);
 			session.update(empCredentialEntity);
 			transaction.commit();
 			if (transaction != null && transaction.isActive()) {
@@ -161,7 +166,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 					empCredentialEntity.getSalt())) {
 				passwordChanged = true;
 			} else {
-				throw new BackEndException("Server error!!!");
+				throw new BackEndException(Constants.SERVER_ERROR_MESSAGE);
 			}
 		} catch (Exception exception) {
 			if (transaction != null)
@@ -187,20 +192,20 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 					try {
 						result = setPassword(actualEmployee);
 					} catch (BackEndException exception) {
-						logger.error("Password could not be updated!!!");
-						throw new PasswordException("Password could not be updated!!!");
+						logger.error(Constants.LOGGER_ERROR_MESSAGE_BACKEND_ISSUE);
+						throw new PasswordException(Constants.LOGGER_ERROR_MESSAGE_BACKEND_ISSUE);
 					}
 				} else {
-					logger.error("Passwords do not match!!!");
-					throw new PasswordException("Passwords do not match!!!");
+					logger.error(Constants.LOGGER_ERROR_MESSAGE_PASSWORD_MISMATCH);
+					throw new PasswordException(Constants.LOGGER_ERROR_MESSAGE_PASSWORD_MISMATCH);
 				}
 			} else {
-				logger.error("New password matches with old password!!!");
-				throw new PasswordException("New password matches with old password!!!");
+				logger.error(Constants.LOGGER_ERROR_MESSAGE_PASSWORD_UNCHANGED);
+				throw new PasswordException(Constants.LOGGER_ERROR_MESSAGE_PASSWORD_UNCHANGED);
 			}
 		} else {
-			logger.error("Answer to security question is wrong!!!");
-			throw new WrongSecurityAnswerException("Answer to security question is wrong!!!");
+			logger.error(Constants.LOGGER_ERROR_MESSAGE_WRONG_ANSWER);
+			throw new WrongSecurityAnswerException(Constants.LOGGER_ERROR_MESSAGE_WRONG_ANSWER);
 		}
 
 		return result;
