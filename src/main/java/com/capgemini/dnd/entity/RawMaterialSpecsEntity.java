@@ -51,10 +51,4 @@ public class RawMaterialSpecsEntity {
 	public String getDescription() {
 		return description;
 	}
-
-	@Override
-	public String toString() {
-		return "RawMaterialSpecs [rmsId=" + rmsId + ", name=" + name + ", duration="
-				+ duration + ", description=" + description + "]";
-	}
 }

@@ -65,11 +65,4 @@ public class ProductSpecsEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	@Override
-	public String toString() {
-		return "ProductSpecsEntity [psId=" + psId + ", name=" + name + ", duration=" + duration + ", description="
-				+ description + "]";
-	}
-
 }
