@@ -502,9 +502,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			try {
-				RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class,
-						Integer.parseInt(rawMaterialStock.getOrderId()));
+	
 
 
 	        try {
