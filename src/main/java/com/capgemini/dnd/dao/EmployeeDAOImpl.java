@@ -1,11 +1,5 @@
 package com.capgemini.dnd.dao;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -19,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.InvalidPasswordException;
 import com.capgemini.dnd.customexceptions.PasswordException;
-import com.capgemini.dnd.customexceptions.RowNotAddedException;
 import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
 import com.capgemini.dnd.customexceptions.WrongPasswordException;
@@ -27,12 +20,11 @@ import com.capgemini.dnd.customexceptions.WrongSecurityAnswerException;
 import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.entity.EmployeeCredentialEntity;
 import com.capgemini.dnd.util.CryptoFunction;
-import com.capgemini.dnd.util.DBUtil;
-import com.capgemini.dnd.util.HibernateUtil;
+
 @Repository
 public class EmployeeDAOImpl implements EmployeeDAO {
 	private Logger logger = Logger.getRootLogger();
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -42,44 +34,28 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 //		// Log4JManager.initProps();
 	}
 
-	
-
 	// -----------------------------------------------------------------------------------------------------------------------------------
 
 	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException {
-		System.out.println("In login exists controller");
 		boolean result = false;
-		//Session session = null;
-		Transaction transaction = null;
+		Session session = null;
 		try {
-			System.out.println("before sesion");
-			Session session = sessionFactory.openSession();
-			System.out.println("after session");
-			transaction = session.beginTransaction();
+			session = sessionFactory.openSession();
+			session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
 			query.setParameter("username", employee.getUsername());
 			if (query.getResultList().size() == 1) {
 				result = true;
-//				transaction.commit();
-//				if (session.getTransaction() != null && session.getTransaction().isActive()) {
-//					 session.getTransaction().rollback();
-//				}
-			}
-			
-			else {
+			} else {
 				logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 			}
-			
-			session.close();
 		} catch (Exception exception) {
 			logger.error(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
-			exception.printStackTrace();
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER);
 		} finally {
-//			HibernateUtil.closeSession(session);
-//			session.close();
+			session.close();
 		}
 		return result;
 	}
@@ -88,10 +64,9 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public boolean setLoggedIn(Employee employee) throws BackEndException, RowNotFoundException {
 		boolean result = false;
 		Session session = null;
-		Transaction transaction = null;
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
 			query.setParameter("username", employee.getUsername());
@@ -105,10 +80,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 			}
 
-//			transaction.commit();
 		} catch (Exception exception) {
-			if (transaction != null)
-				transaction.rollback();
 			logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 		} finally {
@@ -120,7 +92,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public boolean login(Employee employee)
 			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
 		boolean result = false;
-		System.out.println("In login dao controller");
 		try {
 			if (employeeExists(employee)) {
 				try {
@@ -143,10 +114,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public Employee fetchOneConfidentialDetail(Employee employee) throws BackEndException {
 		Employee idealEmployee = null;
 		Session session = null;
-		Transaction transaction = null;
+		
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			@SuppressWarnings("rawtypes")
 			Query query = session.createNamedQuery("GetOneConfidentialDetail");
 			query.setParameter("username", employee.getUsername());
@@ -158,10 +129,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			idealEmployee.setSecurityAnswer(empCredentialEntity.getSecurityAnswer());
 			idealEmployee.setHash(empCredentialEntity.getHash());
 			idealEmployee.setSalt(empCredentialEntity.getSalt());
-//			transaction.commit();
 		} catch (Exception exception) {
-			if (transaction != null)
-				transaction.rollback();
 			logger.error(exception.getMessage());
 			throw new BackEndException(exception.getMessage());
 		} finally {
@@ -177,21 +145,23 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		try {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
-			EmployeeDAO empDAO = new EmployeeDAOImpl();
-			Employee tempEmployee=employee;
-			tempEmployee=empDAO.fetchOneConfidentialDetail(tempEmployee);
-			EmployeeCredentialEntity empCredentialEntity = session.load(EmployeeCredentialEntity.class, tempEmployee.getEmpId());
+			Employee tempEmployee = employee;
+			tempEmployee = fetchOneConfidentialDetail(tempEmployee);
+			EmployeeCredentialEntity empCredentialEntity = session.load(EmployeeCredentialEntity.class,
+					tempEmployee.getEmpId());
 			empCredentialEntity.setSalt(CryptoFunction.getNextSalt());
 			empCredentialEntity.setHash(CryptoFunction.hash(employee.getPassword(), empCredentialEntity.getSalt()));
+			System.out.println(empCredentialEntity);
 			session.update(empCredentialEntity);
 			transaction.commit();
-			if (session.getTransaction() != null && session.getTransaction().isActive()) {
-				 session.getTransaction().rollback();
+			if (transaction != null && transaction.isActive()) {
+				transaction.rollback();
 			}
-			if (CryptoFunction.isExpectedPassword(employee.getPassword(), empCredentialEntity.getHash(), empCredentialEntity.getSalt())) {
+			if (CryptoFunction.isExpectedPassword(employee.getPassword(), empCredentialEntity.getHash(),
+					empCredentialEntity.getSalt())) {
 				passwordChanged = true;
 			} else {
-				throw new BackEndException("Server error!!!"); 
+				throw new BackEndException("Server error!!!");
 			}
 		} catch (Exception exception) {
 			if (transaction != null)

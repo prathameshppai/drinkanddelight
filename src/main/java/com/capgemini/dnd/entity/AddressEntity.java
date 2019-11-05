@@ -7,8 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
+import org.hibernate.annotations.NamedQuery;
 
+@Entity
+@NamedQuery(name="GetOneAddress", query="FROM DistributorEntity WHERE PlotNo=:plotNo AND BuildingName=:buildingName AND StreetName=:streetName AND Pincode=:pincode") 
 @Table(name = "Address")
 public class AddressEntity {
 	@Id

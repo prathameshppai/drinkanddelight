@@ -31,10 +31,12 @@ import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RowNotAddedException;
+import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.SupplierAddressDoesNotExistsException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.dto.Address;
 import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
+import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
@@ -1334,7 +1336,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	}
 	
-
-
+	public static void main(String[] args) throws BackEndException, RowNotFoundException {
+		
+		RawMaterialDAO ed = new RawMaterialDAOImpl();
+		System.out.println(ed.doesRawMaterialOrderIdExistInStock("1"));
+	}
+	
 
 }

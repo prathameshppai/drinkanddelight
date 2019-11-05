@@ -1,4 +1,5 @@
 package com.capgemini.dnd.controller;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.service.EmployeeService;
-import com.capgemini.dnd.service.EmployeeServiceImpl;
 import com.capgemini.dnd.servlets.ServletConstants;
 import com.capgemini.dnd.util.MappingUtil;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class LoginController {
 	@Autowired
 	private EmployeeService employeeService;
-	
+
 	@Autowired
 	private Employee employee;
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public void login(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
@@ -42,7 +42,7 @@ public class LoginController {
 		employee = new Employee();
 		employee.setUsername(fieldValueMap.get("username"));
 		employee.setPassword(fieldValueMap.get("password"));
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
 		try {
@@ -53,7 +53,7 @@ public class LoginController {
 		} catch (Exception exception) {
 			System.out.println(exception.getMessage());
 			((ObjectNode) dataResponse).put("message", exception.getMessage());
-		} 
+		}
 		response.getWriter().print(dataResponse);
 	}
 }
