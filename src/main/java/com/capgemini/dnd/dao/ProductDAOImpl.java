@@ -32,7 +32,6 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.util.DBUtil;
@@ -48,33 +47,27 @@ public class ProductDAOImpl implements ProductDAO {
 	private SessionFactory sessionFactory;
 
 	/*******************************************
-	 * Product order delivery status update
-	 * Author: Ankit Kumar
+	 * Product order delivery status update Author: Ankit Kumar
 	 * 
-
 	 */
-	
-	public String updateStatusProductOrder(String orderId,String deliveryStatus)  {
+
+	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
-			// start a transaction
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			ProductOrdersEntity product = (ProductOrdersEntity) session.get(ProductOrdersEntity.class,
 					Integer.parseInt(orderId));
 			product.setDeliveryStatus(deliveryStatus);
 			session.save(product);
-			// commit transaction
 			transaction.commit();
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-			// int result = query.executeUpdate();
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback();
 			}
 			try {
-				// Throw an object of user defined exception
 				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
 			} catch (UpdateException ex) {
 				return ex.getMessage();
@@ -83,76 +76,6 @@ public class ProductDAOImpl implements ProductDAO {
 			session.close();
 		}
 	}
-//	public String updateStatusProductOrder(String oid, String newStatus) throws Exception {
-//
-//		Connection con = DBUtil.getInstance().getConnection();
-//		PreparedStatement preparedStatement = null;
-//		java.util.Date today_date = new Date();
-//		int queryResult = 0;
-//		if (newStatus.equalsIgnoreCase("RECEIVED")) {
-//			try {
-//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS);
-//
-//				preparedStatement.setString(1, newStatus);
-//				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
-//				preparedStatement.setInt(3, Integer.parseInt(oid));
-//				queryResult = preparedStatement.executeUpdate();
-//				if (queryResult == 0) {
-//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-//
-//				} else {
-//					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-//				}
-//
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//
-//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//			} finally {
-//				try {
-//
-//					preparedStatement.close();
-//					con.close();
-//				} catch (SQLException sqlException) {
-//					logger.error(sqlException.getMessage());
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//
-//				}
-//			}
-//		} else {
-//			try {
-//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_DELIVERY_STATUS1);
-//				preparedStatement.setString(1, newStatus);
-//				preparedStatement.setInt(2, Integer.parseInt(oid));
-//
-//				queryResult = preparedStatement.executeUpdate();
-//				if (queryResult == 0) {
-//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-//
-//				} else {
-//					logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-//				}
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//			} finally {
-//				try {
-//
-//					preparedStatement.close();
-//					con.close();
-//				} catch (SQLException sqlException) {
-//					logger.error(sqlException.getMessage());
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//
-//				}
-//			}
-//		}
-//
-//	}
 
 	/*****************************************************************
 	 * - Method Name: displayProductOrderDetails() - Input Parameters : - Throws :
