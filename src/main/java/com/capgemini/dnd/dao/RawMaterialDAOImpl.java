@@ -61,23 +61,19 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		Session session = null;
 		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
-			// start a transaction
+			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			RawMaterialOrderEntity rawmaterialorder = (RawMaterialOrderEntity) session.get(RawMaterialOrderEntity.class,
 					Integer.parseInt(orderId));
 			rawmaterialorder.setDeliveryStatus(deliveryStatus);
 			session.save(rawmaterialorder);
-			// commit transaction
 			transaction.commit();
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-			// int result = query.executeUpdate();
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback();
 			}
 			try {
-				// Throw an object of user defined exception
 				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
 			} catch (UpdateException ex) {
 				return ex.getMessage();
@@ -86,73 +82,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			session.close();
 		}
 	}
-//	public String updateStatusRawMaterialOrder(String oid, String newStatus) throws Exception {
-//		Connection con = DBUtil.getInstance().getConnection();
-//		PreparedStatement preparedStatement = null;
-//		int queryResult = 0;
-//		java.util.Date today_date = new Date();
-//		if (newStatus.equalsIgnoreCase("RECEIVED")) {
-//			try {
-//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_RM_DELIVERY_STATUS);
-//				preparedStatement.setString(1, newStatus);
-//				preparedStatement.setDate(2, DBUtil.stringtoDate(today_date));
-//				preparedStatement.setInt(3, Integer.parseInt(oid));
-//				queryResult = preparedStatement.executeUpdate();
-//				if (queryResult == 0) {
-//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-//
-//				} else {
-//					logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
-//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-//				}
-//
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//			} finally {
-//				try {
-//					preparedStatement.close();
-//					con.close();
-//				} catch (SQLException sqlException) {
-//					logger.error(sqlException.getMessage());
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//
-//				}
-//			}
-//		} else {
-//			try {
-//				preparedStatement = con.prepareStatement(QueryMapper.UPDATE_RM_DELIVERY_STATUS1);
-//
-//				preparedStatement.setString(1, newStatus);
-//				preparedStatement.setInt(2, Integer.parseInt(oid));
-//
-//				queryResult = preparedStatement.executeUpdate();
-//				if (queryResult == 0) {
-//					logger.error(Constants.LOGGER_ERROR_MESSAGE_FAILED_UPDATION);
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
-//
-//				} else {
-//					logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
-//					return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
-//				}
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//			} finally {
-//				try {
-//					preparedStatement.close();
-//					con.close();
-//				} catch (SQLException sqlException) {
-//					logger.error(sqlException.getMessage());
-//					throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//
-//				}
-//			}
-//		}
-//	}
 
-		/*******************************************************************************************************
+
+	/*******************************************************************************************************
 	 * - Function Name : add raw material order - Input Parameters :RawmaterialOrder
 	 * newRMO - Return Type : String - Throws : Exception - Author : Capgemini -
 	 * Creation Date : 25/09/2019 - Description : Raw Material orders is placed i.e.
@@ -300,7 +232,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		}
 	}
 
-
 	@SuppressWarnings("unused")
 	@Override
 	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
@@ -374,57 +305,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	}
 
-	// sql based getRawMaterialNamesppp
-//	@Override
-//	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
-//
-//		ArrayList<String> rawMaterialNamesList = new ArrayList<String>();
-//		Connection connection;
-//		try {
-//			connection = DBUtil.getInstance().getConnection();
-//		} catch (Exception e) {
-//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//		}
-//		PreparedStatement pst = null;
-//
-//		try {
-//			pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
-//			ResultSet rs = pst.executeQuery();
-//
-//			int isFetched = 0;
-//			while (rs.next()) {
-//				isFetched = 1;
-//				String rawMaterialName = rs.getString(1);
-//				rawMaterialNamesList.add(rawMaterialName);
-//			}
-//
-//			if (isFetched == 0) {
-//				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-//				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-//
-//			} else {
-//				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-//
-//			}
-//
-//		} catch (SQLException sqlException) {
-//			logger.error(sqlException.getMessage());
-//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//		} finally {
-//			try {
-//
-//				pst.close();
-//				connection.close();
-//			} catch (SQLException sqlException) {
-//				logger.error(sqlException.getMessage());
-//				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//
-//			}
-//		}
-//		return rawMaterialNamesList;
-//	}
-
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
 
@@ -439,7 +319,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		PreparedStatement pst = null;
 
 		try {
-		//	pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
+			// pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
 			ResultSet rs = pst.executeQuery();
 
 			int isFetched = 0;
