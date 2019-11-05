@@ -3,16 +3,19 @@ package com.capgemini.dnd.entity;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.capgemini.dnd.util.DistributorIdentity;
 
 @Entity
 @Table(name = "Distributor")
 public class DistributorEntity {
 
-	@EmbeddedId
-	private DistributorIdentity distributorCompositeId;
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "distributorId")
+	private String distributorId;
 
 	@Column(name = "distributorName")
 	private String distributorName;
@@ -29,13 +32,12 @@ public class DistributorEntity {
 		this.phoneNo = phoneNo;
 	}
 
-	public DistributorIdentity getDistributorCompositeId() {
-		return distributorCompositeId;
+	public String getDistributorId() {
+		return distributorId;
 	}
 
-	public void setDistributorCompositeId(String distributorId, int addressId) {
-		this.distributorCompositeId.setDistributorId(distributorId);
-		this.distributorCompositeId.setAddressId(addressId);
+	public void setDistributorId(String distributorId) {
+		this.distributorId = distributorId;
 	}
 
 	public String getDistributorName() {

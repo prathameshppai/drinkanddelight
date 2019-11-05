@@ -32,7 +32,6 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
-import com.capgemini.dnd.entity.AddressEntity;
 import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
@@ -1238,66 +1237,5 @@ public class ProductDAOImpl implements ProductDAO {
 			session.close();
 			return productOrderIdFound;
 		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	public int getAddressId(Address address) throws BackEndException {
-		int addressId = 0;
-		Session session = null;
-		Transaction transaction = null;
-		try {
-			session = HibernateUtil.getASession();
-			transaction = session.beginTransaction();
-			Query query = session.createNamedQuery("GetOneAddress");
-			query.setParameter("plotNo", address.getPlotNo());
-			query.setParameter("buildingName", address.getBuildingName());
-			query.setParameter("streetName", address.getStreetName());
-			query.setParameter("pincode", address.getPincode());
-			System.out.println("jio");
-			addressId = query.getResultList().size();
-			transaction.commit();
-		} catch (Exception exception) {
-			if (transaction != null)
-				transaction.rollback();
-			System.out.println(exception.getMessage());
-		} 
-		return addressId;
-	}
-
-	public boolean addDistributorAddress(Distributor distributor, Address address) throws BackEndException {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-
-		int addressId = getAddressId(address);
-		DistributorEntity distributorEntity = new DistributorEntity(distributor.getName(), distributor.getEmailId(),
-				distributor.getPhoneNo());
-		if (addressId > 0) { // address exists
-			distributorEntity.setDistributorCompositeId(distributor.getDistributorId(), addressId);
-			session.save(distributorEntity);
-			session.close();
-			return false;
-		} else {
-			AddressEntity addressEntity = new AddressEntity(address.getPlotNo(), address.getBuildingName(),
-					address.getStreetName(), address.getLandmark(), address.getCity(), address.getState(),
-					address.getPincode());
-			session.save(addressEntity);
-			@SuppressWarnings("rawtypes")
-			Query query = session.createQuery("from DistributorEntity");
-			distributorEntity.setDistributorCompositeId(distributor.getDistributorId(),
-					2999 + query.getResultList().size());
-			session.save(distributorEntity);
-			session.close();
-			return true;
-		}
-	}
-
-	public static void main(String[] args) throws BackEndException {
-		Address address = new Address();
-		address.setPlotNo(44);
-		address.setBuildingName("DistributorB1");
-		address.setStreetName("Lake Street");
-		address.setPincode("757080");
-		ProductDAOImpl pd = new ProductDAOImpl();
-		System.out.println(pd.getAddressId(address));
 	}
 }
