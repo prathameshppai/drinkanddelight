@@ -14,8 +14,8 @@
         
         <!--  Stock Database Only -->
         <property name="hibernate.connection.url">jdbc:mysql://remotemysql.com:3306/vh7F14hChv</property>
-        <property name="hibernate.connection.password">nwpao0EA87</property>
         <property name="hibernate.connection.username">vh7F14hChv</property>
+        <property name="hibernate.connection.password">nwpao0EA87</property>
         <!--  Stock Database Only -->
         
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
@@ -26,10 +26,10 @@
         <mapping class="com.capgemini.dnd.entity.ProductOrdersEntity"></mapping>
         <mapping class="com.capgemini.dnd.entity.ProductStockEntity"></mapping>
         <mapping class="com.capgemini.dnd.entity.EmployeeCredentialEntity"></mapping>
-
         <mapping class="com.capgemini.dnd.entity.RawMaterialStockEntity"></mapping>
-
         <mapping class="com.capgemini.dnd.entity.RawMaterialOrderEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.AddressEntity"></mapping>
+        <mapping class="com.capgemini.dnd.entity.DistributorEntity"></mapping>
 
     </session-factory>
 </hibernate-configuration>

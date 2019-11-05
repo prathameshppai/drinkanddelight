@@ -1,12 +1,15 @@
 package com.capgemini.dnd.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
-public class RawMaterialOrder {
+@Component
+public class RawMaterialOrder implements Serializable{
 	private String orderId;
-	private static int orderIdCount = 1;
+//	private static int orderIdCount = 1;
 	private String name;
 	private String supplierId;
 	private double quantityValue;
@@ -21,7 +24,7 @@ public class RawMaterialOrder {
 	public RawMaterialOrder(String name, String supplierId, double quantityValue, String quantityUnit,
 			Date dateOfDelivery, double pricePerUnit, String warehouseId) {
 		super();
-		this.orderId = "OID" + orderIdCount++;
+//		this.orderId = "OID" + orderIdCount++;
 		this.name = name;
 		this.supplierId = supplierId;
 		this.quantityValue = quantityValue;
@@ -76,14 +79,6 @@ public class RawMaterialOrder {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
-	}
-
-	public static int getOrderIdCount() {
-		return orderIdCount;
-	}
-
-	public static void setOrderIdCount(int orderIdCount) {
-		RawMaterialOrder.orderIdCount = orderIdCount;
 	}
 
 	public String getName() {

@@ -57,9 +57,9 @@ public class ProductStockEntity {
 	
 	
 
-	public ProductStockEntity() {
-		
-	}
+//	public ProductStockEntity() {
+//		
+//	}
 
 
 

@@ -36,7 +36,7 @@ public class Constants {
 	public static final String EMPLOYEE_LOGGER_ERROR_RECORD_NOT_FOUND = "Employee record not found!!!";
 	public static final String EMPLOYEE_LOGGER_ERROR_FETCHING_FAILED = "Fetching of the employee failed!!! - ";
 	public static final String EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND = "Employee record with the given username and password not found!!!";
-	public static final String EMPLOYEE_LOGGER_ERROR_NOT_A_REGISTRATED_USER = "You are not a registered user!!!";
+	
 	public static final String EMPLOYEE_LOGGER_ERROR_NOT_LOGGEDIN = "You are not logged in!!!";
 	public static final String EMPLOYEE_LOGGER_ERROR_USER_NOTFOUND = "Username not found!!!";
 	public static final String EMPLOYEE_LOGGER_ERROR_NOT_EVERYONE_IS_LOGGED_OUT = "Not everyone is logged out on exiting the application!!!";
@@ -50,6 +50,7 @@ public class Constants {
 	public static final String DATA_INSERTED_MESSAGE = "Data inserted";
 	public static final String INCORRECT_PASSWORD_MESSAGE ="Password is incorrect!!!";
 	
+	public static final String LOGGER_ERROR_MESSAGE_BACKEND_ISSUE = "Password could not be updated!!!";
 	public static final String LOGGER_ERROR_MESSAGE_PASSWORD_MISMATCH = "Passwords do not match!!!";
 	public static final String LOGGER_ERROR_MESSAGE_PASSWORD_UNCHANGED = "New password matches with old password!!!";
 	public static final String LOGGER_ERROR_MESSAGE_PASSWORD_EMPTY = "Password can't be empty or just spaces!!!";
@@ -66,5 +67,5 @@ public class Constants {
     public static final String SUPPLIER_ADDRESS_EXCEPTION="Supplier ID does not exists!!!";
 	public static final String DISTRIBUTOR_ADDRESS_ID_DOES_NOT_EXISTS_EXCEPTION = "Distributor address ID does not exist";
 	public static final String INCOMPLETE_INFORMATION_IN_DATABASE = "Data Incomplete...Please check database and update required information from Orders Table";
-	
+	public static final String SERVER_ERROR_MESSAGE="Server error!!!";
 }

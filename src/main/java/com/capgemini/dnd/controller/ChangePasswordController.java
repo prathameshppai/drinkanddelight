@@ -21,7 +21,6 @@ import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
 import com.capgemini.dnd.customexceptions.WrongSecurityAnswerException;
 import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.service.EmployeeService;
-import com.capgemini.dnd.service.EmployeeServiceImpl;
 import com.capgemini.dnd.servlets.ServletConstants;
 import com.capgemini.dnd.util.MappingUtil;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -42,13 +41,15 @@ public class ChangePasswordController {
 
 	@Autowired
 	private Employee idealEmployee;
-	
+
+	@Autowired
+	private Employee actualEmployee;
+
 	@RequestMapping(method = RequestMethod.POST)
 	public void login(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
-		employeeService = new EmployeeServiceImpl();
-		tempEmployee = new Employee();
+
 		tempEmployee.setUsername(fieldValueMap.get("username"));
 		idealEmployee = null;
 		try {
@@ -56,7 +57,6 @@ public class ChangePasswordController {
 		} catch (BackEndException e) {
 		}
 
-		Employee actualEmployee = new Employee();
 		actualEmployee.setUsername(fieldValueMap.get("username"));
 		actualEmployee.setSecurityAnswer(fieldValueMap.get("answer"));
 		actualEmployee.setPassword(fieldValueMap.get("newPassword"));
@@ -64,7 +64,8 @@ public class ChangePasswordController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
-
+		System.out.println(idealEmployee);
+		System.out.println(actualEmployee);
 		try {
 			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
 				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);

@@ -153,8 +153,10 @@ public class RawMaterialStockEntity {
 		this.qualityCheck = qualityCheck;
 	}
 
-	public RawMaterialStockEntity() {
-
-	}
+	/*
+	 * public RawMaterialStockEntity() {
+	 * 
+	 * }
+	 */
 
 }

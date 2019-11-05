@@ -26,7 +26,7 @@ import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class RawMaterialServiceImpl implements RawMaterialService {
 
 	//RawMaterialDAO rawMaterialDAO = new RawMaterialDAOImpl();
