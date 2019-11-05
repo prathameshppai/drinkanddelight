@@ -30,6 +30,7 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
