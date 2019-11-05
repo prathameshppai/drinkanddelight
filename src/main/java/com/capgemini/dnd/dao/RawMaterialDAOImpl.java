@@ -31,6 +31,7 @@ import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
 import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
 import com.capgemini.dnd.customexceptions.RowNotAddedException;
+import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.SupplierAddressDoesNotExistsException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.dto.Address;
@@ -599,9 +600,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			e.printStackTrace();
 			System.out.println("Exception 638");
 		}
-		finally {
-			session.close();
-		}
+//		finally {
+//			session.close();
+//		}
 		if (!added) {
 			throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
 		}
@@ -954,7 +955,57 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 
 
-
+	//sql based getRawMaterialNamesppp
+//	@Override
+//	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
+//
+//		ArrayList<String> rawMaterialNamesList = new ArrayList<String>();
+//		Connection connection;
+//		try {
+//			connection = DBUtil.getInstance().getConnection();
+//		} catch (Exception e) {
+//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//		}
+//		PreparedStatement pst = null;
+//
+//		try {
+//			pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
+//			ResultSet rs = pst.executeQuery();
+//
+//			int isFetched = 0;
+//			while (rs.next()) {
+//				isFetched = 1;
+//				String rawMaterialName = rs.getString(1);
+//				rawMaterialNamesList.add(rawMaterialName);
+//			}
+//
+//			if (isFetched == 0) {
+//				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+//				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
+//
+//			} else {
+//				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+//
+//			}
+//
+//		} catch (SQLException sqlException) {
+//			logger.error(sqlException.getMessage());
+//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//		} finally {
+//			try {
+//
+//				pst.close();
+//				connection.close();
+//			} catch (SQLException sqlException) {
+//				logger.error(sqlException.getMessage());
+//				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//
+//			}
+//		}
+//		return rawMaterialNamesList;
+//	}
+	
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
 
@@ -1247,7 +1298,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			}
 	      session.close();
 	      return Constants.DATA_INSERTED_MESSAGE;
-		
 
 	}
 
@@ -1281,7 +1331,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 //	      
 //	      int result = q1.executeUpdate();
 //			System.out.println(result);
-		
 		
 		RawMaterialStockEntity rmStockEntity = session.load(RawMaterialStockEntity.class, Integer.parseInt(rawMaterialStock.getOrderId()));
 		
@@ -1334,7 +1383,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	}
 	
-
-
+	public static void main(String[] args) throws BackEndException, RowNotFoundException {
+		
+		RawMaterialDAO ed = new RawMaterialDAOImpl();
+		System.out.println(ed.doesRawMaterialOrderIdExistInStock("1"));
+	}
+	
 
 }

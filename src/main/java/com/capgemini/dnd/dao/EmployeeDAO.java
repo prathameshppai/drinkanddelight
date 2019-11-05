@@ -11,9 +11,7 @@ import com.capgemini.dnd.customexceptions.WrongSecurityAnswerException;
 import com.capgemini.dnd.dto.Employee;
 
 public interface EmployeeDAO {
-	public boolean addEmployee(Employee employee) throws BackEndException, RowNotAddedException;
-
-	public boolean register(Employee employee) throws BackEndException, RowNotAddedException;
+	
 
 	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException;
 

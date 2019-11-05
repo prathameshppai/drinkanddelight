@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.service.EmployeeService;
-import com.capgemini.dnd.service.EmployeeServiceImpl;
 import com.capgemini.dnd.util.JsonUtil;
 import com.capgemini.dnd.util.MappingUtil;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -36,8 +35,6 @@ public class DisplaySecurityQuestionController {
 	public void getSecurityQuestion(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
-		employeeService = new EmployeeServiceImpl();
-		employee = new Employee();
 		employee.setUsername(fieldValueMap.get("username"));
 		Employee idealEmployee = new Employee();
 		try {
