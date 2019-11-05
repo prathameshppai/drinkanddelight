@@ -45,4 +45,4 @@ And User is on update exit date page
 When User enters the number in order ID as "5"
 And User enters Exit Date as "2019-02-01"
 And user clicks on update button to view output
-Then The message "Exit date cannot be before its manufacturing date" is displayed in the space below
+Then The message "Exit date cannot be before its manufacturing date or after its expiry date" is displayed in the space below
