@@ -9,8 +9,9 @@ import io.cucumber.junit.CucumberOptions;
 
 @RunWith(Cucumber.class) 
 @CucumberOptions(
-		plugin = {"pretty", "html:target/cucumber"},
-		features = {"classpath:com/capgemini/dnd/updateExitDate/updateExitDate.feature"})
+		plugin = {"pretty", "html:target/cucumber"}
+				
+		)
 public class TrackProductRunner {
 
 	public TrackProductRunner() {

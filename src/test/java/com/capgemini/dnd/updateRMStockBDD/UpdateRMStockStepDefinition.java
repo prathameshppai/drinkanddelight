@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateRMStock;
+package com.capgemini.dnd.updateRMStockBDD;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;

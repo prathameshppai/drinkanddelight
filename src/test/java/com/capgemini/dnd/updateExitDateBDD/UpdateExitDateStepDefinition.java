@@ -1,4 +1,4 @@
-package com.capgemini.dnd.updateExitDate;
+package com.capgemini.dnd.updateExitDateBDD;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
