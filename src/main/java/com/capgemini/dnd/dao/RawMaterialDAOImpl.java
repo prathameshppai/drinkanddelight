@@ -870,7 +870,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	@Override
 	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException
 			 {
-		String hql="";
+		
 		Session session=null;
 	    Transaction tx = null;
 	    Criteria cr = null;
@@ -887,6 +887,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			   
 				
 				 session = HibernateUtil.getASession();
+				
 			   
 				tx = session.beginTransaction();
 				String deliveryStatus = displayRawMaterialOrderObject.getDeliveryStatus();
