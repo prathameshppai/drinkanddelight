@@ -45,10 +45,11 @@
 				<value>com.capgemini.dnd.entity.ProductOrdersEntity</value>
 				<value>com.capgemini.dnd.entity.DistributorEntity</value>
 				<value>com.capgemini.dnd.entity.EmployeeCredentialEntity</value>
-				
-			
-				
-			
+				<value>com.capgemini.dnd.entity.RawMaterialSpecsEntity</value>
+				<value>com.capgemini.dnd.entity.ProductSpecsEntity</value>
+				<value>com.capgemini.dnd.entity.WarehouseEntity</value>
+				<value>com.capgemini.dnd.entity.SupplierEntity</value>
+				<value>com.capgemini.dnd.entity.DistributorEntity</value>
 			</list>
 		</property>
 

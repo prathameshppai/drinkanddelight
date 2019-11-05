@@ -31,7 +31,9 @@ import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
+import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
+import com.capgemini.dnd.entity.WarehouseEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
@@ -593,12 +595,13 @@ public class ProductDAOImpl implements ProductDAO {
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
 				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
 				newPO.getWarehouseId());
-		Session session = HibernateUtil.getASession();
+		Session session = null;
+		Transaction transaction = null;
 		try {
-
-			session.beginTransaction();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
 			session.save(productOrdersEntity);
-			session.getTransaction().commit();
+			transaction.commit();
 			added = true;
 		} catch (HibernateException e) {
 			e.printStackTrace();
@@ -793,49 +796,30 @@ public class ProductDAOImpl implements ProductDAO {
 	public ArrayList<String> getProductNames() throws DisplayException, ConnectionException {
 
 		ArrayList<String> productNamesList = new ArrayList<String>();
-		Connection connection;
+		List<ProductSpecsEntity> productSpecsEntityList;
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from ProductSpecsEntity";
+			Query query = session.createQuery(hql);
+			productSpecsEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_PRODUCT_NAMES);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String productName = rs.getString(1);
-				productNamesList.add(productName);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(ProductSpecsEntity productSpecsEntity : productSpecsEntityList) {
+			productNamesList.add(productSpecsEntity.getName());
+		}
+		
 		return productNamesList;
 	}
 
@@ -843,48 +827,30 @@ public class ProductDAOImpl implements ProductDAO {
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> distributorIdsList = new ArrayList<String>();
-		Connection connection;
+		List<DistributorEntity> distributorEntityList;
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from DistributorEntity";
+			Query query = session.createQuery(hql);
+			distributorEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_DISTRIBUTOR_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String distributorId = rs.getString(1);
-				distributorIdsList.add(distributorId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(DistributorEntity distributorEntity : distributorEntityList) {
+			distributorIdsList.add(distributorEntity.getDistributorId());
+		}
+		
 		return distributorIdsList;
 	}
 
@@ -892,48 +858,30 @@ public class ProductDAOImpl implements ProductDAO {
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> warehouseIdsList = new ArrayList<String>();
-		Connection connection;
+		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from WarehouseEntity";
+			Query query = session.createQuery(hql);
+			warehouseEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_WAREHOUSE_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String warehouseId = rs.getString(1);
-				warehouseIdsList.add(warehouseId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(WarehouseEntity warehouseEntity : warehouseEntityList) {
+			warehouseIdsList.add(warehouseEntity.getWarehouseId());
+		}
+		
 		return warehouseIdsList;
 	}
 

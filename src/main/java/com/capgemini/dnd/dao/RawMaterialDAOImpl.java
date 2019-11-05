@@ -40,7 +40,10 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
+import com.capgemini.dnd.entity.RawMaterialSpecsEntity;
 import com.capgemini.dnd.entity.RawMaterialStockEntity;
+import com.capgemini.dnd.entity.SupplierEntity;
+import com.capgemini.dnd.entity.WarehouseEntity;
 import com.capgemini.dnd.util.DBUtil;
 import com.capgemini.dnd.util.HibernateUtil;
 
@@ -96,23 +99,22 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
 		boolean added = false;
-		RawMaterialOrderEntity rawMaterialOrderEntity = new RawMaterialOrderEntity(newRMO.getName(),
-				newRMO.getSupplierId(), newRMO.getQuantityValue(), newRMO.getQuantityUnit(), newRMO.getDateOfDelivery(),
-				newRMO.getPricePerUnit(), newRMO.getWarehouseId());
-		Session session = null;
+		RawMaterialOrderEntity rawMaterialOrderEntity = new RawMaterialOrderEntity(newRMO.getName(), newRMO.getSupplierId(), newRMO.getQuantityValue(), newRMO.getQuantityUnit(), newRMO.getDateOfDelivery(), newRMO.getPricePerUnit(), newRMO.getWarehouseId());
+		Session session=null;
+		Transaction transaction = null;
 		try {
-			session = HibernateUtil.getASession();
-			session.beginTransaction();
-			session.save(rawMaterialOrderEntity);
-			session.getTransaction().commit();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+		    session.save(rawMaterialOrderEntity);
+			transaction.commit();
 			added = true;
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			System.out.println("Exception 638");
 		}
-//		finally {
-//			session.close();
-//		}
+		finally {
+			session.close();
+		}
 		if (!added) {
 			throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
 		}
@@ -141,7 +143,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 				SupplierCounter++;
 
 				supplierDetails.setName(resultSet.getString(2));
-				supplierDetails.setPhoneNo(resultSet.getString(5));
+				supplierDetails.setPhoneNo(resultSet.getInt(5));
 				supplierDetails.setEmailId(resultSet.getString(4));
 				supplierDetails.setAddress(resultSet.getString(3));
 
@@ -307,98 +309,61 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
 
 		ArrayList<String> rawMaterialNamesList = new ArrayList<String>();
-		Connection connection;
+		List<RawMaterialSpecsEntity> rawMaterialSpecsEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from RawMaterialSpecsEntity";
+			Query query = session.createQuery(hql);
+			rawMaterialSpecsEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			// pst = connection.prepareStatement(QueryMapper.FETCH_RAWMATERIAL_NAMES);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String rawMaterialName = rs.getString(1);
-				rawMaterialNamesList.add(rawMaterialName);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(RawMaterialSpecsEntity rawMaterialSpecsEntity : rawMaterialSpecsEntityList) {
+			rawMaterialNamesList.add(rawMaterialSpecsEntity.getName());
+		}
+		
 		return rawMaterialNamesList;
 	}
 
 	@Override
-	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
+	public ArrayList<String> getSupplierIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> supplierIdsList = new ArrayList<String>();
-		Connection connection;
+		List<SupplierEntity> supplierEntityList;
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from SupplierEntity";
+			Query query = session.createQuery(hql);
+			supplierEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_SUPPLIER_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String supplierId = rs.getString(1);
-				supplierIdsList.add(supplierId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(SupplierEntity supplierEntity : supplierEntityList) {
+			supplierIdsList.add(supplierEntity.getSupplierId());
+		}
+		
 		return supplierIdsList;
 	}
 
@@ -406,48 +371,30 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
 		ArrayList<String> warehouseIdsList = new ArrayList<String>();
-		Connection connection;
+		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
+		
+		Session session = null;
+		Transaction transaction = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception e) {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			String hql = "from WarehouseEntity";
+			Query query = session.createQuery(hql);
+			warehouseEntityList = query.list();
+		} 
+		catch(HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 		}
-		PreparedStatement pst = null;
-
-		try {
-			pst = connection.prepareStatement(QueryMapper.FETCH_WAREHOUSE_IDS);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				String warehouseId = rs.getString(1);
-				warehouseIdsList.add(warehouseId);
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+		finally {
+			session.close();
 		}
+		
+		for(WarehouseEntity warehouseEntity : warehouseEntityList) {
+			warehouseIdsList.add(warehouseEntity.getWarehouseId());
+		}
+		
 		return warehouseIdsList;
 	}
 

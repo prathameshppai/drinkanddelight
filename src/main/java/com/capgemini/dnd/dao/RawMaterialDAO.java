@@ -31,10 +31,9 @@ public interface RawMaterialDAO {
 
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException;
 
-	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException;
+	public ArrayList<String> getSupplierIds() throws DisplayException, ConnectionException;
 
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException;
-	
 	
 	public boolean doesRawMaterialOrderIdExist(String orderId) throws RMOrderIDDoesNotExistException;
 
