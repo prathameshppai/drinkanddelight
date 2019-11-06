@@ -68,4 +68,12 @@ public class Constants {
 	public static final String DISTRIBUTOR_ADDRESS_ID_DOES_NOT_EXISTS_EXCEPTION = "Distributor address ID does not exist";
 	public static final String INCOMPLETE_INFORMATION_IN_DATABASE = "Data Incomplete...Please check database and update required information from Orders Table";
 	public static final String SERVER_ERROR_MESSAGE="Server error!!!";
+	public static final Object RM_NAMES_FETCHED = "Raw material Names fetched successfully";
+	public static final Object PRODUCT_NAMES_FETCHED = "Product Names fetched successfully";
+	public static final Object WID_NAMES_FETCHED = "Warehouse IDs fetched successfully";
+	public static final Object SUPPLIER_IDS_FETCHED = "Supplier IDs fetched successfully";
+	public static final Object DISTRIBUTOR_IDS_FETCHED = "Distributor IDs fetched successfully";
+	public static final Object PRODUCT_ORDER_ADDED = "Product Order added successfully";
+	public static final Object RM_ORDER_ADDED = "Raw Material Order added successfully";;
+	
 }

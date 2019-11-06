@@ -184,6 +184,7 @@ public class ProductDAOImpl implements ProductDAO {
 			session.save(productOrdersEntity);
 			transaction.commit();
 			added = true;
+			logger.info(Constants.PRODUCT_ORDER_ADDED);
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		} finally {
@@ -191,6 +192,7 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 
 		if (!added) {
+			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
 			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
 		}
 		return added;
@@ -405,7 +407,7 @@ public class ProductDAOImpl implements ProductDAO {
 		for (ProductSpecsEntity productSpecsEntity : productSpecsEntityList) {
 			productNamesList.add(productSpecsEntity.getName());
 		}
-
+		logger.info(Constants.PRODUCT_NAMES_FETCHED);
 		return productNamesList;
 	}
 
@@ -444,7 +446,7 @@ public class ProductDAOImpl implements ProductDAO {
 		for (DistributorEntity distributorEntity : distributorEntityList) {
 			distributorIdsList.add(distributorEntity.getDistributorId());
 		}
-
+		logger.info(Constants.DISTRIBUTOR_IDS_FETCHED);
 		return distributorIdsList;
 	}
 
@@ -484,7 +486,7 @@ public class ProductDAOImpl implements ProductDAO {
 		for (WarehouseEntity warehouseEntity : warehouseEntityList) {
 			warehouseIdsList.add(warehouseEntity.getWarehouseId());
 		}
-
+		logger.info(Constants.WID_NAMES_FETCHED);
 		return warehouseIdsList;
 	}
 
