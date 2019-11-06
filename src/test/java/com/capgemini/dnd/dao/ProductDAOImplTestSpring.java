@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
-import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 
 

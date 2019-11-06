@@ -14,13 +14,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.capgemini.dnd.customexceptions.BackEndException;
-import com.capgemini.dnd.customexceptions.DoesNotExistException;
-import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
-import com.capgemini.dnd.dto.Distributor;
+
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.service.RawMaterialService;
-
 import com.capgemini.dnd.util.MappingUtil;
 
 @Controller
@@ -36,7 +32,7 @@ public class SupplierConroller {
 			    	String jsonMessage = "";
 					String errorMessage = "";
 					PrintWriter out = response.getWriter();
-					DisplayRawMaterialOrder displayRawMaterialOrderObject = new DisplayRawMaterialOrder();
+					
 				
 					Map<String, String> fieldValueMap = new HashMap<String, String>();
 					fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);

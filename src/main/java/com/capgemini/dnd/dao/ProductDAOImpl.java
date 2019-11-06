@@ -152,8 +152,8 @@ public class ProductDAOImpl implements ProductDAO {
 
 		finally {
 
-			HibernateUtil.closeSession(session);
-			// sessionFactory.close();
+			session.close();
+			
 		}
 		return list;
 
@@ -205,8 +205,7 @@ public class ProductDAOImpl implements ProductDAO {
 	public List<DistributorEntity> fetchDistributorDetail(Distributor distributor)
 			throws BackEndException, DoesNotExistException, DisplayException {
 		Session session = null;
-		Criteria cr = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 		List<DistributorEntity> distributorlist = new ArrayList<DistributorEntity>();
 		
 		try {
@@ -383,6 +382,7 @@ public class ProductDAOImpl implements ProductDAO {
 	 - Description		:	Get a list of Product names
 	 ********************************************************************************************************/
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<String> getProductNames() throws DisplayException, ConnectionException {
 
@@ -390,12 +390,13 @@ public class ProductDAOImpl implements ProductDAO {
 		List<ProductSpecsEntity> productSpecsEntityList;
 
 		Session session = null;
-		Transaction transaction = null;
+		
 
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			String hql = "from ProductSpecsEntity";
+			@SuppressWarnings("rawtypes")
 			Query query = session.createQuery(hql);
 			productSpecsEntityList = query.list();
 		} catch (HibernateException exception) {
@@ -422,6 +423,7 @@ public class ProductDAOImpl implements ProductDAO {
 	 - Description		:	Get a list of Distributor IDs
 	 ********************************************************************************************************/
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
 
@@ -429,11 +431,11 @@ public class ProductDAOImpl implements ProductDAO {
 		List<DistributorEntity> distributorEntityList;
 
 		Session session = null;
-		Transaction transaction = null;
+		
 
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			String hql = "from DistributorEntity";
 			Query query = session.createQuery(hql);
 			distributorEntityList = query.list();
@@ -462,6 +464,7 @@ public class ProductDAOImpl implements ProductDAO {
 	 - Description		:	Get a list of Warehouse IDs
 	 ********************************************************************************************************/
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
@@ -469,12 +472,13 @@ public class ProductDAOImpl implements ProductDAO {
 		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
 
 		Session session = null;
-		Transaction transaction = null;
+		
 
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			String hql = "from WarehouseEntity";
+			@SuppressWarnings("rawtypes")
 			Query query = session.createQuery(hql);
 			warehouseEntityList = query.list();
 		} catch (HibernateException exception) {
@@ -724,45 +728,5 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 	}
 
-	@Override
-	public List<ProductOrder> displayProductOrderDetails() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductOrder> displayPendingProductOrderDetails() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductOrder> displayCancelledProductOrderDetails() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductOrder> displayReceivedProductOrderDetails() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductOrder> displayDispatchedProductOrderDetails() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductOrder> displayProductOrderbetweenDetails(Date dt1, Date dt2) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductOrder> displayOrdersFromDistributor(String distId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

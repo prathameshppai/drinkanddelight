@@ -1,13 +1,13 @@
 package com.capgemini.dnd.dto;
 
-import java.io.Serializable;
+
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Component
-public class RawMaterialOrder implements Serializable{
+public class RawMaterialOrder {
 	private String orderId;
 //	private static int orderIdCount = 1;
 	private String name;

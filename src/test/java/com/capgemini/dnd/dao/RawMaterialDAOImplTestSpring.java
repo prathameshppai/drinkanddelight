@@ -1,10 +1,8 @@
 package com.capgemini.dnd.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +10,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
-import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
-import com.capgemini.dnd.customexceptions.WrongPasswordException;
-import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.dto.RawMaterialStock;
 
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml",
@@ -28,97 +21,11 @@ import com.capgemini.dnd.dto.RawMaterialStock;
 public class RawMaterialDAOImplTestSpring {
 	
 	
-//	private static AnnotationConfigApplicationContext context;
+
 	
 	@Autowired
 	private RawMaterialDAO rawMaterialDAO;
 	
-	
-
-//	@Test
-//	public void testRawMaterialDAOImpl() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testUpdateStatusRawMaterialOrder() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayRawMaterialOrderDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayPendingRawMaterialOrderDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayReceivedRawMaterialOrderDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayCancelledRawMaterialOrderDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayDispatchedRawMaterialOrderDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayRawmaterialOrdersbetweenDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayOrdersFromSupplier() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testAddRawMaterialOrder() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testFetchSupplierDetail() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testAddSupplierAddress() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDoesSupplierAddressExist() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testDisplayRawmaterialOrders() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testGetRawMaterialNames() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testGetDistributorIds() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testGetWarehouseIds() {
-//		fail("Not yet implemented");
-//	}
 
 	@Test
 	@Transactional

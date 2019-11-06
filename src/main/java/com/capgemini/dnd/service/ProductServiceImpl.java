@@ -47,35 +47,7 @@ public class ProductServiceImpl implements ProductService {
 		return JsonUtil.convertJavaToJson(productDAO.updateStatusProductOrder(oid, newStatus));
 	}
 
-	@Override
-	public List<ProductOrder> displayProductOrderDetails() throws Exception {
-		return (productDAO.displayProductOrderDetails());
-	}
-
-	@Override
-	public List<ProductOrder> displayPendingProductOrderDetails() throws Exception {
-		return (productDAO.displayPendingProductOrderDetails());
-	}
-
-	@Override
-	public List<ProductOrder> displayReceivedProductOrderDetails() throws Exception {
-		return (productDAO.displayReceivedProductOrderDetails());
-	}
-
-	@Override
-	public List<ProductOrder> displayCancelledProductOrderDetails() throws Exception {
-		return (productDAO.displayCancelledProductOrderDetails());
-	}
-
-	@Override
-	public List<ProductOrder> displayDispatchedProductOrderDetails() throws Exception {
-		return (productDAO.displayDispatchedProductOrderDetails());
-	}
-
-	@Override
-	public List<ProductOrder> displayProductOrderbetweenDetails(Date dt1, Date dt2) throws Exception {
-		return (productDAO.displayProductOrderbetweenDetails(dt1, dt2));
-	}
+	
 
 	@Override
 	public String placeProductOrder(ProductOrder newProductOrder) throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException{
@@ -84,10 +56,7 @@ public class ProductServiceImpl implements ProductService {
 		return (JsonUtil.convertJavaToJson("0 rows updated"));
 	}
 
-	@Override
-	public List<ProductOrder> displayOrdersFromDistributor(String distId) throws Exception {
-		return (productDAO.displayOrdersFromDistributor(distId));
-	}
+
 
 	@Override
     public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {

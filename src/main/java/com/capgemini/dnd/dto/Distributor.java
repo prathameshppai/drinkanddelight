@@ -7,7 +7,7 @@ public class Distributor {
 	private String emailId;
 	private String phoneNo;
 	private Address address;
-	private String addressIdFK;
+	
 
 	public Distributor() {
 	}

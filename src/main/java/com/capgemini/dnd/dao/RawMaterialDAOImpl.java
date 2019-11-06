@@ -23,6 +23,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -40,15 +41,12 @@ import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
-import com.capgemini.dnd.entity.SupplierEntity;
-import com.capgemini.dnd.entity.SupplierEntity;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.entity.RawMaterialSpecsEntity;
 import com.capgemini.dnd.entity.RawMaterialStockEntity;
 import com.capgemini.dnd.entity.SupplierEntity;
 import com.capgemini.dnd.entity.WarehouseEntity;
 import com.capgemini.dnd.util.DBUtil;
-import com.capgemini.dnd.util.HibernateUtil;
 
 @Repository
 public class RawMaterialDAOImpl implements RawMaterialDAO {
@@ -134,9 +132,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	public List<SupplierEntity> fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException, DisplayException {
 		Session session = null;
-		Criteria cr = null;
+		
 		List<SupplierEntity> supplierlist = new ArrayList<SupplierEntity>();
-		PreparedStatement pst = null;
+		
 		
 		try {
          session = sessionFactory.openSession();
@@ -325,6 +323,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	 - Description		:	Get a list of Raw Material Names 
 	 ********************************************************************************************************/
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
 
@@ -332,11 +331,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		List<RawMaterialSpecsEntity> rawMaterialSpecsEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
 		
 		Session session = null;
-		Transaction transaction = null;
+		
 		
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			String hql = "from RawMaterialSpecsEntity";
 			Query query = session.createQuery(hql);
 			rawMaterialSpecsEntityList = query.list();
@@ -367,6 +366,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	 ********************************************************************************************************/
 
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ArrayList<String> getSupplierIds() throws DisplayException, ConnectionException {
 
@@ -374,11 +374,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		List<SupplierEntity> supplierEntityList;
 		
 		Session session = null;
-		Transaction transaction = null;
+		
 		
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			String hql = "from SupplierEntity";
 			Query query = session.createQuery(hql);
 			supplierEntityList = query.list();
@@ -408,6 +408,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	 - Description		:	Get a list of Warehouse IDs
 	 ********************************************************************************************************/
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
@@ -415,11 +416,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
 		
 		Session session = null;
-		Transaction transaction = null;
+		
 		
 		try {
 			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
+			session.beginTransaction();
 			String hql = "from WarehouseEntity";
 			Query query = session.createQuery(hql);
 			warehouseEntityList = query.list();
@@ -708,11 +709,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 	public List<SupplierEntity> fetchSupplierDetail(Distributor distributor)
 			throws BackEndException, DoesNotExistException, DisplayException {
 		Session session = null;
-		Criteria cr = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		
 		List<SupplierEntity> distributorlist = new ArrayList<SupplierEntity>();
-		PreparedStatement pst = null;
-		int isFetched = 0;
+		
+		
 
 		try {
 			System.out.println("hello");

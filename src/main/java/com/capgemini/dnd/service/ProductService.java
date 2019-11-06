@@ -3,7 +3,6 @@ package com.capgemini.dnd.service;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -25,23 +24,11 @@ public interface ProductService {
 	
 	public String updateStatusProductOrder(String oid, String newStatus) throws Exception;
 
-	public List<ProductOrder> displayProductOrderDetails() throws Exception;
-
-	public List<ProductOrder> displayPendingProductOrderDetails() throws Exception;
-
-	public List<ProductOrder> displayCancelledProductOrderDetails() throws Exception;
-
-	public List<ProductOrder> displayReceivedProductOrderDetails() throws Exception;
-
+	
 	public String placeProductOrder(ProductOrder ProductOrderobject)
 			throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException;
 
-	public List<ProductOrder> displayDispatchedProductOrderDetails() throws Exception;
-
-	public List<ProductOrder> displayProductOrderbetweenDetails(Date dt1, Date dt2) throws Exception;
-
-	public List<ProductOrder> displayOrdersFromDistributor(String distid) throws Exception;
-
+	
 	public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception;
 
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException;
