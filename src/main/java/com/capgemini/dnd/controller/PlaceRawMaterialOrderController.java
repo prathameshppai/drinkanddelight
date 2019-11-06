@@ -37,13 +37,11 @@ public class PlaceRawMaterialOrderController {
 		Map<String, String> myMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		RawMaterialOrder rawMaterialOrder;
-		System.out.println("111111");
 		try {
 			rawMaterialOrder = new RawMaterialOrder(myMap.get("name"), myMap.get("supplierId"),
 					Double.parseDouble(myMap.get("quantityValue")), myMap.get("quantityUnit"),
 					sdf.parse(myMap.get("dateOfDelivery")), Double.parseDouble(myMap.get("pricePerUnit")),
 					myMap.get("warehouseId"));
-			System.out.println("222222");
 		} catch (NumberFormatException | ParseException exception) {
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			return errorJsonMessage;
@@ -52,7 +50,6 @@ public class PlaceRawMaterialOrderController {
 		Date today = new Date();
 		rawMaterialOrder.setDateOfOrder(today);
 		rawMaterialOrder.setDeliveryStatus("Pending");
-		System.out.println(rawMaterialOrder);
 		
 		try {
 			String jsonMessage = rawMaterialService.placeRawMaterialOrder(rawMaterialOrder);

@@ -8,9 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -39,26 +41,22 @@ import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
-import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.WarehouseEntity;
-
 import com.capgemini.dnd.util.DBUtil;
-import com.capgemini.dnd.util.HibernateUtil;
 
 @Repository
 public class ProductDAOImpl implements ProductDAO {
 
-	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	/*******************************************
-	 * Product order delivery status update Author: Ankit Kumar
-	 * 
-	 * 
-	 */
+	 * Product order delivery status update
+	 *  Author: Ankit Kumar
+	 *  Throw Update Exception
+	 *******************************************/
 
 	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
 		Session session = null;
@@ -71,9 +69,11 @@ public class ProductDAOImpl implements ProductDAO {
 			product.setDeliveryStatus(deliveryStatus);
 			session.save(product);
 			transaction.commit();
+			logger.info(Constants.UPADTED_SUCCESSFULLY_MESSAGE);
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
 		} catch (Exception e) {
 			if (transaction != null) {
+				logger.error(e);
 				transaction.rollback();
 			}
 			try {
@@ -176,9 +176,9 @@ public class ProductDAOImpl implements ProductDAO {
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
 				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
 				newPO.getWarehouseId());
-		System.out.println(newPO.getName() + " " +newPO.getDistributorId() + " " +
-				newPO.getQuantityValue() + " " +newPO.getQuantityUnit() + " " +newPO.getDateofDelivery() + " " +newPO.getPricePerUnit() + " " +
-				newPO.getWarehouseId());
+		System.out.println(newPO.getName() + " " + newPO.getDistributorId() + " " + newPO.getQuantityValue() + " "
+				+ newPO.getQuantityUnit() + " " + newPO.getDateofDelivery() + " " + newPO.getPricePerUnit() + " "
+				+ newPO.getWarehouseId());
 		Session session = null;
 		Transaction transaction = null;
 		try {

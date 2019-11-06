@@ -60,7 +60,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	public RawMaterialDAOImpl() {
 	}
-
+	/*******************************************
+	 * Raw Material order delivery status update
+	 *  Author: Ankit Kumar
+	 *  Throw Update Exception
+	 *******************************************/
 	public String updateStatusRawMaterialOrder(String orderId, String deliveryStatus) {
 		Session session = null;
 		Transaction transaction = null;
@@ -72,10 +76,12 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			rawmaterialorder.setDeliveryStatus(deliveryStatus);
 			session.save(rawmaterialorder);
 			transaction.commit();
+			logger.info(Constants.UPADTED_SUCCESSFULLY_MESSAGE);
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback();
+				logger.error(e);
 			}
 			try {
 				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
@@ -125,8 +131,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		return added;
 
 	}
-
-	// ------------------------------------------------------------------------------------------------------------------------------------
 
 	public List<SupplierEntity> fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException, DisplayException {
 		Session session = null;
