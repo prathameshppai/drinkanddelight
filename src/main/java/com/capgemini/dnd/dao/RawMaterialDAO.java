@@ -17,6 +17,7 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
+import com.capgemini.dnd.entity.SupplierEntity;
 
 public interface RawMaterialDAO {
 
@@ -25,7 +26,7 @@ public interface RawMaterialDAO {
 	public boolean addRawMaterialOrder(RawMaterialOrder newRawMaterialOrder)  throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException;
 
 	public String updateStatusRawMaterialOrder(String oid, String newStatus) throws Exception;
-   public Supplier fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException;
+   public List<SupplierEntity> fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException, DisplayException;
 
 	public List<RawMaterialOrderEntity> displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException;
 

@@ -36,9 +36,12 @@ import com.capgemini.dnd.customexceptions.SupplierAddressDoesNotExistsException;
 import com.capgemini.dnd.customexceptions.UpdateException;
 import com.capgemini.dnd.dto.Address;
 import com.capgemini.dnd.dto.DisplayRawMaterialOrder;
+import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
+import com.capgemini.dnd.entity.SupplierEntity;
+import com.capgemini.dnd.entity.SupplierEntity;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 import com.capgemini.dnd.entity.RawMaterialSpecsEntity;
 import com.capgemini.dnd.entity.RawMaterialStockEntity;
@@ -124,46 +127,48 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
-	public Supplier fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException {
-		Connection connection;
+	public List<SupplierEntity> fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException, DisplayException {
+		Session session = null;
+		Criteria cr = null;
+		List<SupplierEntity> supplierlist = new ArrayList<SupplierEntity>();
+		PreparedStatement pst = null;
+		
 		try {
-			connection = DBUtil.getInstance().getConnection();
-		} catch (Exception exception) {
-			logger.error(Constants.SUPPLIER_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-			throw new BackEndException(Constants.SUPPLIER_LOGGER_ERROR_DATABASE_NOTCONNECTED + exception.getMessage());
-		}
-		ResultSet resultSet = null;
-		PreparedStatement preparedStatement = null;
-		try {
-			preparedStatement = connection.prepareStatement(QueryMapper.SELECT_ONE_SUPPLIER_ID);
-			preparedStatement.setString(1, supplierDetails.getSupplierId());
-			resultSet = preparedStatement.executeQuery();
-			int SupplierCounter = 0;
-			while (resultSet.next()) {
-				SupplierCounter++;
+         session = sessionFactory.openSession();
+			session.beginTransaction();
 
-				supplierDetails.setName(resultSet.getString(2));
-				supplierDetails.setPhoneNo(resultSet.getInt(5));
-				supplierDetails.setEmailId(resultSet.getString(4));
-				supplierDetails.setAddress(resultSet.getString(3));
+			String supplierId = supplierDetails.getSupplierId();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<SupplierEntity> criteria = builder.createQuery(SupplierEntity.class);
+			Root<SupplierEntity> root = criteria.from(SupplierEntity.class);
+
+			criteria.select(root).where(builder.equal(root.get("supplierId"), supplierId));
+
+			Query<SupplierEntity> query = session.createQuery(criteria);
+			supplierlist = query.list();
+			System.out.println(supplierlist);
+			if (supplierlist.isEmpty()) {
+				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
+
+			} else {
+				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
 
 			}
-			if (SupplierCounter == 0)
-				throw new DoesNotExistException(Constants.SUPPLIER_ID_DOES_NOT_EXISTS_EXCEPTION);
-		} catch (SQLException exception) {
-			logger.error(Constants.SUPPLIER_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
-			throw new BackEndException(Constants.SUPPLIER_LOGGER_ERROR_FETCHING_FAILED + exception.getMessage());
+		} catch (Exception e) {
 
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException exception) {
-				logger.error(exception.getMessage());
-				throw new BackEndException(exception.getMessage());
-			}
+			e.printStackTrace();
+			throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
 		}
-		return supplierDetails;
+
+		finally {
+
+			session.close();
+		}
+		return supplierlist;
+
 	}
+
 
 	public boolean addSupplierAddress(Address newsupplieraddress) throws Exception {
 		Connection connection;
@@ -245,7 +250,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		int isFetched = 0;
 
 		try {
-			System.out.println("hello");
 
 			session = sessionFactory.openSession();
 			session.beginTransaction();
@@ -664,6 +668,53 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		}
 
 	}
+	public List<SupplierEntity> fetchSupplierDetail(Distributor distributor)
+			throws BackEndException, DoesNotExistException, DisplayException {
+		Session session = null;
+		Criteria cr = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<SupplierEntity> distributorlist = new ArrayList<SupplierEntity>();
+		PreparedStatement pst = null;
+		int isFetched = 0;
+
+		try {
+			System.out.println("hello");
+
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+
+			String distributorId = distributor.getDistributorId();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<SupplierEntity> criteria = builder.createQuery(SupplierEntity.class);
+			Root<SupplierEntity> root = criteria.from(SupplierEntity.class);
+
+			criteria.select(root).where(builder.equal(root.get("distributorId"), distributorId));
+
+			Query<SupplierEntity> query = session.createQuery(criteria);
+			distributorlist = query.list();
+			System.out.println(distributorlist);
+			if (distributorlist.isEmpty()) {
+				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
+
+			} else {
+				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+
+			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
+		}
+
+		finally {
+
+			session.close();
+		}
+		return distributorlist;
+
+	}
+
 
 
 }

@@ -24,6 +24,7 @@ import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.DistributorEntity;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 @Service
@@ -97,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Override
     public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
-        List<ProductOrder> poList2 = new ArrayList<ProductOrder>();
+        List<ProductOrdersEntity> poList2 = new ArrayList<ProductOrdersEntity>();
         poList2 = productDAO.displayProductOrders(displayProductOrderObject);
         String jsonMessage = JsonUtil.convertJavaToJson1(poList2);
         return jsonMessage;
