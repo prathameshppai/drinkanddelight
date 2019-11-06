@@ -116,14 +116,15 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		    session.save(rawMaterialOrderEntity);
 			transaction.commit();
 			added = true;
+			logger.info(Constants.RM_ORDER_ADDED);
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			System.out.println("Exception 638");
 		}
 		finally {
 			session.close();
 		}
 		if (!added) {
+			logger.error(Constants.RM_ORDER_NOT_ADDED);
 			throw new RMOrderNotAddedException(Constants.RM_ORDER_NOT_ADDED);
 		}
 		return added;
@@ -239,6 +240,16 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			con.close();
 		}
 	}
+	/*******************************************************************************************************
+	 - Function Name	:	getListofRawMaterial
+	 - Input Parameters	:	none
+	 - Return Type		:	List
+	 - Throws			:  	DisplayException, BackEndException  
+	 - Author			:	Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Raw Material Names 
+	 ********************************************************************************************************/
+	
 
 	@SuppressWarnings("unused")
 	@Override
@@ -289,11 +300,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 			Query<RawMaterialOrderEntity> q = session.createQuery(criteria);
 			list = q.list();
-
 			if (list.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
-
 			} else {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
 
@@ -351,7 +360,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		for(RawMaterialSpecsEntity rawMaterialSpecsEntity : rawMaterialSpecsEntityList) {
 			rawMaterialNamesList.add(rawMaterialSpecsEntity.getName());
 		}
-		
+		logger.info(Constants.RM_NAMES_FETCHED);
 		return rawMaterialNamesList;
 	}
 
@@ -394,7 +403,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		for(SupplierEntity supplierEntity : supplierEntityList) {
 			supplierIdsList.add(supplierEntity.getSupplierId());
 		}
-		
+		logger.info(Constants.SUPPLIER_IDS_FETCHED);
 		return supplierIdsList;
 	}
 
@@ -436,7 +445,7 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		for(WarehouseEntity warehouseEntity : warehouseEntityList) {
 			warehouseIdsList.add(warehouseEntity.getWarehouseId());
 		}
-		
+		logger.info(Constants.WID_NAMES_FETCHED);
 		return warehouseIdsList;
 	}
 

@@ -3,33 +3,22 @@ package com.capgemini.dnd.dao;
 
 
 public interface QueryMapper {
-
 		
 		public static final String ADDRMORDER = "INSERT into RawmaterialOrders (name,rmid,supplierid,quantityvalue,quantityunit,dateoforder,dateofdelivery,priceperunit,totalprice,deliverystatus,warehouseid)"+ 
 				" VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		public static final String ADDPRODUCTORDER = "INSERT into ProductOrders (name,productid,distributorid,quantityvalue,quantityunit,dateoforder,dateofdelivery,priceperunit,totalprice,deliverystatus,warehouseid)"+ 
 				" VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		public static final String UPDATERMSTOCK = "update RMStock set manufacturingDate = ?, expiryDate = ?, qualityCheck = ? where orderID = ?";
-		
 		public static final String UPDATEPRODUCTSTOCK = "update ProductStock set manufacturingDate = ?, expiryDate = ?, qualityCheck = ? where orderID = ?";
-		
 		public static final String UPDATEPROCESSDATE = "update RMStock set processDate = ? where orderID = ?";
-		
 		public static final String UPDATEEXITDATE = "update ProductStock set exitDate = ? where orderID = ?";
-		
 		public static final String TRACKRMORDER = "select processDate, deliveryDate, warehouseID from RMStock where orderID = ?";
-		
 		public static final String TRACKPRODUCTORDER = "select exitDate, manufacturingDate, warehouseID from ProductStock where orderID = ?";
-		
 		public static final String CHECKPROCESSDATE = "select deliveryDate, expiryDate from RMStock where orderID = ?";
-		
 		public static final String RETRIEVEPRODUCTORDERDETAILSFORPRODUCTSTOCK = "SELECT name, priceperunit, quantityValue, quantityUnit, totalprice, warehouseId, dateofdelivery  FROM ProductOrders where orderId = ? ";
 		public static final String INSERTPRODUCTSTOCK = "INSERT INTO ProductStock(orderId, name, price_per_unit, quantityValue, quantityUnit, price, warehouseId, deliveryDate) values (?, ?, ?, ?, ?, ?, ?, ?)"; 
-		
 		public static final String RETRIEVERMORDERDETAILSFORRMSTOCK = "SELECT name, priceperunit, quantityValue, quantityUnit, totalprice, warehouseId, dateofdelivery  FROM RawmaterialOrders where orderId = ? ";
 		public static final String INSERTRMSTOCK = "INSERT INTO RMStock(orderId, name, price_per_unit, quantityValue, quantityUnit, price, warehouseId, deliveryDate) values (?,?, ?, ?, ?, ?, ?, ?)"; 
-		
-		
 		public static final String CHECKEXITDATE = "select manufacturingDate, expiryDate from ProductStock where orderID = ?";
 		public static final String UPDATE_DELIVERY_STATUS="UPDATE ProductOrders SET deliverystatus=?, dateofdelivery = ? WHERE orderid=?";
         public static final String UPDATE_DELIVERY_STATUS1="UPDATE ProductOrders SET deliverystatus=? WHERE orderid=?";
@@ -50,8 +39,6 @@ public interface QueryMapper {
 	    public static final String PLACE_PRODUCT_ORDER="INSERT into ProductOrders VALUES(?,?,?,?,?,?,SYSDATE,?,?,?,?,?)";
 	    public static final String UPDATE_RM_DELIVERY_STATUS="UPDATE RawmaterialOrders SET deliverystatus=?, dateofdelivery = ? WHERE orderid=?";
         public static final String UPDATE_RM_DELIVERY_STATUS1="UPDATE RawmaterialOrders SET deliverystatus=? WHERE orderid=?";
-
-
 	    public static final String SELECT_ONE_EMPLOYEE_LOGIN_CREDENTIAL = "SELECT * FROM EmployeeCredentials WHERE Username = ? ";
 	    public static final String INSERT_ONE_EMPLOYEE = "INSERT INTO Employees VALUES (?,?,?,?,?,?,?)";
 	    public static final String INSERT_ONE_EMPLOYEE_LOGIN_CREDENTIAL = "INSERT INTO EmployeeCredentials VALUES (?,?,?,?,?,?,?)";
@@ -79,14 +66,8 @@ public interface QueryMapper {
 		public static final String SELECT_ONE_SUPPLIER_ID = "SELECT * FROM Supplier WHERE supplierId = ?";
 		public static final String SELECT_ONE_DISTRIBUTOR_ID = "SELECT * FROM Distributor WHERE distributorId = ?";
 		public static final String SELECT_ONE_DISTRIBUTOR_ADDRESS_ID = "SELECT * FROM Address WHERE AddressId = ?";
-		
-		 public static final String INSERT_ADDRESS="INSERT INTO Address VALUES(?,?,?,?,?,?,?,?)";
-	        public static final String SELECT_ALL_ADDRESS="SELECT * FROM Address WHERE AddressID = ?";
-			public static final String FETCH_PRODUCT_NAMES = "SELECT name FROM ProductSpecs";
-			public static final String FETCH_DISTRIBUTOR_IDS = "SELECT distributorId FROM Distributor";
-			public static final String FETCH_WAREHOUSE_IDS = "SELECT WarehouseID FROM Warehouse";
-			public static final String FETCH_RAWMATERIAL_NAMES = "SELECT name FROM RMSpecs";
-			public static final String FETCH_SUPPLIER_IDS = "SELECT supplierId FROM Supplier";
+		public static final String INSERT_ADDRESS="INSERT INTO Address VALUES(?,?,?,?,?,?,?,?)";
+	    public static final String SELECT_ALL_ADDRESS="SELECT * FROM Address WHERE AddressID = ?";
 	        
 }
 

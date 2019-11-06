@@ -1,6 +1,7 @@
 package com.capgemini.dnd.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.junit.Test;
@@ -10,10 +11,26 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
+
+
+import com.capgemini.dnd.customexceptions.BackEndException;
+import com.capgemini.dnd.customexceptions.ConnectionException;
+import com.capgemini.dnd.customexceptions.DisplayException;
+import com.capgemini.dnd.customexceptions.IncompleteDataException;
+import com.capgemini.dnd.customexceptions.ProcessDateException;
+import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
+import com.capgemini.dnd.customexceptions.RMOrderNotAddedException;
+import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
+import com.capgemini.dnd.customexceptions.WrongPasswordException;
+import com.capgemini.dnd.dto.Employee;
+import com.capgemini.dnd.dto.RawMaterialOrder;
+
 import com.capgemini.dnd.dto.RawMaterialStock;
+import com.capgemini.dnd.entity.RawMaterialOrderEntity;
 
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml",
 "file:src/main/webapp/WEB-INF/applicationContext.xml"})
@@ -27,6 +44,16 @@ public class RawMaterialDAOImplTestSpring {
 	private RawMaterialDAO rawMaterialDAO;
 	
 
+
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testAddRawMaterialOrder() throws ParseException, RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		RawMaterialOrder rawMaterialOrder = new RawMaterialOrder("JUICE","d004",25,"kg", sdf.parse("2019-12-12"),50,"w03");
+		assertTrue(rawMaterialDAO.addRawMaterialOrder(rawMaterialOrder));
+	}
+	
 	@Test
 	@Transactional
 	@Rollback(true)

@@ -2,7 +2,7 @@ package com.capgemini.dnd.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//import org.junit.jupiter.api.Test;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.junit.Test;
@@ -13,12 +13,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import com.capgemini.dnd.customexceptions.IncompleteDataException;
+import com.capgemini.dnd.customexceptions.ConnectionException;
+import com.capgemini.dnd.customexceptions.DisplayException;
 import com.capgemini.dnd.customexceptions.ExitDateException;
 import com.capgemini.dnd.customexceptions.ProductOrderIDDoesNotExistException;
+import com.capgemini.dnd.customexceptions.ProductOrderNotAddedException;
+import com.capgemini.dnd.dto.ProductOrder;
+
 import com.capgemini.dnd.dto.ProductStock;
-
-
-
 
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml",
 "file:src/main/webapp/WEB-INF/applicationContext.xml"})
@@ -28,6 +30,15 @@ public class ProductDAOImplTestSpring {
 	@Autowired
 	private ProductDAO productDAO;
 
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testAddProductOrder() throws ParseException, ConnectionException, SQLException, DisplayException, ProductOrderNotAddedException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		ProductOrder productOrder = new ProductOrder("JUICE","d004",25,"kg", sdf.parse("2019-12-12"),50,"w03");
+		assertTrue(productDAO.addProductOrder(productOrder));
+	}
+	
 	@Test
 	@Transactional
 	@Rollback(true)
