@@ -23,18 +23,18 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
+import com.capgemini.dnd.entity.SupplierEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 @Service
 //@Transactional(readOnly = true)
 public class RawMaterialServiceImpl implements RawMaterialService {
 
-	//RawMaterialDAO rawMaterialDAO = new RawMaterialDAOImpl();
-	
 	@Autowired
 	private RawMaterialDAO rawMaterialDAO;
-	public String placeRawMaterialOrder(RawMaterialOrder newRawMaterialOrder) throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException{
-		
+
+	public String placeRawMaterialOrder(RawMaterialOrder newRawMaterialOrder)
+			throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 		if (rawMaterialDAO.addRawMaterialOrder(newRawMaterialOrder))
 			return (JsonUtil.convertJavaToJson("Raw Material Order placed successfully"));
 		return (JsonUtil.convertJavaToJson("0 rows updated"));
@@ -44,47 +44,41 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		return (JsonUtil.convertJavaToJson(rawMaterialDAO.updateStatusRawMaterialOrder(orderId, newStatus)));
 	}
 
-	public String fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException {
-		
-		 Supplier supplierObject = rawMaterialDAO.fetchSupplierDetail(supplierDetails);
-		  String jsonMessage = JsonUtil.convertJavaToJson1(supplierObject);
+	public String fetchSupplierDetail(Supplier supplierDetails)
+			throws BackEndException, DoesNotExistException, DisplayException {
+		List<SupplierEntity> supplierList = rawMaterialDAO.fetchSupplierDetail(supplierDetails);
+		String jsonMessage = JsonUtil.convertJavaToJson1(supplierList);
 		return jsonMessage;
-		 
 	}
 
 	@Override
 	public ArrayList<String> fetchRawMaterialNames() throws DisplayException, ConnectionException {
-		return(rawMaterialDAO.getRawMaterialNames());
-		
+		return (rawMaterialDAO.getRawMaterialNames());
 	}
 
 	@Override
 	public ArrayList<String> fetchSupplierIds() throws DisplayException, ConnectionException {
-		return(rawMaterialDAO.getSupplierIds());
+		return (rawMaterialDAO.getSupplierIds());
 	}
-	
+
 	@Override
 	public ArrayList<String> fetchWarehouseIds() throws DisplayException, ConnectionException {
-		return(rawMaterialDAO.getWarehouseIds());
+		return (rawMaterialDAO.getWarehouseIds());
 	}
-	
+
 	@Override
 
-	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject) throws DisplayException, BackEndException {
-		
+	public String displayRawmaterialOrders(DisplayRawMaterialOrder displayRawMaterialOrderObject)
+			throws DisplayException, BackEndException {
 		List<RawMaterialOrderEntity> rmoList2 = new ArrayList<RawMaterialOrderEntity>();
 		rmoList2 = rawMaterialDAO.displayRawmaterialOrders(displayRawMaterialOrderObject);
 		String jsonMessage = JsonUtil.convertJavaToJson1(rmoList2);
 		return jsonMessage;
-		
 	}
-	
-	
-	
+
 	@Override
 	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock) {
 		String message = rawMaterialDAO.trackRawMaterialOrder(rawMaterialStock);
-
 		String jsonMessage = JsonUtil.convertJavaToJson(message);
 		return jsonMessage;
 	}
@@ -95,18 +89,18 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	}
 
 	@Override
-	public boolean processDateCheck(RawMaterialStock rawMaterialStock) throws ProcessDateException, IncompleteDataException {
+	public boolean processDateCheck(RawMaterialStock rawMaterialStock)
+			throws ProcessDateException, IncompleteDataException {
 		return rawMaterialDAO.processDateCheck(rawMaterialStock);
 	}
 
 	@Override
 	public String updateProcessDateinStock(RawMaterialStock rawMaterialStock) {
 		String message = rawMaterialDAO.updateProcessDateinStock(rawMaterialStock);
-
 		String jsonMessage = JsonUtil.convertJavaToJson(message);
 		return jsonMessage;
 	}
-	
+
 	@Override
 	public boolean validateManufacturingDate(Date manufacturing_date) throws ManufacturingDateException {
 		Date today = new Date();
@@ -130,14 +124,9 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		String jsonMessage = JsonUtil.convertJavaToJson(message);
 		return jsonMessage;
 	}
-	
+
 	@Override
 	public boolean doesRawMaterialOrderIdExistInStock(String orderId) {
 		return rawMaterialDAO.doesRawMaterialOrderIdExistInStock(orderId);
 	}
-
-	
-	
-	
-	
 }

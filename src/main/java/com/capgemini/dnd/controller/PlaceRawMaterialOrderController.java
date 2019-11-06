@@ -8,16 +8,11 @@ import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -36,27 +31,17 @@ public class PlaceRawMaterialOrderController {
 
 	@Autowired
 	private RawMaterialService rawMaterialService;
-
-//	@GetMapping("/PlaceRawMaterialOrder/PlaceOrder")
-//	@RequestMapping(method = RequestMethod.POST)
-//	public String trackProductOrder(@RequestParam("name") String name, @RequestParam("supplierId") String supplierId,
-//			@RequestParam("quantityValue") Double quantityValue, @RequestParam("quantityUnit") String quantityUnit,
-//			@RequestParam("dateOfDelivery") @DateTimeFormat(pattern = "yyyy-MM-dd") String dateOfDelivery,
-//			@RequestParam("pricePerUnit") Double pricePerUnit, @RequestParam("warehouseId") String warehouseId) {
-
 	@RequestMapping(value = "/placeOrder",method = RequestMethod.POST)
 	public String trackRawMaterialOrder(HttpServletRequest request) throws JsonParseException, JsonMappingException, IOException {
 
 		Map<String, String> myMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		RawMaterialOrder rawMaterialOrder;
-		System.out.println("111111");
 		try {
 			rawMaterialOrder = new RawMaterialOrder(myMap.get("name"), myMap.get("supplierId"),
 					Double.parseDouble(myMap.get("quantityValue")), myMap.get("quantityUnit"),
 					sdf.parse(myMap.get("dateOfDelivery")), Double.parseDouble(myMap.get("pricePerUnit")),
 					myMap.get("warehouseId"));
-			System.out.println("222222");
 		} catch (NumberFormatException | ParseException exception) {
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			return errorJsonMessage;
@@ -65,17 +50,13 @@ public class PlaceRawMaterialOrderController {
 		Date today = new Date();
 		rawMaterialOrder.setDateOfOrder(today);
 		rawMaterialOrder.setDeliveryStatus("Pending");
-		System.out.println(rawMaterialOrder);
 		
 		try {
 			String jsonMessage = rawMaterialService.placeRawMaterialOrder(rawMaterialOrder);
 			return jsonMessage;
-//			response.getWriter().write(jsonMessage);
-
 		} catch (RMOrderNotAddedException | ConnectionException | SQLException | DisplayException exception) {
 			String errorJsonMessage = JsonUtil.convertJavaToJson(exception.getMessage());
 			return errorJsonMessage;
-//			response.getWriter().write(errorJsonMessage);
 		}
 	}
 }

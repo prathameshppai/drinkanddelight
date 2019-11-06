@@ -35,4 +35,4 @@ And User is on update process date page
 When User enters a number in order ID as "5"
 And User enters Process Date as "2019-06-25"
 And user clicks on update button
-Then The message such as "Process date cannot be before its arrival(date of delivery)" is displayed
+Then The message such as "Process Date should be after manufacturing date and before expiry date" is displayed

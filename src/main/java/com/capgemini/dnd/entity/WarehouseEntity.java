@@ -56,11 +56,4 @@ public class WarehouseEntity {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	@Override
-	public String toString() {
-		return "Warehouse [WarehouseId=" + warehouseId + ", WarehouseName=" + warehouseName + ", managerId=" + managerId
-				+ ", address=" + address + "]";
-	}
-
-
 }

@@ -13,9 +13,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
+import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
+import com.capgemini.dnd.customexceptions.WrongPasswordException;
+import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.dto.RawMaterialStock;
 
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml",
@@ -287,6 +291,34 @@ public class RawMaterialDAOImplTestSpring {
 		assertFalse(rawMaterialDAO.doesRawMaterialOrderIdExistInStock("500"));
 	}
 
-	
-
+	@Test
+    @Transactional
+    @Rollback(true)
+    public void testUpdateRawMaterialDeliveryStatus1() throws Exception{
+        String actualMessage = null;
+        try {
+            if(rawMaterialDAO.doesRawMaterialOrderIdExist("5") ){
+            actualMessage = rawMaterialDAO.updateStatusRawMaterialOrder("5","Recieved");
+            }
+        } catch (RMOrderIDDoesNotExistException e) {
+            actualMessage = e.getMessage();
+        }
+        String expectedMessage = "Updated succesfully";
+        assertEquals(expectedMessage, actualMessage);
+    }
+	@Test
+    @Transactional
+    @Rollback(true)
+    public void testUpdateRawMaterialDeliveryStatus2() throws Exception{
+        String actualMessage = null;
+        try {
+            if(rawMaterialDAO.doesRawMaterialOrderIdExist("1000") ){
+            actualMessage = rawMaterialDAO.updateStatusRawMaterialOrder("5","Recieved");
+            }
+        } catch (RMOrderIDDoesNotExistException e) {
+            actualMessage = e.getMessage();
+        }
+        String expectedMessage = "RawMaterial Order ID does not exist";
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

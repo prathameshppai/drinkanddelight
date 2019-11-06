@@ -26,8 +26,6 @@ public class ProductOrdersEntity {
 	
     @Column(name = "name")
 	private String name;
-  
-    //Product ID removed
     
     @Column(name = "distributorid")
 	private String distributorId;
@@ -59,7 +57,6 @@ public class ProductOrdersEntity {
 	public ProductOrdersEntity(String name, String distributorId, double quantityValue, String quantityUnit,
 			Date dateofDelivery, double pricePerUnit, String warehouseId) {
 		super();
-//		this.orderId = "PID" + orderIdCount++;
 		this.name = name;
 		this.distributorId = distributorId;
 		this.quantityValue = quantityValue;
@@ -67,7 +64,8 @@ public class ProductOrdersEntity {
 		this.dateOfOrder = new Date();
 		this.dateofDelivery = dateofDelivery;
 		this.deliveryStatus = "pending";
-		this.pricePerUnit = this.pricePerUnit * this.quantityValue;
+		this.pricePerUnit = pricePerUnit; 
+		this.totalPrice = this.pricePerUnit * this.quantityValue;
 		this.warehouseId = warehouseId;
 	}
 
@@ -94,11 +92,6 @@ public class ProductOrdersEntity {
 	public void setOrderId(int orderId) {
 		this.orderId = orderId;
 	}
-
-//	public static void setOrderIdCount(int orderIdCount) {
-//		ProductOrdersEntity.orderIdCount = orderIdCount;
-//	}
-
 
 	public String getDistributorId() {
 		return this.distributorId;
@@ -179,14 +172,4 @@ public class ProductOrdersEntity {
 	public void setDeliveryStatus(String deliveryStatus) {
 		this.deliveryStatus = deliveryStatus;
 	}
-
-	@Override
-	public String toString() {
-		return "ProductOrderEntity [orderId=" + this.orderId + ", name=" + this.name + ", distributorId="
-				+ this.distributorId + ", quantityValue=" + this.quantityValue + ", quantityUnit=" + this.quantityUnit
-				+ ", dateOfOrder=" + this.dateOfOrder + ", dateofDelivery=" + this.dateofDelivery + ", pricePerUnit="
-				+ this.pricePerUnit + ", totalPrice=" + this.totalPrice + ", deliveryStatus=" + this.deliveryStatus + ", warehouseId="
-				+ this.warehouseId + "]";
-	}
-
 }

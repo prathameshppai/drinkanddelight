@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Distributor")
 public class DistributorEntity {
-//    `DistributorName``DistributorId``Address``Email``PhoneNumber`
+
 	@Id
 	@Column(name = "DistributorId")
 	private String distributorId;
