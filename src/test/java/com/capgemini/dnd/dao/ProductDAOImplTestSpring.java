@@ -271,6 +271,36 @@ public class ProductDAOImplTestSpring {
 	public void testDoesProductOrderIdExistInStock2() {
 		assertFalse(productDAO.doesProductOrderIdExistInStock("500"));
 	}
-
+	@Test
+    @Transactional
+    @Rollback(true)
+    public void testUpdateProductDeliveryStatus1() throws Exception  {
+        String actualMessage = null;
+       
+        try {
+            if(productDAO.doesProductOrderIdExist("5") ){
+            actualMessage = productDAO.updateStatusProductOrder("5","Dispatched");
+            }
+        } catch (ProductOrderIDDoesNotExistException e) {
+            actualMessage = e.getMessage();
+        }
+        String expectedMessage = "Updated succesfully";
+        assertEquals(expectedMessage, actualMessage);
+    }
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testUpdateProductDeliveryStatus2() throws Exception  {
+        String actualMessage = null;
+        try {
+            if(productDAO.doesProductOrderIdExist("1000") ){
+            actualMessage = productDAO.updateStatusProductOrder("5","Dispatched");
+            }
+        } catch (ProductOrderIDDoesNotExistException e) {
+            actualMessage = e.getMessage();
+        }
+        String expectedMessage = "Product Order ID does not exist";
+        assertEquals(expectedMessage, actualMessage);
+    }
 
 }
