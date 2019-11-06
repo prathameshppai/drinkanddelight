@@ -163,11 +163,13 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	/*******************************************************************************************************
-	 * - Function Name : add product order - Input Parameters : ProductOrder po -
-	 * Return Type : String - Throws : Exception - Author : Capgemini - Creation
-	 * Date : 25/09/2019 - Description : Product order is placed i.e. entry is added
-	 * in database
-	 * 
+	 - Function Name	:	addProductOrder
+	 - Input Parameters	:	ProductOrder newPO
+	 - Return Type		:	boolean
+	 - Throws			:  	ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException 
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Place Product order 
 	 ********************************************************************************************************/
 
 	@Override
@@ -375,6 +377,16 @@ public class ProductDAOImpl implements ProductDAO {
 //		return poList;
 //	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	getProductNames
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Product names
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getProductNames() throws DisplayException, ConnectionException {
 
@@ -404,6 +416,16 @@ public class ProductDAOImpl implements ProductDAO {
 		return productNamesList;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	getDistributorIds
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Distributor IDs
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
 
@@ -433,6 +455,17 @@ public class ProductDAOImpl implements ProductDAO {
 		return distributorIdsList;
 	}
 
+
+	/*******************************************************************************************************
+	 - Function Name	:	getWarehouseIds
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Warehouse IDs
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
