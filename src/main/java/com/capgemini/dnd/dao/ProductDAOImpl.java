@@ -97,15 +97,11 @@ public class ProductDAOImpl implements ProductDAO {
 		Transaction tx = null;
 		Criteria cr = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		SessionFactory sessionFactory = null;
 		List<ProductOrdersEntity> list = new ArrayList<ProductOrdersEntity>();
-		PreparedStatement pst = null;
-		int isFetched = 0;
 
 		try {
-			session = HibernateUtil.getASession();
-
-			tx = session.beginTransaction();
+			session = sessionFactory.openSession();
+		tx = session.beginTransaction();
 			String deliveryStatus = displayProductOrderObject.getDeliveryStatus();
 
 			CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -223,7 +219,6 @@ public class ProductDAOImpl implements ProductDAO {
 
 			Query<DistributorEntity> query = session.createQuery(criteria);
 			distributorlist = query.list();
-			System.out.println(distributorlist);
 			if (distributorlist.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
