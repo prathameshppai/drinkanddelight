@@ -86,114 +86,60 @@ public class ProductDAOImpl implements ProductDAO {
 		}
 	}
 
-	/*****************************************************************
-	 * - Method Name: displayProductOrderDetails() - Input Parameters : - Throws :
-	 * Exception - Creation Date : 25/09/2019 - Description : Returns list of all
-	 * products
-	 * 
-	 * @throws Exception
-	 *******************************************************************/
 
-	public List<ProductOrder> displayProductOrderDetails() throws Exception {
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-		Connection connection = DBUtil.getInstance().getConnection();
+
+	@SuppressWarnings("unused")
+	@Override
+	public List<ProductOrdersEntity> displayProductOrders(DisplayProductOrder displayProductOrderObject)
+			throws DisplayException, BackEndException {
+		String hql = "";
+		Session session = null;
+		Transaction tx = null;
+		Criteria cr = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SessionFactory sessionFactory = null;
+		List<ProductOrdersEntity> list = new ArrayList<ProductOrdersEntity>();
 		PreparedStatement pst = null;
+		int isFetched = 0;
 
 		try {
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_PRODUCT_ORDER);
-			ResultSet rs = pst.executeQuery();
+			session = HibernateUtil.getASession();
 
-			int isFetched = 0;
-			while (rs.next()) {
+			tx = session.beginTransaction();
+			String deliveryStatus = displayProductOrderObject.getDeliveryStatus();
 
-				isFetched = 1;
-				int index = 1;
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<ProductOrdersEntity> criteria = builder.createQuery(ProductOrdersEntity.class);
+			Root<ProductOrdersEntity> root = criteria.from(ProductOrdersEntity.class);
 
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-			}
+			if (deliveryStatus.equals("ALL")) {
 
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
+				;
 			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
+
+				criteria.select(root).where(builder.equal(root.get("deliveryStatus"), deliveryStatus));
+
+			}
+			String distributorid = displayProductOrderObject.getDistributorid();
+
+			if (distributorid.equals("ALL"))
+				;
+			else
+				criteria.select(root).where(builder.equal(root.get("distributorId"), distributorid));
+
+			String startDate = displayProductOrderObject.getStartdate();
+			String endDate = displayProductOrderObject.getEndDate();
+
+			if (startDate != null && endDate != null) {
+				criteria.select(root)
+						.where(builder.between(root.get("dateofDelivery"), sdf.parse(startDate), sdf.parse(endDate)));
 
 			}
 
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
+			Query<ProductOrdersEntity> q = session.createQuery(criteria);
+			list = q.list();
 
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
-		}
-		return poList1;
-
-	}
-
-	/*****************************************************************
-	 * - Method Name: displayProductOrderbetweenDetails - Input Parameters : -
-	 * Throws : Exception - Creation Date : 25/09/2019 - Description : Returns list
-	 * of all received products between tow dates entered by user
-	 *******************************************************************/
-
-	public List<ProductOrder> displayProductOrderbetweenDetails(java.util.Date dt1, java.util.Date dt2)
-			throws Exception {
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-		Connection connection = DBUtil.getInstance().getConnection();
-
-		PreparedStatement pst = null;
-		try {
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_PRODUCT_ORDER_BW_DATES);
-
-			pst.setDate(1, DBUtil.stringtoDate(dt1));
-			pst.setDate(2, DBUtil.stringtoDate(dt2));
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-
-			}
-
-			if (isFetched == 0) {
+			if (list.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
 
@@ -201,345 +147,29 @@ public class ProductDAOImpl implements ProductDAO {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
 
 			}
+		} catch (Exception e) {
 
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+			e.printStackTrace();
+			throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
 		}
-		return poList1;
 
-	}
+		finally {
 
-	/*****************************************************************
-	 * - Method Name: displayOrdersFromDistributor - Input Parameters : - Throws :
-	 * Exception - Creation Date : 25/09/2019 - Description : Returns list of all
-	 * received products from a particular distributor
-	 *******************************************************************/
-
-	public List<ProductOrder> displayOrdersFromDistributor(String distId) throws Exception {
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-		Connection connection = DBUtil.getInstance().getConnection();
-		PreparedStatement pst = null;
-
-		try {
-
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_PRODUCT_ORDER_FROM_DISTRIBUTOR);
-			pst.setString(1, distId);
-			ResultSet rs = pst.executeQuery();
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-
-			}
-
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_MESSAGE_DELIVERY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
+			HibernateUtil.closeSession(session);
+			// sessionFactory.close();
 		}
-		return poList1;
-
-	}
-
-	/*****************************************************************
-	 * - Method Name: displayPendingProductOrderDetails - Input Parameters : -
-	 * Throws : Exception - Creation Date : 25/09/2019 - Description : Returns list
-	 * of all pending products from a particular distributor
-	 *******************************************************************/
-
-	public List<ProductOrder> displayPendingProductOrderDetails() throws Exception {
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-		Connection connection = DBUtil.getInstance().getConnection();
-		PreparedStatement pst = null;
-		try {
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_PENDING_PRODUCT_ORDER);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-
-			}
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
-		}
-		return poList1;
-	}
-
-	/*****************************************************************
-	 * - Method Name: displayReceivedProductOrderDetails - Input Parameters : -
-	 * Throws : Exception - Creation Date : 25/09/2019 - Description : Returns list
-	 * of all received products from a particular distributor
-	 ********************************************************************/
-
-	public List<ProductOrder> displayReceivedProductOrderDetails() throws Exception {
-
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-
-		Connection connection = DBUtil.getInstance().getConnection();
-		PreparedStatement pst = null;
-		try {
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_RECEIVED_PRODUCT_ORDER);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-
-			}
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
-		}
-		return poList1;
-	}
-
-	/*****************************************************************
-	 * - Method Name: displayDispatchedProductOrderDetails - Input Parameters : -
-	 * Throws : Exception - Creation Date : 25/09/2019 - Description : Returns list
-	 * of all dispatched products from a particular distributor
-	 *******************************************************************/
-
-	public List<ProductOrder> displayDispatchedProductOrderDetails() throws Exception {
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-
-		Connection connection = DBUtil.getInstance().getConnection();
-		PreparedStatement pst = null;
-		try {
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_DISPATCHED_PRODUCT_ORDER);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-
-			}
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
-		}
-		return poList1;
-
-	}
-
-	/*****************************************************************
-	 * - Method Name: displayCancelledProductOrderDetails - Input Parameters : -
-	 * Throws : Exception - Creation Date : 25/09/2019 - Description : Returns list
-	 * of all cancelled products from a particular distributor
-	 *******************************************************************/
-
-	public List<ProductOrder> displayCancelledProductOrderDetails() throws Exception {
-		List<ProductOrder> poList1 = new ArrayList<ProductOrder>();
-		Connection connection = DBUtil.getInstance().getConnection();
-		PreparedStatement pst = null;
-		try {
-			pst = connection.prepareStatement(QueryMapper.DISPLAY_CANCELLED_PRODUCT_ORDER);
-			ResultSet rs = pst.executeQuery();
-
-			int isFetched = 0;
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList1.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-
-			}
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_FETCH_FAILED);
-
-			} else {
-				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
-
-			}
-
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-
-				pst.close();
-				connection.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-
-			}
-		}
-		return poList1;
+		return list;
 
 	}
 
 	/*******************************************************************************************************
-	 * - Function Name : add product order - Input Parameters : ProductOrder po -
-	 * Return Type : String - Throws : Exception - Author : Capgemini - Creation
-	 * Date : 25/09/2019 - Description : Product order is placed i.e. entry is added
-	 * in database
-	 * 
+	 - Function Name	:	addProductOrder
+	 - Input Parameters	:	ProductOrder newPO
+	 - Return Type		:	boolean
+	 - Throws			:  	ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException 
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Place Product order 
 	 ********************************************************************************************************/
 
 	@Override
@@ -581,15 +211,9 @@ public class ProductDAOImpl implements ProductDAO {
 		Criteria cr = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		List<DistributorEntity> distributorlist = new ArrayList<DistributorEntity>();
-		PreparedStatement pst = null;
-		int isFetched = 0;
-
+		
 		try {
-			System.out.println("hello");
-
 			session = sessionFactory.openSession();
-			session.beginTransaction();
-
 			String distributorId = distributor.getDistributorId();
 			CriteriaBuilder builder = session.getCriteriaBuilder();
 			CriteriaQuery<DistributorEntity> criteria = builder.createQuery(DistributorEntity.class);
@@ -677,82 +301,92 @@ public class ProductDAOImpl implements ProductDAO {
 	 * : 25/09/2019 - Description : updating manufacturing date, exit date and
 	 * quality status into product stock table.
 	 ********************************************************************************************************/
-	@Override
-	public List<ProductOrder> displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
-		List<ProductOrder> poList = new ArrayList<ProductOrder>();
-		PreparedStatement pst = null;
-		Connection con = null;
-		int isFetched = 0;
-		try {
-			con = DBUtil.getInstance().getConnection();
-			String DeliveryStatus = displayProductOrderObject.getDeliveryStatus();
-			String generateQuery = "";
-			{
-				if (DeliveryStatus.equals("ALL"))
-					generateQuery = "SELECT * FROM ProductOrders WHERE deliverystatus in "
-							+ "( select DeliveryStatus from ProductOrders )";
-				else
-					generateQuery = "SELECT * FROM ProductOrders WHERE deliverystatus in ( '" + DeliveryStatus + "')";
+//	@Override
+//	public List<ProductOrder> displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
+//		List<ProductOrder> poList = new ArrayList<ProductOrder>();
+//		PreparedStatement pst = null;
+//		Connection con = null;
+//		int isFetched = 0;
+//		try {
+//			con = DBUtil.getInstance().getConnection();
+//			String DeliveryStatus = displayProductOrderObject.getDeliveryStatus();
+//			String generateQuery = "";
+//			{
+//				if (DeliveryStatus.equals("ALL"))
+//					generateQuery = "SELECT * FROM ProductOrders WHERE deliverystatus in "
+//							+ "( select DeliveryStatus from ProductOrders )";
+//				else
+//					generateQuery = "SELECT * FROM ProductOrders WHERE deliverystatus in ( '" + DeliveryStatus + "')";
+//
+//			}
+//
+//			String distributorid = displayProductOrderObject.getDistributorid();
+//			{
+//				if (distributorid.equals("ALL"))
+//					generateQuery += " AND distributorid in ( select distributorid  from ProductOrders )";
+//				else
+//
+//					generateQuery += " AND distributorid in ( '" + distributorid + "' )";
+//			}
+//
+//			String startDate = displayProductOrderObject.getStartdate();
+//			String endDate = displayProductOrderObject.getEndDate();
+//
+//			if (startDate != null && endDate != null)
+//
+//				generateQuery += " AND  dateofdelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
+//			System.out.println(generateQuery);
+//			pst = con.prepareStatement(generateQuery);
+//			ResultSet rs = pst.executeQuery();
+//
+//			while (rs.next()) {
+//				isFetched = 1;
+//				int index = 1;
+//				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
+//				String name = rs.getString(index++);
+//				String productId = rs.getString(index++);
+//				String distributorId = rs.getString(index++);
+//				double quantityValue = rs.getDouble(index++);
+//				String quantityUnit = rs.getString(index++);
+//				Date dateOfOrder = rs.getDate(index++);
+//				Date dateofDelivery = rs.getDate(index++);
+//				double pricePerUnit = rs.getDouble(index++);
+//				double totalPrice = rs.getDouble(index++);
+//				String deliveryStatus = rs.getString(index++);
+//				String warehouseId = rs.getString(index++);
+//				poList.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
+//						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
+//			}
+//			if (isFetched == 0) {
+//				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
+//				throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
+//			}
+//		} catch (SQLException sqlException) {
+//			logger.error(sqlException.getMessage());
+//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
+//		} finally {
+//			try {
+//				// resultSet.close();
+//				pst.close();
+//				con.close();
+//			} catch (SQLException sqlException) {
+//				logger.error(sqlException.getMessage());
+//				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
+//			}
+//		}
+//		return poList;
+//	}
 
-			}
-
-			String distributorid = displayProductOrderObject.getDistributorid();
-			{
-				if (distributorid.equals("ALL"))
-					generateQuery += " AND distributorid in ( select distributorid  from ProductOrders )";
-				else
-
-					generateQuery += " AND distributorid in ( '" + distributorid + "' )";
-			}
-
-			String startDate = displayProductOrderObject.getStartdate();
-			String endDate = displayProductOrderObject.getEndDate();
-
-			if (startDate != null && endDate != null)
-
-				generateQuery += " AND  dateofdelivery BETWEEN '" + startDate + "' AND '" + endDate + "'  ";
-			System.out.println(generateQuery);
-			pst = con.prepareStatement(generateQuery);
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				isFetched = 1;
-				int index = 1;
-				String orderId = Integer.valueOf(rs.getInt(index++)).toString();
-				String name = rs.getString(index++);
-				String productId = rs.getString(index++);
-				String distributorId = rs.getString(index++);
-				double quantityValue = rs.getDouble(index++);
-				String quantityUnit = rs.getString(index++);
-				Date dateOfOrder = rs.getDate(index++);
-				Date dateofDelivery = rs.getDate(index++);
-				double pricePerUnit = rs.getDouble(index++);
-				double totalPrice = rs.getDouble(index++);
-				String deliveryStatus = rs.getString(index++);
-				String warehouseId = rs.getString(index++);
-				poList.add(new ProductOrder(orderId, name, productId, distributorId, quantityValue, quantityUnit,
-						dateOfOrder, dateofDelivery, pricePerUnit, totalPrice, deliveryStatus, warehouseId));
-			}
-			if (isFetched == 0) {
-				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_INALID_INPUT);
-			}
-		} catch (SQLException sqlException) {
-			logger.error(sqlException.getMessage());
-			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-		} finally {
-			try {
-				// resultSet.close();
-				pst.close();
-				con.close();
-			} catch (SQLException sqlException) {
-				logger.error(sqlException.getMessage());
-				throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-			}
-		}
-		return poList;
-	}
-
+	/*******************************************************************************************************
+	 - Function Name	:	getProductNames
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Product names
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getProductNames() throws DisplayException, ConnectionException {
 
@@ -782,6 +416,16 @@ public class ProductDAOImpl implements ProductDAO {
 		return productNamesList;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	getDistributorIds
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Distributor IDs
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getDistributorIds() throws DisplayException, ConnectionException {
 
@@ -811,6 +455,17 @@ public class ProductDAOImpl implements ProductDAO {
 		return distributorIdsList;
 	}
 
+
+	/*******************************************************************************************************
+	 - Function Name	:	getWarehouseIds
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Warehouse IDs
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
@@ -1071,5 +726,47 @@ public class ProductDAOImpl implements ProductDAO {
 			session.close();
 			return productOrderIdFound;
 		}
+	}
+
+	@Override
+	public List<ProductOrder> displayProductOrderDetails() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProductOrder> displayPendingProductOrderDetails() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProductOrder> displayCancelledProductOrderDetails() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProductOrder> displayReceivedProductOrderDetails() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProductOrder> displayDispatchedProductOrderDetails() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProductOrder> displayProductOrderbetweenDetails(Date dt1, Date dt2) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ProductOrder> displayOrdersFromDistributor(String distId) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

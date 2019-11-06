@@ -13,9 +13,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.IncompleteDataException;
 import com.capgemini.dnd.customexceptions.ProcessDateException;
 import com.capgemini.dnd.customexceptions.RMOrderIDDoesNotExistException;
+import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
+import com.capgemini.dnd.customexceptions.WrongPasswordException;
+import com.capgemini.dnd.dto.Employee;
 import com.capgemini.dnd.dto.RawMaterialStock;
 
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml",

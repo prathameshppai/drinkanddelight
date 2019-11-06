@@ -24,6 +24,7 @@ import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.DistributorEntity;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 @Service
@@ -32,8 +33,6 @@ public class ProductServiceImpl implements ProductService {
 
 	Scanner scanner = new Scanner(System.in);
 
-	//ProductDAO productDAO = new ProductDAOImpl();
-	
 	@Autowired
 	private ProductDAO productDAO;
 
@@ -77,12 +76,8 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductOrder> displayProductOrderbetweenDetails(Date dt1, Date dt2) throws Exception {
 		return (productDAO.displayProductOrderbetweenDetails(dt1, dt2));
 	}
-//
-//	public boolean placeProductOrder(ProductOrder newProductOrder)
-//			throws ConnectionException, SQLException, ProductOrderNotAddedException {
-//		return (productDAO.addProductOrder(newProductOrder));
-//	}
 
+	@Override
 	public String placeProductOrder(ProductOrder newProductOrder) throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException{
 		if (productDAO.addProductOrder(newProductOrder))
 			return (JsonUtil.convertJavaToJson("Product Order placed successfully"));
@@ -94,33 +89,27 @@ public class ProductServiceImpl implements ProductService {
 		return (productDAO.displayOrdersFromDistributor(distId));
 	}
 
-	
 	@Override
     public String displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception {
-        List<ProductOrder> poList2 = new ArrayList<ProductOrder>();
+        List<ProductOrdersEntity> poList2 = new ArrayList<ProductOrdersEntity>();
         poList2 = productDAO.displayProductOrders(displayProductOrderObject);
         String jsonMessage = JsonUtil.convertJavaToJson1(poList2);
         return jsonMessage;
     }
 
-
-
 	@Override
 	public ArrayList<String> fetchProductNames() throws DisplayException, ConnectionException {
-//		return(JsonUtil.convertJavaToJson1(productDAO.getProductNames()));
 		return(productDAO.getProductNames());
 		
 	}
 
 	@Override
 	public ArrayList<String> fetchDistributorIds() throws DisplayException, ConnectionException {
-//		return(JsonUtil.convertJavaToJson1(productDAO.getDistributorIds()));
 		return(productDAO.getDistributorIds());
 	}
 	
 	@Override
 	public ArrayList<String> fetchWarehouseIds() throws DisplayException, ConnectionException {
-//		return(JsonUtil.convertJavaToJson1(productDAO.getWarehouseIds()));
 		return(productDAO.getWarehouseIds());
 	}
 	
@@ -128,7 +117,6 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
 		String message = productDAO.trackProductOrder(productStock);
-
 		String jsonMessage = JsonUtil.convertJavaToJson(message);
 		return jsonMessage;
 	}
@@ -179,8 +167,4 @@ public class ProductServiceImpl implements ProductService {
 	public boolean doesProductOrderIdExistInStock(String orderId) {
 		return productDAO.doesProductOrderIdExistInStock(orderId);
 	}
-	
-	
-	
-	
 }

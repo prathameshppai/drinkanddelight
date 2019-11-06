@@ -18,6 +18,7 @@ import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
 import com.capgemini.dnd.entity.DistributorEntity;
+import com.capgemini.dnd.entity.ProductOrdersEntity;
 
 public interface ProductDAO {
 
@@ -43,7 +44,7 @@ public interface ProductDAO {
 	
 	public Address fetchAddress(Distributor distributor) throws BackEndException, DoesNotExistException;
 
-	public List<ProductOrder> displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception;
+	public List<ProductOrdersEntity> displayProductOrders(DisplayProductOrder displayProductOrderObject) throws Exception;
 
 	public ArrayList<String> getProductNames() throws DisplayException, ConnectionException;
 
@@ -62,7 +63,5 @@ public interface ProductDAO {
 	public String updateProductStock(ProductStock productStock);
 
 	boolean doesProductOrderIdExistInStock(String orderId);
-	
-	
 
 }
