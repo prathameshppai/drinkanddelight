@@ -23,6 +23,7 @@ import com.capgemini.dnd.dto.RawMaterialOrder;
 import com.capgemini.dnd.dto.RawMaterialStock;
 import com.capgemini.dnd.dto.Supplier;
 import com.capgemini.dnd.entity.RawMaterialOrderEntity;
+import com.capgemini.dnd.entity.SupplierEntity;
 import com.capgemini.dnd.util.JsonUtil;
 
 @Service
@@ -44,10 +45,10 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		return (JsonUtil.convertJavaToJson(rawMaterialDAO.updateStatusRawMaterialOrder(orderId, newStatus)));
 	}
 
-	public String fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException {
+	public String fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException, DisplayException {
 		
-		 Supplier supplierObject = rawMaterialDAO.fetchSupplierDetail(supplierDetails);
-		  String jsonMessage = JsonUtil.convertJavaToJson1(supplierObject);
+		 List<SupplierEntity> supplierList = rawMaterialDAO.fetchSupplierDetail(supplierDetails);
+		  String jsonMessage = JsonUtil.convertJavaToJson1(supplierList);
 		return jsonMessage;
 		 
 	}
@@ -136,8 +137,7 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		return rawMaterialDAO.doesRawMaterialOrderIdExistInStock(orderId);
 	}
 
-	
-	
+
 	
 	
 }
