@@ -622,62 +622,12 @@ public class ProductDAOImpl implements ProductDAO {
 	public boolean addProductOrder(ProductOrder newPO)
 			throws ProductOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 
-//		Connection con;
-//		try {
-//			con = DBUtil.getInstance().getConnection();
-//		} catch (Exception e) {
-//			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-//		}
-//
-//		PreparedStatement preparedStatement = null, preparedStatement1 = null;
 		boolean added = false;
-//		String pId = null;
-//		try {
-//			preparedStatement1 = con.prepareStatement(QueryMapper.FETCH_PRODUCTID_FROM_PRODUCTNAME);
-//			preparedStatement1.setString(1, newPO.getName().toUpperCase());
-//			ResultSet rs = preparedStatement1.executeQuery();
-//			while (rs.next()) {
-//				pId = rs.getString(1);
-//			}
-//		} catch (SQLException sqlException) {
-//			logger.error(sqlException.getMessage());
-//			throw new DisplayException(Constants.DISPLAY_EXCEPTION_MESSAGE_TECHNICAL_PROBLEM);
-//		}
-//
-//		try {
-//			preparedStatement = con.prepareStatement(QueryMapper.ADDPRODUCTORDER);
-//			preparedStatement.setString(1, newPO.getName().toUpperCase());
-//			preparedStatement.setString(2, pId.toUpperCase());
-//			preparedStatement.setString(3, newPO.getDistributorId().toUpperCase());
-//			preparedStatement.setDouble(4, newPO.getQuantityValue());
-//			preparedStatement.setString(5, newPO.getQuantityUnit().toLowerCase());
-//			preparedStatement.setDate(6, DBUtil.stringtoDate(newPO.getDateOfOrder()));
-//			preparedStatement.setDate(7, DBUtil.stringtoDate(newPO.getDateofDelivery()));
-//			preparedStatement.setDouble(8, newPO.getPricePerUnit());
-//			preparedStatement.setDouble(9, newPO.getTotalPrice());
-//			preparedStatement.setString(10, newPO.getDeliveryStatus().toUpperCase());
-//			preparedStatement.setString(11, newPO.getWarehouseId().toLowerCase());
-//
-//			int noOfRows = preparedStatement.executeUpdate();
-//
-//			con.close();
-//
-//			if (noOfRows == 1) {
-//				added = true;
-//			}
-//
-//			if (!added) {
-//				throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);
-//			}
-//			return added;
-//		} catch (ProductOrderNotAddedException | SQLException exception) {
-//			logger.error(Constants.PRODUCT_ORDER_NOT_ADDED);
-//			throw exception;
-//		}
-
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
 				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
+				newPO.getWarehouseId());
+		System.out.println(newPO.getName() + " " +newPO.getDistributorId() + " " +
+				newPO.getQuantityValue() + " " +newPO.getQuantityUnit() + " " +newPO.getDateofDelivery() + " " +newPO.getPricePerUnit() + " " +
 				newPO.getWarehouseId());
 		Session session = null;
 		Transaction transaction = null;
@@ -689,11 +639,9 @@ public class ProductDAOImpl implements ProductDAO {
 			added = true;
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			System.out.println("Exception 638");
 		} finally {
 			session.close();
 		}
-		// HibernateUtil.shutdown();
 
 		if (!added) {
 			throw new ProductOrderNotAddedException(Constants.PRODUCT_ORDER_NOT_ADDED);

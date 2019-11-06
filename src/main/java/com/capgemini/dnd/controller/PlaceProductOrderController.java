@@ -44,7 +44,7 @@ public class PlaceProductOrderController {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		ProductOrder productOrder;
 		try {
-			productOrder = new ProductOrder(myMap.get("name"), myMap.get("supplierId"),
+			productOrder = new ProductOrder(myMap.get("name"), myMap.get("distributorId"),
 					Double.parseDouble(myMap.get("quantityValue")), myMap.get("quantityUnit"),
 					sdf.parse(myMap.get("dateOfDelivery")), Double.parseDouble(myMap.get("pricePerUnit")),
 					myMap.get("warehouseId"));
