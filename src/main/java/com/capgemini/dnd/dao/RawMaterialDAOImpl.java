@@ -84,15 +84,16 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		}
 	}
 
-
 	/*******************************************************************************************************
-	 * - Function Name : add raw material order - Input Parameters :RawmaterialOrder
-	 * newRMO - Return Type : String - Throws : Exception - Author : Capgemini -
-	 * Creation Date : 25/09/2019 - Description : Raw Material orders is placed i.e.
-	 * entry is added in database @throws
-	 * 
-	 * @throws DisplayException
+	 - Function Name	:	addRawMaterialOrder
+	 - Input Parameters	:	RawMaterialOrder newRMO
+	 - Return Type		:	boolean
+	 - Throws			:  	RMOrderNotAddedException, ConnectionException, SQLException, DisplayException 
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Place Raw Material order 
 	 ********************************************************************************************************/
+	
 
 	@Override
 	public boolean addRawMaterialOrder(RawMaterialOrder newRMO)
@@ -305,6 +306,17 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	}
 
+
+	/*******************************************************************************************************
+	 - Function Name	:	getRawMaterialNames
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Raw Material Names 
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getRawMaterialNames() throws DisplayException, ConnectionException {
 
@@ -336,6 +348,17 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		return rawMaterialNamesList;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	getSupplierIds
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Supplier IDs
+	 ********************************************************************************************************/
+
+	
 	@Override
 	public ArrayList<String> getSupplierIds() throws DisplayException, ConnectionException {
 
@@ -367,6 +390,16 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 		return supplierIdsList;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	getWarehouseIds
+	 - Input Parameters	:	none
+	 - Return Type		:	ArrayList
+	 - Throws			:  	DisplayException, ConnectionException  
+	 - Author			:	Prathamesh Pai, Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Warehouse IDs
+	 ********************************************************************************************************/
+	
 	@Override
 	public ArrayList<String> getWarehouseIds() throws DisplayException, ConnectionException {
 
