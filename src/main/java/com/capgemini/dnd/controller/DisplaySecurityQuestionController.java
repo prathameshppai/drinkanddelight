@@ -31,12 +31,14 @@ public class DisplaySecurityQuestionController {
 	@Autowired
 	private Employee employee;
 
+	@Autowired
+	private Employee idealEmployee;
+
 	@RequestMapping(method = RequestMethod.POST)
 	public void getSecurityQuestion(HttpServletRequest request, HttpServletResponse response)
 			throws BackEndException, JsonParseException, JsonMappingException, IOException {
 		Map<String, String> fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 		employee.setUsername(fieldValueMap.get("username"));
-		Employee idealEmployee = new Employee();
 		try {
 			idealEmployee = employeeService.fetchOneConfidentialDetail(employee);
 			String jsonQuestion = JsonUtil.convertJavaToJson(idealEmployee.getSecurityQuestion());

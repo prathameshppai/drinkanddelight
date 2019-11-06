@@ -60,7 +60,11 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	public RawMaterialDAOImpl() {
 	}
-
+	/*******************************************
+	 * Raw Material order delivery status update
+	 *  Author: Ankit Kumar
+	 *  Throw Update Exception
+	 *******************************************/
 	public String updateStatusRawMaterialOrder(String orderId, String deliveryStatus) {
 		Session session = null;
 		Transaction transaction = null;
@@ -72,10 +76,12 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			rawmaterialorder.setDeliveryStatus(deliveryStatus);
 			session.save(rawmaterialorder);
 			transaction.commit();
+			logger.info(Constants.UPADTED_SUCCESSFULLY_MESSAGE);
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback();
+				logger.error(e);
 			}
 			try {
 				throw new UpdateException(Constants.UPDATE_EXCEPTION_MESSAGE_FAILURE_DELIVERY);
@@ -236,6 +242,16 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			con.close();
 		}
 	}
+	/*******************************************************************************************************
+	 - Function Name	:	getListofRawMaterial
+	 - Input Parameters	:	none
+	 - Return Type		:	List
+	 - Throws			:  	DisplayException, BackEndException  
+	 - Author			:	Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Raw Material Names 
+	 ********************************************************************************************************/
+	
 
 	@SuppressWarnings("unused")
 	@Override
@@ -286,11 +302,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 			Query<RawMaterialOrderEntity> q = session.createQuery(criteria);
 			list = q.list();
-
 			if (list.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
-
 			} else {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
 

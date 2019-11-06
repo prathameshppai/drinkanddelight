@@ -302,25 +302,23 @@ public class RawMaterialDAOImplTestSpring {
 	public void testDoesRawMaterialOrderIdExistInStock2() {
 		assertFalse(rawMaterialDAO.doesRawMaterialOrderIdExistInStock("500"));
 	}
-	
-  
-    @Test
+
+	@Test
     @Transactional
     @Rollback(true)
     public void testUpdateRawMaterialDeliveryStatus1() throws Exception{
         String actualMessage = null;
         try {
-            if(rawMaterialDAO.doesRawMaterialOrderIdExist("5") )
+            if(rawMaterialDAO.doesRawMaterialOrderIdExist("5") ){
             actualMessage = rawMaterialDAO.updateStatusRawMaterialOrder("5","Recieved");
             }
-        catch (RMOrderIDDoesNotExistException e) {
+        } catch (RMOrderIDDoesNotExistException e) {
             actualMessage = e.getMessage();
         }
         String expectedMessage = "Updated succesfully";
         assertEquals(expectedMessage, actualMessage);
-    
     }
-    @Test
+	@Test
     @Transactional
     @Rollback(true)
     public void testUpdateRawMaterialDeliveryStatus2() throws Exception{
@@ -335,8 +333,4 @@ public class RawMaterialDAOImplTestSpring {
         String expectedMessage = "RawMaterial Order ID does not exist";
         assertEquals(expectedMessage, actualMessage);
     }
-
-  
-
-
 }

@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -21,6 +23,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -39,11 +42,8 @@ import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
-import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.WarehouseEntity;
-
 import com.capgemini.dnd.util.DBUtil;
-import com.capgemini.dnd.util.HibernateUtil;
 
 @Repository
 public class ProductDAOImpl implements ProductDAO {
@@ -52,6 +52,12 @@ public class ProductDAOImpl implements ProductDAO {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+
+	/*******************************************
+	 * Product order delivery status update
+	 *  Author: Ankit Kumar
+	 *  Throw Update Exception
+	 *******************************************/
 
 	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
 		Session session = null;
@@ -64,9 +70,11 @@ public class ProductDAOImpl implements ProductDAO {
 			product.setDeliveryStatus(deliveryStatus);
 			session.save(product);
 			transaction.commit();
+			logger.info(Constants.UPADTED_SUCCESSFULLY_MESSAGE);
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
 		} catch (Exception e) {
 			if (transaction != null) {
+				logger.error(e);
 				transaction.rollback();
 			}
 			try {
@@ -90,15 +98,11 @@ public class ProductDAOImpl implements ProductDAO {
 		Transaction tx = null;
 		Criteria cr = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		SessionFactory sessionFactory = null;
 		List<ProductOrdersEntity> list = new ArrayList<ProductOrdersEntity>();
-		PreparedStatement pst = null;
-		int isFetched = 0;
 
 		try {
-			session = HibernateUtil.getASession();
-
-			tx = session.beginTransaction();
+			session = sessionFactory.openSession();
+		tx = session.beginTransaction();
 			String deliveryStatus = displayProductOrderObject.getDeliveryStatus();
 
 			CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -148,8 +152,7 @@ public class ProductDAOImpl implements ProductDAO {
 
 		finally {
 
-			HibernateUtil.closeSession(session);
-			// sessionFactory.close();
+			session.close();
 		}
 		return list;
 
@@ -173,9 +176,9 @@ public class ProductDAOImpl implements ProductDAO {
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
 				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
 				newPO.getWarehouseId());
-		System.out.println(newPO.getName() + " " +newPO.getDistributorId() + " " +
-				newPO.getQuantityValue() + " " +newPO.getQuantityUnit() + " " +newPO.getDateofDelivery() + " " +newPO.getPricePerUnit() + " " +
-				newPO.getWarehouseId());
+		System.out.println(newPO.getName() + " " + newPO.getDistributorId() + " " + newPO.getQuantityValue() + " "
+				+ newPO.getQuantityUnit() + " " + newPO.getDateofDelivery() + " " + newPO.getPricePerUnit() + " "
+				+ newPO.getWarehouseId());
 		Session session = null;
 		Transaction transaction = null;
 		try {
@@ -218,7 +221,6 @@ public class ProductDAOImpl implements ProductDAO {
 
 			Query<DistributorEntity> query = session.createQuery(criteria);
 			distributorlist = query.list();
-			System.out.println(distributorlist);
 			if (distributorlist.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
