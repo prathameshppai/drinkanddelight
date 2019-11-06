@@ -151,8 +151,7 @@ public class ProductDAOImpl implements ProductDAO {
 
 		finally {
 
-			HibernateUtil.closeSession(session);
-			// sessionFactory.close();
+			session.close();
 		}
 		return list;
 
