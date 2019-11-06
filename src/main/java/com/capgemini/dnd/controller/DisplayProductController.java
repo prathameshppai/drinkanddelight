@@ -34,14 +34,13 @@ public class DisplayProductController {
 		String jsonMessage = "";
 		String errorMessage = "";
 		PrintWriter out = response.getWriter();
-		ModelAndView mav = new ModelAndView();
+
 		DisplayProductOrder displayProductOrderObject = new DisplayProductOrder();
 		Map<String, String> fieldValueMap = new HashMap<String, String>();
 		fieldValueMap = MappingUtil.convertJsonObjectToFieldValueMap(request);
 
 		String DeliveryStatusVar = fieldValueMap.get("deliveryStatus");
 		String DistributorIDVar = fieldValueMap.get("distributorid");
-		System.out.println(DistributorIDVar);
 		String date1Var = fieldValueMap.get("startdate");
 		String date2Var = fieldValueMap.get("endDate");
 
@@ -57,9 +56,6 @@ public class DisplayProductController {
 		}
 
 		if (errorMessage.isEmpty()) {
-			System.out.println(jsonMessage);
-			mav.addObject("msg", jsonMessage);
-			System.out.println(mav);
 			out.write(jsonMessage);
 		}
 	}
