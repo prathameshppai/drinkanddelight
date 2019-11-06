@@ -36,7 +36,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	 - Return Type		:	boolean
 	 - Throws			:  	RowNotFoundException, BackEndException 
 	 - Author			:	Akash Deep, Capgemini
-	 - Description		:	To check wheteher an employee with the given username exists in the table, 
+	 - Description		:	To check whether an employee with the given username exists in the table, 
 	 						EmployeeCredentials
 	 ********************************************************************************************************/
 	public boolean employeeExists(Employee employee) throws RowNotFoundException, BackEndException {
@@ -55,8 +55,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				throw new RowNotFoundException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 			}
 		} catch (Exception exception) {
-			logger.error(Constants.SERVER_ERROR_MESSAGE);
-			throw new BackEndException(Constants.SERVER_ERROR_MESSAGE);
+			logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
+			throw new BackEndException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 		} finally {
 			session.close();
 		}
@@ -93,8 +93,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			}
 
 		} catch (Exception exception) {
-			logger.error(Constants.SERVER_ERROR_MESSAGE);
-			throw new BackEndException(Constants.SERVER_ERROR_MESSAGE);
+			logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+			throw new BackEndException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
 		} finally {
 			session.close();
 		}

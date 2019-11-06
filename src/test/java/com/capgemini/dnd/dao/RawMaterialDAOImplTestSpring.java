@@ -42,7 +42,8 @@ public class RawMaterialDAOImplTestSpring {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testAddRawMaterialOrder() throws ParseException, RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
+	public void testAddRawMaterialOrder()
+			throws ParseException, RMOrderNotAddedException, ConnectionException, SQLException, DisplayException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		RawMaterialOrder rawMaterialOrder = new RawMaterialOrder("JUICE","d004",25,"kg", sdf.parse("2019-12-12"),50,"w03");
 		assertTrue(rawMaterialDAO.addRawMaterialOrder(rawMaterialOrder));
