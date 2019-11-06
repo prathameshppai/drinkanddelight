@@ -64,8 +64,6 @@ public class ChangePasswordController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode dataResponse = mapper.createObjectNode();
-		System.out.println(idealEmployee);
-		System.out.println(actualEmployee);
 		try {
 			if (employeeService.changePassword(idealEmployee, actualEmployee)) {
 				((ObjectNode) dataResponse).put("message", ServletConstants.PASSWORD_CHANGE_SUCCESSFUL_MESSAGE);

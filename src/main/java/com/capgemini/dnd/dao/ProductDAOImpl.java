@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
@@ -16,6 +17,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.ConnectionException;
 import com.capgemini.dnd.customexceptions.DisplayException;
@@ -30,12 +32,12 @@ import com.capgemini.dnd.dto.DisplayProductOrder;
 import com.capgemini.dnd.dto.Distributor;
 import com.capgemini.dnd.dto.ProductOrder;
 import com.capgemini.dnd.dto.ProductStock;
+import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
 import com.capgemini.dnd.entity.WarehouseEntity;
 import com.capgemini.dnd.util.DBUtil;
-import com.capgemini.dnd.util.HibernateUtil;
 
 @Repository
 public class ProductDAOImpl implements ProductDAO {

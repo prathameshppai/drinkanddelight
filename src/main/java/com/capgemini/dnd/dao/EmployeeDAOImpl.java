@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.capgemini.dnd.customexceptions.BackEndException;
-import com.capgemini.dnd.customexceptions.InvalidPasswordException;
 import com.capgemini.dnd.customexceptions.PasswordException;
 import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
@@ -29,20 +28,18 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	private SessionFactory sessionFactory;
 
 	public EmployeeDAOImpl() {
-//		System.out.println("PWD = " + new File(".").getAbsolutePath());
-//		// PropertyConfigurator.configure("resources//log4j.properties");
-//		// Log4JManager.initProps();
 	}
 
-	
-	
-	// -----------------------------------------------------------------------------------------------------------------------------------
-
-	/*
-	 * This method is used to check whether an employee with a given user name exists in the table of Employees.
-	 * Return type - boolean 
-	 */
-	public boolean employeeExists(Employee employee) throws BackEndException, RowNotFoundException {
+	/*******************************************************************************************************
+	 - Function Name	:	employeeExists
+	 - Input Parameters	:	Employee (DTO; its username variable is set)
+	 - Return Type		:	boolean
+	 - Throws			:  	RowNotFoundException, BackEndException 
+	 - Author			:	Akash Deep, Capgemini
+	 - Description		:	To check wheteher an employee with the given username exists in the table, 
+	 						EmployeeCredentials
+	 ********************************************************************************************************/
+	public boolean employeeExists(Employee employee) throws RowNotFoundException, BackEndException {
 		boolean result = false;
 		Session session = null;
 		try {
@@ -58,16 +55,25 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				throw new RowNotFoundException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 			}
 		} catch (Exception exception) {
-			logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
-			throw new RowNotFoundException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
+			logger.error(Constants.SERVER_ERROR_MESSAGE);
+			throw new BackEndException(Constants.SERVER_ERROR_MESSAGE);
 		} finally {
 			session.close();
 		}
 		return result;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	setLoggedIn
+	 - Input Parameters	:	Employee (DTO; its username & password variables are set)
+	 - Return Type		:	boolean
+	 - Throws			:  	RowNotFoundException, BackEndException
+	 - Author			:	Akash Deep, Capgemini
+	 - Description		:	To check whether an employee with the given username and password exists in the table, 
+	 						EmployeeCredentials, if it returns true, the employee is logged in.
+	 ********************************************************************************************************/
 	@SuppressWarnings("unchecked")
-	public boolean setLoggedIn(Employee employee) throws BackEndException, RowNotFoundException {
+	public boolean setLoggedIn(Employee employee) throws RowNotFoundException, BackEndException {
 		boolean result = false;
 		Session session = null;
 		try {
@@ -87,21 +93,29 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			}
 
 		} catch (Exception exception) {
-			logger.error(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
-			throw new RowNotFoundException(Constants.EMPLOYEE_LOGGER_NAME_PASSWORD_NOTFOUND);
+			logger.error(Constants.SERVER_ERROR_MESSAGE);
+			throw new BackEndException(Constants.SERVER_ERROR_MESSAGE);
 		} finally {
 			session.close();
 		}
 		return result;
 	}
 
-	public boolean login(Employee employee)
-			throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
-		boolean result = false;
+	/*******************************************************************************************************
+	 - Function Name	:	login
+	 - Input Parameters	:	Employee (DTO; its username and password variables are set)
+	 - Return Type		:	boolean
+	 - Throws			:  	UnregisteredEmployeeException, WrongPasswordException, BackEndException
+	 - Author			:	Akash Deep, Capgemini
+	 - Description		:	To check wheteher an employee with the given username and password 
+	 						is eligible to login or not, uses employeeExists and setLoggedIn
+	 ********************************************************************************************************/
+	public boolean login(Employee employee) throws UnregisteredEmployeeException, WrongPasswordException, BackEndException {
+		boolean eligibleToLogin = false;
 		try {
 			if (employeeExists(employee)) {
 				try {
-					result = setLoggedIn(employee);
+					eligibleToLogin = setLoggedIn(employee);
 				} catch (RowNotFoundException exception) {
 					logger.error(Constants.INCORRECT_PASSWORD_MESSAGE);
 					throw new WrongPasswordException(Constants.INCORRECT_PASSWORD_MESSAGE);
@@ -110,12 +124,24 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		} catch (RowNotFoundException exception) {
 			logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 			throw new UnregisteredEmployeeException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
+		} catch (BackEndException exception) {
+			logger.error(exception.getMessage());
+			throw new BackEndException(exception.getMessage());
 		}
-		return result;
+		return eligibleToLogin;
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
+	/*******************************************************************************************************
+	 - Function Name	:	fetchOneConfidential
+	 - Input Parameters	:	Employee (DTO; its username variable is set)
+	 - Return Type		:	Employee with all its variables filled from database
+	 - Throws			:  	BackEndException
+	 - Author			:	Akash Deep, Capgemini
+	 - Description		:	To fetch all the securityQuestion, securityAnswer, Hash and Salt 
+	 						of the employee with the given username.
+	 ********************************************************************************************************/
 	@SuppressWarnings("unchecked")
 	public Employee fetchOneConfidentialDetail(Employee employee) throws BackEndException {
 		Employee idealEmployee = null;
@@ -144,6 +170,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		return idealEmployee;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	setPassword
+	 - Input Parameters	:	Employee (DTO; its username variable is set)
+	 - Return Type		:	boolean
+	 - Throws			:  	BackEndException, RowNotFoundException
+	 - Author			:	Akash Deep, Capgemini
+	 - Description		:	To change password of the employee with given username.
+	 ********************************************************************************************************/
 	public boolean setPassword(Employee employee) throws BackEndException, RowNotFoundException {
 		boolean passwordChanged = false;
 		Session session = null;
@@ -179,10 +213,21 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		return passwordChanged;
 	}
 
+	/*******************************************************************************************************
+	 - Function Name	:	changePassword
+	 - Input Parameters	:	Employee, Employee (DTOs)
+	 						First Employee parameter has the correct details corresponding to its username.
+	 						Second Employee parameter has the details input by the user which have to be checked against 
+	 						the details of the first Employee parameter.
+	 - Return Type		:	boolean
+	 - Throws			:  	WrongSecurityAnswerException, PasswordException, BackEndException, RowNotFoundException
+	 - Author			:	Akash Deep, Capgemini
+	 - Description		:	To change password of the employee with given username if it has correct details 
+	 						else throw appropriate exceptions.
+	 ********************************************************************************************************/
 	@Override
 	public boolean changePassword(Employee idealEmployee, Employee actualEmployee)
-			throws UnregisteredEmployeeException, WrongSecurityAnswerException, PasswordException, BackEndException,
-			InvalidPasswordException, RowNotFoundException {
+			throws WrongSecurityAnswerException, PasswordException, BackEndException, RowNotFoundException {
 		boolean result = false;
 
 		if (idealEmployee.getSecurityAnswer().equals(actualEmployee.getSecurityAnswer())) {
@@ -207,7 +252,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			logger.error(Constants.LOGGER_ERROR_MESSAGE_WRONG_ANSWER);
 			throw new WrongSecurityAnswerException(Constants.LOGGER_ERROR_MESSAGE_WRONG_ANSWER);
 		}
-
 		return result;
 	}
 }
