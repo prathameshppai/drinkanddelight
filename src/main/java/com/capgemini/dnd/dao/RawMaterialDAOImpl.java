@@ -126,8 +126,6 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 	}
 
-	// ------------------------------------------------------------------------------------------------------------------------------------
-
 	public List<SupplierEntity> fetchSupplierDetail(Supplier supplierDetails) throws BackEndException, DoesNotExistException, DisplayException {
 		Session session = null;
 		Criteria cr = null;

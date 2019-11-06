@@ -23,8 +23,6 @@ import com.capgemini.dnd.dto.Supplier;
 
 
 public interface RawMaterialService {
-//	public void viewRMspec(String name);
-
 	
 	public String placeRawMaterialOrder(RawMaterialOrder newRawMaterialOrder) throws RMOrderNotAddedException, ConnectionException, SQLException, DisplayException;
 
@@ -40,7 +38,6 @@ public interface RawMaterialService {
 
 	public ArrayList<String> fetchWarehouseIds() throws DisplayException, ConnectionException;
 	
-	
 	public String trackRawMaterialOrder(RawMaterialStock rawMaterialStock);
 
 	public boolean doesRawMaterialOrderIdExist(String id) throws RMOrderIDDoesNotExistException;
@@ -55,8 +52,6 @@ public interface RawMaterialService {
 
 	public boolean validateExpiryDate(Date manufacturing_date, Date expiry_date) throws ExpiryDateException;
 
-	public String updateRawMaterialStock(RawMaterialStock rawMaterialStock);
-
-	
+	public String updateRawMaterialStock(RawMaterialStock rawMaterialStock);	
 }
 

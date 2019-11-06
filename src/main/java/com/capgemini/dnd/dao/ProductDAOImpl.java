@@ -48,17 +48,10 @@ import com.capgemini.dnd.util.HibernateUtil;
 @Repository
 public class ProductDAOImpl implements ProductDAO {
 
-	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
 
 	@Autowired
 	private SessionFactory sessionFactory;
-
-	/*******************************************
-	 * Product order delivery status update Author: Ankit Kumar
-	 * 
-	 * 
-	 */
 
 	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
 		Session session = null;

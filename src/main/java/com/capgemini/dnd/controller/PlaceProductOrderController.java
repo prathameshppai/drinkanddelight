@@ -56,7 +56,6 @@ public class PlaceProductOrderController {
 		Date today = new Date();
 		productOrder.setDateOfOrder(today);
 		productOrder.setDeliveryStatus("Pending");
-		System.out.println(productOrder);
 		
 		try {
 			String jsonMessage = productService.placeProductOrder(productOrder);

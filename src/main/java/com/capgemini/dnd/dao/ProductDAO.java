@@ -63,7 +63,5 @@ public interface ProductDAO {
 	public String updateProductStock(ProductStock productStock);
 
 	boolean doesProductOrderIdExistInStock(String orderId);
-	
-	
 
 }
