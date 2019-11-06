@@ -116,7 +116,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			if (employeeExists(employee)) {
 				try {
 					eligibleToLogin = setLoggedIn(employee);
-				} catch (RowNotFoundException exception) {
+				} catch (BackEndException exception) {
 					logger.error(Constants.INCORRECT_PASSWORD_MESSAGE);
 					throw new WrongPasswordException(Constants.INCORRECT_PASSWORD_MESSAGE);
 				}
@@ -124,7 +124,11 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		} catch (RowNotFoundException exception) {
 			logger.error(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
 			throw new UnregisteredEmployeeException(Constants.LOGGER_ERROR_MESSAGE_UNREGISTERED_USER);
-		} catch (BackEndException exception) {
+		} catch (WrongPasswordException exception) {
+			logger.error(Constants.INCORRECT_PASSWORD_MESSAGE);
+			throw new WrongPasswordException(Constants.INCORRECT_PASSWORD_MESSAGE);
+		}
+		catch (BackEndException exception) {
 			logger.error(exception.getMessage());
 			throw new BackEndException(exception.getMessage());
 		}

@@ -1,6 +1,8 @@
 package com.capgemini.dnd.dao;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.capgemini.dnd.customexceptions.BackEndException;
 import com.capgemini.dnd.customexceptions.RowNotFoundException;
 import com.capgemini.dnd.customexceptions.UnregisteredEmployeeException;
@@ -41,7 +44,7 @@ public class EmployeeDAOImplTestSpring {
 		Employee employee = new Employee();
 		employee.setUsername("kaushik_nafeez");
 
-		assertThrows(RowNotFoundException.class, () -> {
+		assertThrows(BackEndException.class, () -> {
 			employeeDAO.employeeExists(employee);
 		});
 
@@ -78,7 +81,7 @@ public class EmployeeDAOImplTestSpring {
 		Employee employee = new Employee();
 		employee.setUsername("kavfuxvx_40");
 		employee.setPassword("bye");
-		assertThrows(UnregisteredEmployeeException.class, () -> {
+		assertThrows(BackEndException.class, () -> {
 			employeeDAO.login(employee);
 		});
 	}
