@@ -8,9 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -39,26 +41,22 @@ import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.ProductOrdersEntity;
 import com.capgemini.dnd.entity.ProductSpecsEntity;
 import com.capgemini.dnd.entity.ProductStockEntity;
-import com.capgemini.dnd.entity.DistributorEntity;
 import com.capgemini.dnd.entity.WarehouseEntity;
-
 import com.capgemini.dnd.util.DBUtil;
-import com.capgemini.dnd.util.HibernateUtil;
 
 @Repository
 public class ProductDAOImpl implements ProductDAO {
 
-	// private static final Distributor supplier = null;
 	Logger logger = Logger.getRootLogger();
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	/*******************************************
-	 * Product order delivery status update Author: Ankit Kumar
-
-	 * 
-	 */
+	 * Product order delivery status update
+	 *  Author: Ankit Kumar
+	 *  Throw Update Exception
+	 *******************************************/
 
 	public String updateStatusProductOrder(String orderId, String deliveryStatus) {
 		Session session = null;
@@ -71,9 +69,11 @@ public class ProductDAOImpl implements ProductDAO {
 			product.setDeliveryStatus(deliveryStatus);
 			session.save(product);
 			transaction.commit();
+			logger.info(Constants.UPADTED_SUCCESSFULLY_MESSAGE);
 			return Constants.UPADTED_SUCCESSFULLY_MESSAGE;
 		} catch (Exception e) {
 			if (transaction != null) {
+				logger.error(e);
 				transaction.rollback();
 			}
 			try {
@@ -550,9 +550,9 @@ public class ProductDAOImpl implements ProductDAO {
 		ProductOrdersEntity productOrdersEntity = new ProductOrdersEntity(newPO.getName(), newPO.getDistributorId(),
 				newPO.getQuantityValue(), newPO.getQuantityUnit(), newPO.getDateofDelivery(), newPO.getPricePerUnit(),
 				newPO.getWarehouseId());
-		System.out.println(newPO.getName() + " " +newPO.getDistributorId() + " " +
-				newPO.getQuantityValue() + " " +newPO.getQuantityUnit() + " " +newPO.getDateofDelivery() + " " +newPO.getPricePerUnit() + " " +
-				newPO.getWarehouseId());
+		System.out.println(newPO.getName() + " " + newPO.getDistributorId() + " " + newPO.getQuantityValue() + " "
+				+ newPO.getQuantityUnit() + " " + newPO.getDateofDelivery() + " " + newPO.getPricePerUnit() + " "
+				+ newPO.getWarehouseId());
 		Session session = null;
 		Transaction transaction = null;
 		try {
@@ -575,7 +575,8 @@ public class ProductDAOImpl implements ProductDAO {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
-	public List<DistributorEntity> fetchDistributorDetail(Distributor distributor) throws BackEndException, DoesNotExistException, DisplayException {
+	public List<DistributorEntity> fetchDistributorDetail(Distributor distributor)
+			throws BackEndException, DoesNotExistException, DisplayException {
 		Session session = null;
 		Criteria cr = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -594,12 +595,11 @@ public class ProductDAOImpl implements ProductDAO {
 			CriteriaQuery<DistributorEntity> criteria = builder.createQuery(DistributorEntity.class);
 			Root<DistributorEntity> root = criteria.from(DistributorEntity.class);
 
-		
-				criteria.select(root).where(builder.equal(root.get("distributorId"),distributorId ));
+			criteria.select(root).where(builder.equal(root.get("distributorId"), distributorId));
 
 			Query<DistributorEntity> query = session.createQuery(criteria);
-                  distributorlist = query.list();
-			         System.out.println(distributorlist);
+			distributorlist = query.list();
+			System.out.println(distributorlist);
 			if (distributorlist.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
@@ -758,29 +758,27 @@ public class ProductDAOImpl implements ProductDAO {
 
 		ArrayList<String> productNamesList = new ArrayList<String>();
 		List<ProductSpecsEntity> productSpecsEntityList;
-		
+
 		Session session = null;
 		Transaction transaction = null;
-		
+
 		try {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			String hql = "from ProductSpecsEntity";
 			Query query = session.createQuery(hql);
 			productSpecsEntityList = query.list();
-		} 
-		catch(HibernateException exception) {
+		} catch (HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-		finally {
+		} finally {
 			session.close();
 		}
-		
-		for(ProductSpecsEntity productSpecsEntity : productSpecsEntityList) {
+
+		for (ProductSpecsEntity productSpecsEntity : productSpecsEntityList) {
 			productNamesList.add(productSpecsEntity.getName());
 		}
-		
+
 		return productNamesList;
 	}
 
@@ -789,29 +787,27 @@ public class ProductDAOImpl implements ProductDAO {
 
 		ArrayList<String> distributorIdsList = new ArrayList<String>();
 		List<DistributorEntity> distributorEntityList;
-		
+
 		Session session = null;
 		Transaction transaction = null;
-		
+
 		try {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			String hql = "from DistributorEntity";
 			Query query = session.createQuery(hql);
 			distributorEntityList = query.list();
-		} 
-		catch(HibernateException exception) {
+		} catch (HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-		finally {
+		} finally {
 			session.close();
 		}
-		
-		for(DistributorEntity distributorEntity : distributorEntityList) {
+
+		for (DistributorEntity distributorEntity : distributorEntityList) {
 			distributorIdsList.add(distributorEntity.getDistributorId());
 		}
-		
+
 		return distributorIdsList;
 	}
 
@@ -820,40 +816,35 @@ public class ProductDAOImpl implements ProductDAO {
 
 		ArrayList<String> warehouseIdsList = new ArrayList<String>();
 		List<WarehouseEntity> warehouseEntityList;// = new ArrayList<RawMaterialSpecsEntity>();
-		
+
 		Session session = null;
 		Transaction transaction = null;
-		
+
 		try {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			String hql = "from WarehouseEntity";
 			Query query = session.createQuery(hql);
 			warehouseEntityList = query.list();
-		} 
-		catch(HibernateException exception) {
+		} catch (HibernateException exception) {
 			logger.error(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
 			throw new ConnectionException(Constants.CONNECTION_EXCEPTION_MESSAGE_DBCONNECTION_ERROR);
-		}
-		finally {
+		} finally {
 			session.close();
 		}
-		
-		for(WarehouseEntity warehouseEntity : warehouseEntityList) {
+
+		for (WarehouseEntity warehouseEntity : warehouseEntityList) {
 			warehouseIdsList.add(warehouseEntity.getWarehouseId());
 		}
-		
+
 		return warehouseIdsList;
 	}
 
 	/*******************************************************************************************************
-	 - Function Name	:	trackProductOrder
-	 - Input Parameters	:	ProductStock productStock
-	 - Return Type		:	String
-	 - Throws			:  	No exception
-	 - Author			:	Diksha Gupta, Capgemini
-	 - Creation Date	:	05/11/2019
-	 - Description		:	Track a particular order and calculate its shelf life 
+	 * - Function Name : trackProductOrder - Input Parameters : ProductStock
+	 * productStock - Return Type : String - Throws : No exception - Author : Diksha
+	 * Gupta, Capgemini - Creation Date : 05/11/2019 - Description : Track a
+	 * particular order and calculate its shelf life
 	 ********************************************************************************************************/
 	@Override
 	public String trackProductOrder(ProductStock productStock) {
@@ -890,13 +881,10 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	/*******************************************************************************************************
-	 - Function Name	:	exitDateCheck
-	 - Input Parameters	:	String orderId
-	 - Return Type		:	boolean
-	 - Throws			:  	ProductOrderIDDoesNotExistException
-	 - Author			:	Diksha Gupta, Capgemini
-	 - Creation Date	:	05/11/2019
-	 - Description		:	Checks if the Order ID exists in the Orders Table
+	 * - Function Name : exitDateCheck - Input Parameters : String orderId - Return
+	 * Type : boolean - Throws : ProductOrderIDDoesNotExistException - Author :
+	 * Diksha Gupta, Capgemini - Creation Date : 05/11/2019 - Description : Checks
+	 * if the Order ID exists in the Orders Table
 	 ********************************************************************************************************/
 	@Override
 	public boolean doesProductOrderIdExist(String orderId) throws ProductOrderIDDoesNotExistException {
@@ -927,13 +915,10 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	/*******************************************************************************************************
-	 - Function Name	:	exitDateCheck
-	 - Input Parameters	:	ProductStock productStock
-	 - Return Type		:	boolean
-	 - Throws			:  	ExitDateException, IncompleteDataException
-	 - Author			:	Diksha Gupta, Capgemini
-	 - Creation Date	:	05/11/2019
-	 - Description		:	Checks if the exit date entered is valid or not
+	 * - Function Name : exitDateCheck - Input Parameters : ProductStock
+	 * productStock - Return Type : boolean - Throws : ExitDateException,
+	 * IncompleteDataException - Author : Diksha Gupta, Capgemini - Creation Date :
+	 * 05/11/2019 - Description : Checks if the exit date entered is valid or not
 	 ********************************************************************************************************/
 	@Override
 	public boolean exitDateCheck(ProductStock productStock) throws ExitDateException, IncompleteDataException {
@@ -979,13 +964,10 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	/*******************************************************************************************************
-	 - Function Name	:	updateExitDateInStock
-	 - Input Parameters	:	ProductStock productStock
-	 - Return Type		:	String
-	 - Throws			:  	No exception
-	 - Author			:	Diksha Gupta, Capgemini
-	 - Creation Date	:	05/11/2019
-	 - Description		:	Updates Details of Exit Date in Database 
+	 * - Function Name : updateExitDateInStock - Input Parameters : ProductStock
+	 * productStock - Return Type : String - Throws : No exception - Author : Diksha
+	 * Gupta, Capgemini - Creation Date : 05/11/2019 - Description : Updates Details
+	 * of Exit Date in Database
 	 ********************************************************************************************************/
 	@Override
 	public String updateExitDateinStock(ProductStock productStock) {
@@ -1011,13 +993,10 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	/*******************************************************************************************************
-	 - Function Name	:	updateProductStock
-	 - Input Parameters	:	ProductStock productStock
-	 - Return Type		:	String
-	 - Throws			:  	No exception
-	 - Author			:	Diksha Gupta, Capgemini
-	 - Creation Date	:	05/11/2019
-	 - Description		:	Updates Details of Stock in Database 
+	 * - Function Name : updateProductStock - Input Parameters : ProductStock
+	 * productStock - Return Type : String - Throws : No exception - Author : Diksha
+	 * Gupta, Capgemini - Creation Date : 05/11/2019 - Description : Updates Details
+	 * of Stock in Database
 	 ********************************************************************************************************/
 	@Override
 	public String updateProductStock(ProductStock productStock) {
@@ -1061,13 +1040,10 @@ public class ProductDAOImpl implements ProductDAO {
 	}
 
 	/*******************************************************************************************************
-	 - Function Name	:	doesProductOrderExistInStock
-	 - Input Parameters	:	orderId
-	 - Return Type		:	boolean
-	 - Throws			:  	No exception
-	 - Author			:	Diksha Gupta, Capgemini
-	 - Creation Date	:	05/11/2019
-	 - Description		:	Checks if Product Order ID exists in Stock
+	 * - Function Name : doesProductOrderExistInStock - Input Parameters : orderId -
+	 * Return Type : boolean - Throws : No exception - Author : Diksha Gupta,
+	 * Capgemini - Creation Date : 05/11/2019 - Description : Checks if Product
+	 * Order ID exists in Stock
 	 ********************************************************************************************************/
 	@Override
 	public boolean doesProductOrderIdExistInStock(String orderId) {
