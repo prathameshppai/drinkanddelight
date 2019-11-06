@@ -241,6 +241,16 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 			con.close();
 		}
 	}
+	/*******************************************************************************************************
+	 - Function Name	:	getListofRawMaterial
+	 - Input Parameters	:	none
+	 - Return Type		:	List
+	 - Throws			:  	DisplayException, BackEndException  
+	 - Author			:	Capgemini
+	 - Creation Date	:	05/11/2019
+	 - Description		:	Get a list of Raw Material Names 
+	 ********************************************************************************************************/
+	
 
 	@SuppressWarnings("unused")
 	@Override
@@ -291,11 +301,9 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
 
 			Query<RawMaterialOrderEntity> q = session.createQuery(criteria);
 			list = q.list();
-
 			if (list.isEmpty()) {
 				logger.error(Constants.LOGGER_ERROR_FETCH_FAILED);
 				throw new DisplayException(Constants.DISPLAY_EXCEPTION_NO_RECORDS_FOUND);
-
 			} else {
 				logger.info(Constants.LOGGER_INFO_DISPLAY_SUCCESSFUL);
 
